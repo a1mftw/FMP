@@ -4,23 +4,48 @@ using UnityEngine;
 
 public class TransitionController : MonoBehaviour
 {
+    public GameObject MainMenu;
+    public Camera playerCamera;
+    public Camera battleCamera;
+    public Animator battleTransition;
+    public Animator menuTransition;
+    public ThirdPersonMovement playerMovement;
+    public float menuTransitionTime = 1f;
+    public float battleTransitionTime = 2f;
 
-    public Animator transition;
-    public float transitionTime = 1f;
+   
+
 
     public void StartGame() 
     {
-
-        StartCoroutine(StartGameTransition());
-    
+        StartCoroutine(StartMenuTransition());
     }
 
-    IEnumerator StartGameTransition() 
+    public void StartBattle() 
     {
-        transition.SetTrigger("Start");
+        StartCoroutine(StartBattleTransition());
+    }
 
-        yield return new WaitForSeconds(transitionTime);
-    
+    IEnumerator StartMenuTransition() 
+    {
+        menuTransition.SetTrigger("Start");
+        yield return new WaitForSeconds(menuTransitionTime);
+        MainMenu.SetActive(false);
+        playerCamera.enabled = true;
+        playerMovement.canControl = true;
+        menuTransition.SetTrigger("End");
+
+    }
+
+    IEnumerator StartBattleTransition()
+    {
+        battleTransition.SetTrigger("Start");
+        yield return new WaitForSeconds(battleTransitionTime);
+        playerCamera.enabled = false;
+        battleCamera.enabled = true;
+        playerMovement.StartBattle();
+        battleTransition.SetTrigger("End");
+
 
     }
 
