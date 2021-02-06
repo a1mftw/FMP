@@ -15,6 +15,7 @@ public enum BattleState
 public class BattleSystem : MonoBehaviour
 {
 
+    public GameObject BattleUI;
     public GameObject playerPrefab;
     public GameObject enemyPrefab;
 
@@ -25,7 +26,9 @@ public class BattleSystem : MonoBehaviour
 
     public void SetupBattle() 
     {
+
         state = BattleState.Start;
+        BattleUI.enabled = true;
         playerPrefab.transform.position = playerBattleSpot.position;
         enemyPrefab.transform.position = enemyBattleSpot.position;
         playerPrefab.transform.LookAt(enemyPrefab.transform);
