@@ -66,7 +66,7 @@ public class ThirdPersonMovement : MonoBehaviour
 
             canControl = false;
             PreviousPos = transform.position;
-            tranController.StartBattle();
+            tranController.StartBattle(other.gameObject);
         }
     }
 

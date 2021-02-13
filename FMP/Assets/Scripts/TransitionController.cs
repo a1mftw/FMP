@@ -22,8 +22,9 @@ public class TransitionController : MonoBehaviour
         StartCoroutine(StartMenuTransition());
     }
 
-    public void StartBattle() 
+    public void StartBattle(GameObject enemy) 
     {
+        battleSystemController.enemyTarget = enemy;
         StartCoroutine(StartBattleTransition());
     }
 

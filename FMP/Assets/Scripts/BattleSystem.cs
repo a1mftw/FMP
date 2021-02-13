@@ -26,7 +26,8 @@ public class BattleSystem : MonoBehaviour
     public BattleHUD playerHUD;
     public PlayerCombat playerCombat;
     public TransitionController tranController;
-    
+
+    public GameObject enemyTarget;
 
     public BattleState state;
 
@@ -47,6 +48,7 @@ public class BattleSystem : MonoBehaviour
                 PlayerAction();
                 break;
             case BattleState.EnemyTurn:
+                enemyAction();
                 break;
             case BattleState.Won:
                 break;
@@ -77,7 +79,6 @@ public class BattleSystem : MonoBehaviour
         playerPrefab.transform.LookAt(enemyPrefab.transform);
         enemyPrefab.transform.LookAt(playerPrefab.transform);
 
-
         state = BattleState.PlayerTurn;
 
     }
@@ -107,8 +108,17 @@ public class BattleSystem : MonoBehaviour
             playerCombat.FourthButtonAction();
         }
 
+        if (!enemyPrefab)
+        {
+            playerCombat.BattleOver = true;
+        }
 
     }
+
+    void enemyAction() 
+    {
+        changeState(BattleState.PlayerTurn);
+    } 
 
 
     public void changeState(BattleState stateToChange) 
@@ -117,7 +127,7 @@ public class BattleSystem : MonoBehaviour
     }
 
     public void EndBattle()
-    { 
+    {
         BattleUI.SetActive(false);
         state = BattleState.None;
     }

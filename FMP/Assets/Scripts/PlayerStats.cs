@@ -4,10 +4,13 @@ using UnityEngine;
 
 public class PlayerStats : MonoBehaviour
 {
-    public string PlayerName;
-    public int PlayerLevel;
+    public string PlayerName = "Hero";
+    public int PlayerLevel = 1;
 
-    public int damage;
-    public int maxHp;
-    public int currentHp;
+    public int damage = 10;
+    public int maxHp = 200;
+    public int currentHp = 200;
+
+
+
 }
