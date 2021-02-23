@@ -30,17 +30,17 @@ public class PlayerAttacks : MonoBehaviour
    
     public void BludgeoningAttack(Target target, GameObject enemy) 
     {
-        enemy.GetComponent<EnemyCombat>().TakeBludgeoningDamage(playerStats.damage,target);
+        enemy.GetComponent<EnemyCombat>().TakeBludgeoningDamage(playerStats.player.baseDamage,target);
     }
 
     public void PiercingAttack(Target target, GameObject enemy) 
     {
-        enemy.GetComponent<EnemyCombat>().TakePiercingDamage(playerStats.damage, target);
+        enemy.GetComponent<EnemyCombat>().TakePiercingDamage(playerStats.player.baseDamage, target);
     }
 
     public void SlashingAttack(Target target, GameObject enemy) 
     {
-        enemy.GetComponent<EnemyCombat>().TakeSlashingDamage(playerStats.damage, target);
+        enemy.GetComponent<EnemyCombat>().TakeSlashingDamage(playerStats.player.baseDamage, target);
     }
 
     #endregion

@@ -31,7 +31,10 @@ public class BattleSystem : MonoBehaviour
 
     public BattleState state;
 
- 
+    public bool playerStartAction = true;
+
+
+
 
 
 
@@ -85,9 +88,12 @@ public class BattleSystem : MonoBehaviour
 
     void PlayerAction()
     {
-
-        playerCombat.SetUI();
-
+        if (playerStartAction)
+        {
+            playerCombat.SetUI();
+            playerStartAction = false;
+        }
+        
         if (Input.GetButtonDown("FirstBattleButton"))
         {
             playerCombat.FirstButtonAction();
@@ -118,6 +124,7 @@ public class BattleSystem : MonoBehaviour
     void enemyAction() 
     {
         changeState(BattleState.PlayerTurn);
+        playerStartAction = true;
     } 
 
 

@@ -7,6 +7,7 @@ public class PlayerCombat : MonoBehaviour
 {
 
     public GameObject UIControls;
+    public GameObject PlayerUI;
     public BattleSystem battleSystem;
     public PlayerAttacks playerAttacks;
 
@@ -19,7 +20,12 @@ public class PlayerCombat : MonoBehaviour
 
     }
 
-    public Stances stance;
+    public Sprite physicalImage;
+    public Sprite magicImage;
+    public Sprite alchemyImage;
+    public Sprite overdriveImage;
+
+    public Stances stance = Stances.Physical;
     public PlayerAttacks.Attacks attack;
     public PlayerAttacks.Target target;
     public Animator cameraController;
@@ -28,6 +34,7 @@ public class PlayerCombat : MonoBehaviour
 
     private bool firstPress = true;
     private bool targeting = false;
+    private bool playerTargeting = false;
 
     private Text FirstButton;
     private Text SecondButton;
@@ -35,10 +42,12 @@ public class PlayerCombat : MonoBehaviour
     private Text FourthButton;
 
     public GameObject bodyPartUI;
+    public GameObject ChangeStanceUI;
     public Button partHighlight;
 
     private int bodyPartCount = 0;
     public bool BattleOver = false;
+    public bool changeStanceActive = false;
 
     private void Update()
     {
@@ -46,12 +55,40 @@ public class PlayerCombat : MonoBehaviour
         {
                 Flee();
         }
-       
+
+        if (changeStanceActive)
+        {
+            if (Input.GetButtonDown("Up"))
+            {
+                ChangeStance(Stances.Physical);
+                ChangeStanceUI.SetActive(false);
+            }
+
+            if (Input.GetButtonDown("Left"))
+            {
+                ChangeStance(Stances.Magic);
+                ChangeStanceUI.SetActive(false);
+            }
+
+            if (Input.GetButtonDown("Right"))
+            {
+                ChangeStance(Stances.Alchemy);
+                ChangeStanceUI.SetActive(false);
+            }
+
+            if (Input.GetButtonDown("Down"))
+            {
+                ChangeStance(Stances.Overdrive);
+                ChangeStanceUI.SetActive(false);
+
+            }
+
+            
+            
+        }
 
         if (targeting)
         {
-
-
 
             //Change between enemy
             if (Input.GetButtonDown("Right"))
@@ -87,23 +124,57 @@ public class PlayerCombat : MonoBehaviour
 
             if (Input.GetButtonDown("Submit"))
             {
-                switch (attack)
+                switch (stance)
                 {
-                    case PlayerAttacks.Attacks.Bludgeoning:
-                        playerAttacks.BludgeoningAttack(target,enemyTarget);
+                    case Stances.Physical:
+                        switch (attack)
+                        {
+                            case PlayerAttacks.Attacks.Bludgeoning:
+                                playerAttacks.BludgeoningAttack(target, enemyTarget);
+                                break;
+                            case PlayerAttacks.Attacks.Piercing:
+                                playerAttacks.PiercingAttack(target, enemyTarget);
+                                break;
+                            case PlayerAttacks.Attacks.Slashing:
+                                playerAttacks.SlashingAttack(target, enemyTarget);
+                                break;
+                            default:
+                                break;
+                        }
                         break;
-                    case PlayerAttacks.Attacks.Piercing:
-                        playerAttacks.PiercingAttack(target, enemyTarget);
+                    case Stances.Magic:
                         break;
-                    case PlayerAttacks.Attacks.Slashing:
-                        playerAttacks.SlashingAttack(target, enemyTarget);
+                    case Stances.Alchemy:
+
+                        switch (target)
+                        {
+                            case PlayerAttacks.Target.Head:
+                                break;
+                            case PlayerAttacks.Target.Torso:
+                                break;
+                            case PlayerAttacks.Target.Arms:
+                                break;
+                            case PlayerAttacks.Target.Hands:
+                                break;
+                            case PlayerAttacks.Target.Legs:
+                                break;
+                            case PlayerAttacks.Target.Feet:
+                                break;
+                            default:
+                                break;
+                        }
+                        break;
+
+                    case Stances.Overdrive:
                         break;
                     default:
                         break;
                 }
+                
 
                 bodyPartUI.SetActive(false);
                 targeting = false;
+                firstPress = true;
                 cameraController.Play("BattleCamera");
                 bodyPartCount = 0;
                 battleSystem.changeState(BattleState.EnemyTurn);
@@ -134,6 +205,13 @@ public class PlayerCombat : MonoBehaviour
         ThirdButton = GameObject.Find("FunctionText3").GetComponent<Text>();
         FourthButton = GameObject.Find("FunctionText4").GetComponent<Text>();
 
+        FirstButton.text = "Attack";
+        SecondButton.text = "Abilities";
+        ThirdButton.text = "Change Stance";
+        FourthButton.text = "Flee";
+        firstPress = true;
+
+        ChangeStance(stance);
     }
 
     public void FirstButtonAction() 
@@ -176,8 +254,25 @@ public class PlayerCombat : MonoBehaviour
 
                 break;
             case Stances.Magic:
+                if (firstPress)
+                {
+                    cameraController.Play("MagicState");
+                    firstPress = false;
+                }
                 break;
             case Stances.Alchemy:
+                if (firstPress)
+                {
+                    cameraController.Play("AlchemyState");
+                    partHighlight.Select();
+                    targeting = true;
+
+                    //Change color of parts if they are damaged
+                    PlayerColorTargetSystem();
+
+                    //Show body part select
+                    bodyPartUI.SetActive(true);
+                }
                 break;
             case Stances.Overdrive:
                 break;
@@ -195,8 +290,12 @@ public class PlayerCombat : MonoBehaviour
                     
                     if (firstPress)
                     {
-
-                    }
+                        FirstButton.text = "War Cry";
+                        SecondButton.text = "Piercing Gaze";
+                        ThirdButton.text = "Meditate";
+                        FourthButton.text = "Back";
+                        firstPress = false;
+                }
                     else
                     {
                     if (!targeting)
@@ -224,6 +323,9 @@ public class PlayerCombat : MonoBehaviour
                 case Stances.Magic:
                     break;
                 case Stances.Alchemy:
+                    
+
+
                     break;
                 case Stances.Overdrive:
                     break;
@@ -238,33 +340,48 @@ public class PlayerCombat : MonoBehaviour
     {
         if (firstPress)
         {
-            
+            changeStanceActive = true;
+            ChangeStanceUI.SetActive(true);
+            firstPress = false;
         }
         else
         {
-            if (!targeting)
+
+            switch (stance)
             {
-                attack = PlayerAttacks.Attacks.Slashing;
-                enemyTarget = battleSystem.enemyTarget;
-                partHighlight.Select();
-                targeting = true;
-                //Change camera to enemy
+                case Stances.Physical:
+                    if (!targeting)
+                    {
+                        attack = PlayerAttacks.Attacks.Slashing;
+                        enemyTarget = battleSystem.enemyTarget;
+                        partHighlight.Select();
+                        targeting = true;
 
 
+                        //Change color of parts if they are damaged
+                        EnemyColorTargetSystem();
 
-                //Change color of parts if they are damaged
-                EnemyColorTargetSystem();
 
-
-                //Show body part select
-                bodyPartUI.SetActive(true);
+                        //Show body part select
+                        bodyPartUI.SetActive(true);
+                    }
+                    break;
+                case Stances.Magic:
+                    break;
+                case Stances.Alchemy:
+                    break;
+                case Stances.Overdrive:
+                    break;
+                default:
+                    break;
             }
+            
         }
 
     }
     public void FourthButtonAction() 
     {
-        if (firstPress)
+        if (firstPress && !changeStanceActive)
         {
             Flee();
         }
@@ -273,14 +390,13 @@ public class PlayerCombat : MonoBehaviour
             if (!targeting)
             {
                 FirstButton.text = "Attack";
-                SecondButton.text = "Stance Ability";
+                SecondButton.text = "Abilities";
                 ThirdButton.text = "Change Stance";
                 FourthButton.text = "Flee";
                 firstPress = true;
             }
         }
     }
-
 
     void Flee() 
     {
@@ -398,6 +514,141 @@ public class PlayerCombat : MonoBehaviour
             bodyPartUI.transform.GetChild(2).GetChild(5).GetComponent<Image>().color = Color.green;
         }
 
+    }
+
+    void PlayerColorTargetSystem() 
+    {
+        PlayerStats playerStats = GameObject.Find("Player").GetComponent<PlayerStats>();
+
+        bodyPartUI.transform.GetChild(1).GetComponent<Slider>().maxValue = playerStats.player.maxHealth;
+        bodyPartUI.transform.GetChild(1).GetComponent<Slider>().value = playerStats.player.currentHealth;
+
+        if (playerStats.player.bodyPartHealth.headHealth <= 0)
+        {
+            bodyPartUI.transform.GetChild(2).GetChild(0).GetComponent<Image>().color = Color.gray;
+        }
+        else if (playerStats.player.bodyPartHealth.headHealth <= playerStats.player.bodyPartHealth.headMaxHealth / 4)
+        {
+            bodyPartUI.transform.GetChild(2).GetChild(0).GetComponent<Image>().color = Color.red;
+        }
+        else if (playerStats.player.bodyPartHealth.headHealth <= playerStats.player.bodyPartHealth.headMaxHealth / 2)
+        {
+            bodyPartUI.transform.GetChild(2).GetChild(0).GetComponent<Image>().color = Color.yellow;
+        }
+        else
+        {
+            bodyPartUI.transform.GetChild(2).GetChild(0).GetComponent<Image>().color = Color.green;
+        }
+
+        if (playerStats.player.bodyPartHealth.torsoHealth <= 0)
+        {
+            bodyPartUI.transform.GetChild(2).GetChild(1).GetComponent<Image>().color = Color.gray;
+        }
+        else if (playerStats.player.bodyPartHealth.torsoHealth <= playerStats.player.bodyPartHealth.torsoMaxHealth / 4)
+        {
+            bodyPartUI.transform.GetChild(2).GetChild(1).GetComponent<Image>().color = Color.red;
+        }
+        else if (playerStats.player.bodyPartHealth.torsoHealth <= playerStats.player.bodyPartHealth.torsoMaxHealth / 2)
+        {
+            bodyPartUI.transform.GetChild(2).GetChild(1).GetComponent<Image>().color = Color.yellow;
+        }
+        else
+        {
+            bodyPartUI.transform.GetChild(2).GetChild(1).GetComponent<Image>().color = Color.green;
+        }
+
+
+        if (playerStats.player.bodyPartHealth.armsHealth <= 0)
+        {
+            bodyPartUI.transform.GetChild(2).GetChild(2).GetComponent<Image>().color = Color.gray;
+        }
+        else if (playerStats.player.bodyPartHealth.armsHealth <= playerStats.player.bodyPartHealth.armsMaxHealth / 4)
+        {
+            bodyPartUI.transform.GetChild(2).GetChild(2).GetComponent<Image>().color = Color.red;
+        }
+        else if (playerStats.player.bodyPartHealth.armsHealth <= playerStats.player.bodyPartHealth.armsMaxHealth / 2)
+        {
+            bodyPartUI.transform.GetChild(2).GetChild(2).GetComponent<Image>().color = Color.yellow;
+        }
+        else
+        {
+            bodyPartUI.transform.GetChild(2).GetChild(2).GetComponent<Image>().color = Color.green;
+        }
+
+        if (playerStats.player.bodyPartHealth.handsHealth <= 0)
+        {
+            bodyPartUI.transform.GetChild(2).GetChild(3).GetComponent<Image>().color = Color.gray;
+        }
+        else if (playerStats.player.bodyPartHealth.handsHealth <= playerStats.player.bodyPartHealth.handsMaxHealth / 4)
+        {
+            bodyPartUI.transform.GetChild(2).GetChild(3).GetComponent<Image>().color = Color.red;
+        }
+        else if (playerStats.player.bodyPartHealth.handsHealth <= playerStats.player.bodyPartHealth.handsMaxHealth / 2)
+        {
+            bodyPartUI.transform.GetChild(2).GetChild(3).GetComponent<Image>().color = Color.yellow;
+        }
+        else
+        {
+            bodyPartUI.transform.GetChild(2).GetChild(3).GetComponent<Image>().color = Color.green;
+        }
+
+        if (playerStats.player.bodyPartHealth.legsHealth <= 0)
+        {
+            bodyPartUI.transform.GetChild(2).GetChild(4).GetComponent<Image>().color = Color.gray;
+        }
+        else if (playerStats.player.bodyPartHealth.legsHealth <= playerStats.player.bodyPartHealth.legsMaxHealth / 4)
+        {
+            bodyPartUI.transform.GetChild(2).GetChild(4).GetComponent<Image>().color = Color.red;
+        }
+        else if (playerStats.player.bodyPartHealth.legsHealth <= playerStats.player.bodyPartHealth.legsMaxHealth / 2)
+        {
+            bodyPartUI.transform.GetChild(2).GetChild(4).GetComponent<Image>().color = Color.yellow;
+        }
+        else
+        {
+            bodyPartUI.transform.GetChild(2).GetChild(4).GetComponent<Image>().color = Color.green;
+        }
+
+        if (playerStats.player.bodyPartHealth.feetHealth <= 0)
+        {
+            bodyPartUI.transform.GetChild(2).GetChild(5).GetComponent<Image>().color = Color.gray;
+        }
+        else if (playerStats.player.bodyPartHealth.feetHealth <= playerStats.player.bodyPartHealth.feetMaxHealth / 4)
+        {
+            bodyPartUI.transform.GetChild(2).GetChild(5).GetComponent<Image>().color = Color.red;
+        }
+        else if (playerStats.player.bodyPartHealth.feetHealth <= playerStats.player.bodyPartHealth.feetMaxHealth / 2)
+        {
+            bodyPartUI.transform.GetChild(2).GetChild(5).GetComponent<Image>().color = Color.yellow;
+        }
+        else
+        {
+            bodyPartUI.transform.GetChild(2).GetChild(5).GetComponent<Image>().color = Color.green;
+        }
+    }
+
+    void ChangeStance(Stances newStance) 
+    {
+        stance = newStance;
+
+        switch (stance)
+        {
+            case Stances.Physical:
+                PlayerUI.transform.GetChild(2).GetChild(1).GetComponent<Image>().sprite = physicalImage;
+                break;
+            case Stances.Magic:
+                PlayerUI.transform.GetChild(2).GetChild(1).GetComponent<Image>().sprite = magicImage;
+                break;
+            case Stances.Alchemy:
+                PlayerUI.transform.GetChild(2).GetChild(1).GetComponent<Image>().sprite = alchemyImage;
+                break;
+            case Stances.Overdrive:
+                PlayerUI.transform.GetChild(2).GetChild(1).GetComponent<Image>().sprite = overdriveImage;
+                break;
+        }
+
+        changeStanceActive = false;
+        firstPress = true;
     }
 
 }
