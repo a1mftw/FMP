@@ -45,4 +45,24 @@ public class PlayerAttacks : MonoBehaviour
 
     #endregion
 
+    #region Physical Skills
+
+    #endregion
+
+    #region Magic Attacks
+
+    #endregion
+
+    #region Magic Skills
+
+    #endregion
+
+    #region Alchemy Abilities
+
+    #endregion
+
+    #region Alchemy Skills
+
+    #endregion
+
 }

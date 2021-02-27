@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -245,6 +246,7 @@ public class PlayerCombat : MonoBehaviour
 
                         //Change color of parts if they are damaged
                         EnemyColorTargetSystem();
+                        BuffDebuffs();
 
 
                         //Show body part select
@@ -269,6 +271,7 @@ public class PlayerCombat : MonoBehaviour
 
                     //Change color of parts if they are damaged
                     PlayerColorTargetSystem();
+                    BuffDebuffs(true);
 
                     //Show body part select
                     bodyPartUI.SetActive(true);
@@ -312,6 +315,8 @@ public class PlayerCombat : MonoBehaviour
 
                         //Change color of parts if they are damaged
                         EnemyColorTargetSystem();
+                        //Turn the buff debuff UI on
+                        BuffDebuffs();
 
 
                         //Show body part select
@@ -336,6 +341,9 @@ public class PlayerCombat : MonoBehaviour
         
 
     }
+
+
+
     public void ThirdButtonAction() 
     {
         if (firstPress)
@@ -360,6 +368,7 @@ public class PlayerCombat : MonoBehaviour
 
                         //Change color of parts if they are damaged
                         EnemyColorTargetSystem();
+                        BuffDebuffs();
 
 
                         //Show body part select
@@ -397,13 +406,11 @@ public class PlayerCombat : MonoBehaviour
             }
         }
     }
-
     void Flee() 
     {
         battleSystem.tranController.FleeBattle();
         BattleOver = false;
     }
-
     void EnemyColorTargetSystem() 
     {
         EnemyStats enemyStats = enemyTarget.GetComponent<EnemyStats>();
@@ -515,7 +522,6 @@ public class PlayerCombat : MonoBehaviour
         }
 
     }
-
     void PlayerColorTargetSystem() 
     {
         PlayerStats playerStats = GameObject.Find("Player").GetComponent<PlayerStats>();
@@ -649,6 +655,329 @@ public class PlayerCombat : MonoBehaviour
 
         changeStanceActive = false;
         firstPress = true;
+    }
+
+    private void BuffDebuffs(bool player = false)
+    {
+        var image = new Color();
+        EnemyStats enemyStats = enemyTarget.GetComponent<EnemyStats>();
+        PlayerStats playerStats = GetComponent<PlayerStats>();
+
+        if (player)
+        {
+            if (playerStats.player.buffs.headDebuff)
+            {
+                image = bodyPartUI.transform.GetChild(3).GetChild(0).GetChild(0).GetComponent<Image>().color;
+                image.a = 1f;
+                bodyPartUI.transform.GetChild(3).GetChild(0).GetChild(0).GetComponent<Image>().color = image;
+            }
+            else
+            {
+                image = bodyPartUI.transform.GetChild(3).GetChild(0).GetChild(0).GetComponent<Image>().color;
+                image.a = 0.3f;
+                bodyPartUI.transform.GetChild(3).GetChild(0).GetChild(0).GetComponent<Image>().color = image;
+            }
+
+
+            if (playerStats.player.buffs.torsoDebuff)
+            {
+                image = bodyPartUI.transform.GetChild(3).GetChild(1).GetChild(0).GetComponent<Image>().color;
+                image.a = 1f;
+                bodyPartUI.transform.GetChild(3).GetChild(1).GetChild(0).GetComponent<Image>().color = image;
+            }
+            else
+            {
+                image = bodyPartUI.transform.GetChild(3).GetChild(1).GetChild(0).GetComponent<Image>().color;
+                image.a = 0.3f;
+                bodyPartUI.transform.GetChild(3).GetChild(1).GetChild(0).GetComponent<Image>().color = image;
+            }
+
+            if (playerStats.player.buffs.armsDebuff)
+            {
+                image = bodyPartUI.transform.GetChild(3).GetChild(2).GetChild(0).GetComponent<Image>().color;
+                image.a = 1f;
+                bodyPartUI.transform.GetChild(3).GetChild(2).GetChild(0).GetComponent<Image>().color = image;
+            }
+            else
+            {
+                image = bodyPartUI.transform.GetChild(3).GetChild(2).GetChild(0).GetComponent<Image>().color;
+                image.a = 0.3f;
+                bodyPartUI.transform.GetChild(3).GetChild(2).GetChild(0).GetComponent<Image>().color = image;
+            }
+
+            if (playerStats.player.buffs.handsDebuff)
+            {
+                image = bodyPartUI.transform.GetChild(3).GetChild(3).GetChild(0).GetComponent<Image>().color;
+                image.a = 1f;
+                bodyPartUI.transform.GetChild(3).GetChild(3).GetChild(0).GetComponent<Image>().color = image;
+            }
+            else
+            {
+                image = bodyPartUI.transform.GetChild(3).GetChild(3).GetChild(0).GetComponent<Image>().color;
+                image.a = 0.3f;
+                bodyPartUI.transform.GetChild(3).GetChild(3).GetChild(0).GetComponent<Image>().color = image;
+            }
+
+            if (playerStats.player.buffs.legsDebuff)
+            {
+                image = bodyPartUI.transform.GetChild(3).GetChild(4).GetChild(0).GetComponent<Image>().color;
+                image.a = 1f;
+                bodyPartUI.transform.GetChild(3).GetChild(4).GetChild(0).GetComponent<Image>().color = image;
+            }
+            else
+            {
+                image = bodyPartUI.transform.GetChild(3).GetChild(4).GetChild(0).GetComponent<Image>().color;
+                image.a = 0.3f;
+                bodyPartUI.transform.GetChild(3).GetChild(4).GetChild(0).GetComponent<Image>().color = image;
+            }
+
+            if (playerStats.player.buffs.feetDebuff)
+            {
+                image = bodyPartUI.transform.GetChild(3).GetChild(5).GetChild(0).GetComponent<Image>().color;
+                image.a = 1f;
+                bodyPartUI.transform.GetChild(3).GetChild(5).GetChild(0).GetComponent<Image>().color = image;
+            }
+            else
+            {
+                image = bodyPartUI.transform.GetChild(3).GetChild(5).GetChild(0).GetComponent<Image>().color;
+                image.a = 0.3f;
+                bodyPartUI.transform.GetChild(3).GetChild(5).GetChild(0).GetComponent<Image>().color = image;
+            }
+
+            if (playerStats.player.buffs.Paralysed)
+            {
+                image = bodyPartUI.transform.GetChild(4).GetChild(0).GetChild(0).GetComponent<Image>().color;
+                image.a = 1f;
+                bodyPartUI.transform.GetChild(4).GetChild(0).GetChild(0).GetComponent<Image>().color = image;
+            }
+            else
+            {
+                image = bodyPartUI.transform.GetChild(4).GetChild(0).GetChild(0).GetComponent<Image>().color;
+                image.a = 0.3f;
+                bodyPartUI.transform.GetChild(4).GetChild(0).GetChild(0).GetComponent<Image>().color = image;
+            }
+
+            if (playerStats.player.buffs.Clouded)
+            {
+                image = bodyPartUI.transform.GetChild(4).GetChild(1).GetChild(0).GetComponent<Image>().color;
+                image.a = 1f;
+                bodyPartUI.transform.GetChild(4).GetChild(1).GetChild(0).GetComponent<Image>().color = image;
+            }
+            else
+            {
+                image = bodyPartUI.transform.GetChild(4).GetChild(1).GetChild(0).GetComponent<Image>().color;
+                image.a = 0.3f;
+                bodyPartUI.transform.GetChild(4).GetChild(1).GetChild(0).GetComponent<Image>().color = image;
+            }
+
+            if (playerStats.player.buffs.Slowed)
+            {
+                image = bodyPartUI.transform.GetChild(4).GetChild(2).GetChild(0).GetComponent<Image>().color;
+                image.a = 1f;
+                bodyPartUI.transform.GetChild(4).GetChild(2).GetChild(0).GetComponent<Image>().color = image;
+            }
+            else
+            {
+                image = bodyPartUI.transform.GetChild(4).GetChild(2).GetChild(0).GetComponent<Image>().color;
+                image.a = 0.3f;
+                bodyPartUI.transform.GetChild(4).GetChild(2).GetChild(0).GetComponent<Image>().color = image;
+            }
+
+            if (playerStats.player.buffs.Scared)
+            {
+                image = bodyPartUI.transform.GetChild(4).GetChild(3).GetChild(0).GetComponent<Image>().color;
+                image.a = 1f;
+                bodyPartUI.transform.GetChild(4).GetChild(3).GetChild(0).GetComponent<Image>().color = image;
+            }
+            else
+            {
+                image = bodyPartUI.transform.GetChild(4).GetChild(3).GetChild(0).GetComponent<Image>().color;
+                image.a = 0.3f;
+                bodyPartUI.transform.GetChild(4).GetChild(3).GetChild(0).GetComponent<Image>().color = image;
+            }
+
+            if (playerStats.player.buffs.Unatunned)
+            {
+                image = bodyPartUI.transform.GetChild(4).GetChild(4).GetChild(0).GetComponent<Image>().color;
+                image.a = 1f;
+                bodyPartUI.transform.GetChild(4).GetChild(4).GetChild(0).GetComponent<Image>().color = image;
+            }
+            else
+            {
+                image = bodyPartUI.transform.GetChild(4).GetChild(4).GetChild(0).GetComponent<Image>().color;
+                image.a = 0.3f;
+                bodyPartUI.transform.GetChild(4).GetChild(4).GetChild(0).GetComponent<Image>().color = image;
+            }
+
+            if (playerStats.player.buffs.Unbalanced)
+            {
+                image = bodyPartUI.transform.GetChild(4).GetChild(5).GetChild(0).GetComponent<Image>().color;
+                image.a = 1f;
+                bodyPartUI.transform.GetChild(4).GetChild(5).GetChild(0).GetComponent<Image>().color = image;
+            }
+            else
+            {
+                image = bodyPartUI.transform.GetChild(4).GetChild(5).GetChild(0).GetComponent<Image>().color;
+                image.a = 0.3f;
+                bodyPartUI.transform.GetChild(4).GetChild(5).GetChild(0).GetComponent<Image>().color = image;
+            }
+        }
+        else
+        {
+            if (enemyStats.foxEnemy.buffs.headDebuff)
+            {
+                image = bodyPartUI.transform.GetChild(3).GetChild(0).GetChild(0).GetComponent<Image>().color;
+                image.a = 1f;
+                bodyPartUI.transform.GetChild(3).GetChild(0).GetChild(0).GetComponent<Image>().color = image;
+            }
+            else
+            {
+                image = bodyPartUI.transform.GetChild(3).GetChild(0).GetChild(0).GetComponent<Image>().color;
+                image.a = 0.3f;
+                bodyPartUI.transform.GetChild(3).GetChild(0).GetChild(0).GetComponent<Image>().color = image;
+            }
+
+
+            if (enemyStats.foxEnemy.buffs.torsoDebuff)
+            {
+                image = bodyPartUI.transform.GetChild(3).GetChild(1).GetChild(0).GetComponent<Image>().color;
+                image.a = 1f;
+                bodyPartUI.transform.GetChild(3).GetChild(1).GetChild(0).GetComponent<Image>().color = image;
+            }
+            else
+            {
+                image = bodyPartUI.transform.GetChild(3).GetChild(1).GetChild(0).GetComponent<Image>().color;
+                image.a = 0.3f;
+                bodyPartUI.transform.GetChild(3).GetChild(1).GetChild(0).GetComponent<Image>().color = image;
+            }
+
+            if (enemyStats.foxEnemy.buffs.armsDebuff)
+            {
+                image = bodyPartUI.transform.GetChild(3).GetChild(2).GetChild(0).GetComponent<Image>().color;
+                image.a = 1f;
+                bodyPartUI.transform.GetChild(3).GetChild(2).GetChild(0).GetComponent<Image>().color = image;
+            }
+            else
+            {
+                image = bodyPartUI.transform.GetChild(3).GetChild(2).GetChild(0).GetComponent<Image>().color;
+                image.a = 0.3f;
+                bodyPartUI.transform.GetChild(3).GetChild(2).GetChild(0).GetComponent<Image>().color = image;
+            }
+
+            if (enemyStats.foxEnemy.buffs.handsDebuff)
+            {
+                image = bodyPartUI.transform.GetChild(3).GetChild(3).GetChild(0).GetComponent<Image>().color;
+                image.a = 1f;
+                bodyPartUI.transform.GetChild(3).GetChild(3).GetChild(0).GetComponent<Image>().color = image;
+            }
+            else
+            {
+                image = bodyPartUI.transform.GetChild(3).GetChild(3).GetChild(0).GetComponent<Image>().color;
+                image.a = 0.3f;
+                bodyPartUI.transform.GetChild(3).GetChild(3).GetChild(0).GetComponent<Image>().color = image;
+            }
+
+            if (enemyStats.foxEnemy.buffs.legsDebuff)
+            {
+                image = bodyPartUI.transform.GetChild(3).GetChild(4).GetChild(0).GetComponent<Image>().color;
+                image.a = 1f;
+                bodyPartUI.transform.GetChild(3).GetChild(4).GetChild(0).GetComponent<Image>().color = image;
+            }
+            else
+            {
+                image = bodyPartUI.transform.GetChild(3).GetChild(4).GetChild(0).GetComponent<Image>().color;
+                image.a = 0.3f;
+                bodyPartUI.transform.GetChild(3).GetChild(4).GetChild(0).GetComponent<Image>().color = image;
+            }
+
+            if (enemyStats.foxEnemy.buffs.feetDebuff)
+            {
+                image = bodyPartUI.transform.GetChild(3).GetChild(5).GetChild(0).GetComponent<Image>().color;
+                image.a = 1f;
+                bodyPartUI.transform.GetChild(3).GetChild(5).GetChild(0).GetComponent<Image>().color = image;
+            }
+            else
+            {
+                image = bodyPartUI.transform.GetChild(3).GetChild(5).GetChild(0).GetComponent<Image>().color;
+                image.a = 0.3f;
+                bodyPartUI.transform.GetChild(3).GetChild(5).GetChild(0).GetComponent<Image>().color = image;
+            }
+
+            if (enemyStats.foxEnemy.buffs.Paralysed)
+            {
+                image = bodyPartUI.transform.GetChild(4).GetChild(0).GetChild(0).GetComponent<Image>().color;
+                image.a = 1f;
+                bodyPartUI.transform.GetChild(4).GetChild(0).GetChild(0).GetComponent<Image>().color = image;
+            }
+            else
+            {
+                image = bodyPartUI.transform.GetChild(4).GetChild(0).GetChild(0).GetComponent<Image>().color;
+                image.a = 0.3f;
+                bodyPartUI.transform.GetChild(4).GetChild(0).GetChild(0).GetComponent<Image>().color = image;
+            }
+
+            if (enemyStats.foxEnemy.buffs.Clouded)
+            {
+                image = bodyPartUI.transform.GetChild(4).GetChild(1).GetChild(0).GetComponent<Image>().color;
+                image.a = 1f;
+                bodyPartUI.transform.GetChild(4).GetChild(1).GetChild(0).GetComponent<Image>().color = image;
+            }
+            else
+            {
+                image = bodyPartUI.transform.GetChild(4).GetChild(1).GetChild(0).GetComponent<Image>().color;
+                image.a = 0.3f;
+                bodyPartUI.transform.GetChild(4).GetChild(1).GetChild(0).GetComponent<Image>().color = image;
+            }
+
+            if (enemyStats.foxEnemy.buffs.Slowed)
+            {
+                image = bodyPartUI.transform.GetChild(4).GetChild(2).GetChild(0).GetComponent<Image>().color;
+                image.a = 1f;
+                bodyPartUI.transform.GetChild(4).GetChild(2).GetChild(0).GetComponent<Image>().color = image;
+            } else
+            {
+                image = bodyPartUI.transform.GetChild(4).GetChild(2).GetChild(0).GetComponent<Image>().color;
+                image.a = 0.3f;
+                bodyPartUI.transform.GetChild(4).GetChild(2).GetChild(0).GetComponent<Image>().color = image;
+            }
+
+            if (enemyStats.foxEnemy.buffs.Scared)
+            {
+                image = bodyPartUI.transform.GetChild(4).GetChild(3).GetChild(0).GetComponent<Image>().color;
+                image.a = 1f;
+                bodyPartUI.transform.GetChild(4).GetChild(3).GetChild(0).GetComponent<Image>().color = image;
+            } else
+            {
+                image = bodyPartUI.transform.GetChild(4).GetChild(3).GetChild(0).GetComponent<Image>().color;
+                image.a = 0.3f;
+                bodyPartUI.transform.GetChild(4).GetChild(3).GetChild(0).GetComponent<Image>().color = image;
+            }
+
+            if (enemyStats.foxEnemy.buffs.Unatunned)
+            {
+                image = bodyPartUI.transform.GetChild(4).GetChild(4).GetChild(0).GetComponent<Image>().color;
+                image.a = 1f;
+                bodyPartUI.transform.GetChild(4).GetChild(4).GetChild(0).GetComponent<Image>().color = image;
+            } else
+            {
+                image = bodyPartUI.transform.GetChild(4).GetChild(4).GetChild(0).GetComponent<Image>().color;
+                image.a = 0.3f;
+                bodyPartUI.transform.GetChild(4).GetChild(4).GetChild(0).GetComponent<Image>().color = image;
+            }
+
+            if (enemyStats.foxEnemy.buffs.Unbalanced)
+            {
+                image = bodyPartUI.transform.GetChild(4).GetChild(5).GetChild(0).GetComponent<Image>().color;
+                image.a = 1f;
+                bodyPartUI.transform.GetChild(4).GetChild(5).GetChild(0).GetComponent<Image>().color = image;
+            } else
+            {
+                image = bodyPartUI.transform.GetChild(4).GetChild(5).GetChild(0).GetComponent<Image>().color;
+                image.a = 0.3f;
+                bodyPartUI.transform.GetChild(4).GetChild(5).GetChild(0).GetComponent<Image>().color = image;
+            }
+
+        }
     }
 
 }

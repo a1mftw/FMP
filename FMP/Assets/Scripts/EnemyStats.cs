@@ -23,6 +23,34 @@ public class EnemyStats : MonoBehaviour
 
     }
 
+    public struct BuffDebuff
+    {
+        public bool headDebuff;
+        public bool torsoDebuff;
+        public bool armsDebuff;
+        public bool handsDebuff;
+        public bool legsDebuff;
+        public bool feetDebuff;
+        public bool Paralysed;
+        public bool Clouded;
+        public bool Slowed;
+        public bool Scared;
+        public bool Unatunned;
+        public bool Unbalanced;
+        public bool Scorched;
+        public bool Burning;
+        public bool Chilled;
+        public bool Freezing;
+        public bool Wet;
+        public bool Drowning;
+        public bool Dirty;
+        public bool Poisoned;
+        public bool Shocked;
+        public bool Electrified;
+
+
+    }
+
     public struct Fox
     {
        public int enemyLevel;
@@ -31,6 +59,7 @@ public class EnemyStats : MonoBehaviour
        public int maxHealth;
        public int currentHealth;
        public BodyPartHealth bodyPartHealth;
+       public BuffDebuff buffs;
     }
 
     public enum Enemy
@@ -76,6 +105,28 @@ public class EnemyStats : MonoBehaviour
         foxEnemy.bodyPartHealth.handsHealth = foxEnemy.bodyPartHealth.handsMaxHealth;
         foxEnemy.bodyPartHealth.legsHealth = foxEnemy.bodyPartHealth.legsMaxHealth;
         foxEnemy.bodyPartHealth.feetHealth = foxEnemy.bodyPartHealth.feetMaxHealth;
+        foxEnemy.buffs.headDebuff = false;
+        foxEnemy.buffs.torsoDebuff = false;
+        foxEnemy.buffs.armsDebuff = false;
+        foxEnemy.buffs.handsDebuff = false;
+        foxEnemy.buffs.legsDebuff = false;
+        foxEnemy.buffs.feetDebuff = false;
+        foxEnemy.buffs.Paralysed = false;
+        foxEnemy.buffs.Clouded = false;
+        foxEnemy.buffs.Slowed = false;
+        foxEnemy.buffs.Scared = false;
+        foxEnemy.buffs.Unatunned = false;
+        foxEnemy.buffs.Unbalanced = false;
+        foxEnemy.buffs.Scorched = false;
+        foxEnemy.buffs.Burning = false;
+        foxEnemy.buffs.Chilled = false;
+        foxEnemy.buffs.Freezing = false;
+        foxEnemy.buffs.Wet = false;
+        foxEnemy.buffs.Drowning = false;
+        foxEnemy.buffs.Dirty = false;
+        foxEnemy.buffs.Poisoned = false;
+        foxEnemy.buffs.Shocked = false;
+        foxEnemy.buffs.Electrified = false;
 
     }
 

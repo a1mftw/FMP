@@ -5,7 +5,33 @@ using UnityEngine;
 
 public class PlayerStats : MonoBehaviour
 {
+    public struct BuffDebuff
+    {
+        public bool headDebuff;
+        public bool torsoDebuff;
+        public bool armsDebuff;
+        public bool handsDebuff;
+        public bool legsDebuff;
+        public bool feetDebuff;
+        public bool Paralysed;
+        public bool Clouded;
+        public bool Slowed;
+        public bool Scared;
+        public bool Unatunned;
+        public bool Unbalanced;
+        public bool Scorched;
+        public bool Burning;
+        public bool Chilled;
+        public bool Freezing;
+        public bool Wet;
+        public bool Drowning;
+        public bool Dirty;
+        public bool Poisoned;
+        public bool Shocked;
+        public bool Electrified;
 
+
+    }
     public struct BodyPartHealth
     {
         public int headHealth;
@@ -31,6 +57,7 @@ public class PlayerStats : MonoBehaviour
         public int maxHealth;
         public int currentHealth;
         public BodyPartHealth bodyPartHealth;
+        public BuffDebuff buffs;
     }
 
     public enum Players
