@@ -7,6 +7,9 @@ using UnityEngine.UI;
 public class PlayerCombat : MonoBehaviour
 {
 
+    public ListPositionCtrl spellListControl;
+
+    public GameObject magicSpellList;
     public GameObject UIControls;
     public GameObject PlayerUI;
     public BattleSystem battleSystem;
@@ -28,6 +31,7 @@ public class PlayerCombat : MonoBehaviour
 
     public Stances stance = Stances.Physical;
     public PlayerAttacks.Attacks attack;
+    public PlayerAttacks.Spells spell;
     public PlayerAttacks.Target target;
     public Animator cameraController;
 
@@ -36,6 +40,9 @@ public class PlayerCombat : MonoBehaviour
     private bool firstPress = true;
     private bool targeting = false;
     private bool playerTargeting = false;
+    private bool spellTargeting = false;
+    private bool changeStanceActive = false;
+    private bool spellChoiceActive = false;
 
     private Text FirstButton;
     private Text SecondButton;
@@ -45,10 +52,11 @@ public class PlayerCombat : MonoBehaviour
     public GameObject bodyPartUI;
     public GameObject ChangeStanceUI;
     public Button partHighlight;
+    public Button spellHighlight;
 
     private int bodyPartCount = 0;
     public bool BattleOver = false;
-    public bool changeStanceActive = false;
+    
 
     private void Update()
     {
@@ -87,6 +95,72 @@ public class PlayerCombat : MonoBehaviour
             
             
         }
+
+        
+
+        if (spellTargeting)
+        {
+            //Change between enemy
+            if (Input.GetButtonDown("Right"))
+            {
+                //If theres more than 1 enemy change camera and target here
+            }
+
+            if (Input.GetButtonDown("Left"))
+            {
+                //If theres more than 1 enemy change camera and target here
+            }
+
+            if (Input.GetButtonDown("Submit"))
+            {
+
+                switch (spell)
+                {
+                    case PlayerAttacks.Spells.Fire:
+                        playerAttacks.FireDamage(enemyTarget);
+                        Debug.Log("Fire damage");
+                        break;
+                    case PlayerAttacks.Spells.Water:
+                        Debug.Log("Water damage");
+                        break;
+                    case PlayerAttacks.Spells.Air:
+                        Debug.Log("Air damage");
+                        break;
+                    case PlayerAttacks.Spells.Earth:
+                        Debug.Log("Earth damage");
+                        break;
+                    case PlayerAttacks.Spells.Lightning:
+                        Debug.Log("Lightning damage");
+                        break;
+                }
+
+                spellTargeting = false;
+                firstPress = true;
+                cameraController.Play("BattleCamera");
+                battleSystem.changeState(BattleState.EnemyTurn);
+
+            }
+        }
+
+        if (spellChoiceActive)
+        {
+            if (Input.GetButtonDown("Up"))
+            {
+                spellListControl.MoveOneUnitUp();
+            }
+
+            if (Input.GetButtonDown("Down"))
+            {
+                spellListControl.MoveOneUnitDown();
+            }
+
+
+            if (Input.GetButtonDown("Submit"))
+            {
+                ChooseSpellTarget(spellListControl.GetCenteredContentID());
+            }
+        }
+
 
         if (targeting)
         {
@@ -234,7 +308,7 @@ public class PlayerCombat : MonoBehaviour
                 }
                 else
                 {
-                    if (!targeting)
+                    if (!targeting && !changeStanceActive)
                     {
                         attack = PlayerAttacks.Attacks.Bludgeoning;
                         enemyTarget = battleSystem.enemyTarget;
@@ -259,6 +333,9 @@ public class PlayerCombat : MonoBehaviour
                 if (firstPress)
                 {
                     cameraController.Play("MagicState");
+                    magicSpellList.SetActive(true);
+                    spellHighlight.Select();
+                    spellChoiceActive = true;
                     firstPress = false;
                 }
                 break;
@@ -301,7 +378,7 @@ public class PlayerCombat : MonoBehaviour
                 }
                     else
                     {
-                    if (!targeting)
+                    if (!targeting && !changeStanceActive)
                     {
                         attack = PlayerAttacks.Attacks.Piercing;
                         enemyTarget = battleSystem.enemyTarget;
@@ -341,9 +418,6 @@ public class PlayerCombat : MonoBehaviour
         
 
     }
-
-
-
     public void ThirdButtonAction() 
     {
         if (firstPress)
@@ -358,7 +432,7 @@ public class PlayerCombat : MonoBehaviour
             switch (stance)
             {
                 case Stances.Physical:
-                    if (!targeting)
+                    if (!targeting && !changeStanceActive)
                     {
                         attack = PlayerAttacks.Attacks.Slashing;
                         enemyTarget = battleSystem.enemyTarget;
@@ -396,7 +470,7 @@ public class PlayerCombat : MonoBehaviour
         }
         else
         {
-            if (!targeting)
+            if (!targeting && !changeStanceActive)
             {
                 FirstButton.text = "Attack";
                 SecondButton.text = "Abilities";
@@ -633,6 +707,17 @@ public class PlayerCombat : MonoBehaviour
         }
     }
 
+    public void ChooseSpellTarget(int spellChosen) 
+    {
+        spell = (PlayerAttacks.Spells)spellChosen;
+        enemyTarget = battleSystem.enemyTarget;
+        magicSpellList.SetActive(false);
+        spellChoiceActive = false;
+        spellTargeting = true;
+        cameraController.Play("TargetingEnemy");
+
+    }
+
     void ChangeStance(Stances newStance) 
     {
         stance = newStance;
@@ -660,11 +745,13 @@ public class PlayerCombat : MonoBehaviour
     private void BuffDebuffs(bool player = false)
     {
         var image = new Color();
-        EnemyStats enemyStats = enemyTarget.GetComponent<EnemyStats>();
-        PlayerStats playerStats = GetComponent<PlayerStats>();
+
+        
+        
 
         if (player)
         {
+            PlayerStats playerStats = GetComponent<PlayerStats>();
             if (playerStats.player.buffs.headDebuff)
             {
                 image = bodyPartUI.transform.GetChild(3).GetChild(0).GetChild(0).GetComponent<Image>().color;
@@ -824,6 +911,8 @@ public class PlayerCombat : MonoBehaviour
         }
         else
         {
+            EnemyStats enemyStats = enemyTarget.GetComponent<EnemyStats>();
+
             if (enemyStats.foxEnemy.buffs.headDebuff)
             {
                 image = bodyPartUI.transform.GetChild(3).GetChild(0).GetChild(0).GetComponent<Image>().color;

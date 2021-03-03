@@ -4,8 +4,8 @@ using UnityEngine;
 
 public class MyListBank : BaseListBank
 {
-	private int[] _contents = {
-		1, 2, 3, 4, 5
+	private string[] _contents = {
+		"Fire", "Water", "Air", "Earth", "Lightning"
 	};
 
 	public override string GetListContent(int index)
@@ -20,7 +20,8 @@ public class MyListBank : BaseListBank
 
 	public void GetSelectedContentID(int contentID)
 	{
-		Debug.Log("Selected content ID: " + contentID.ToString() +
-			", Content: " + GetListContent(contentID));
+
+		PlayerCombat player = GameObject.Find("Player").GetComponent<PlayerCombat>();
+		player.ChooseSpellTarget(contentID);
 	}
 }

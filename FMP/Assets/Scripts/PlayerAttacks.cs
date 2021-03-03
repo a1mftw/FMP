@@ -7,10 +7,19 @@ public class PlayerAttacks : MonoBehaviour
 
     public enum Attacks
     {
-        None,
         Bludgeoning,
         Piercing,
         Slashing,
+    }
+
+    public enum Spells
+    {
+        Fire,
+        Water,
+        Air,
+        Earth,
+        Lightning,
+    
     }
 
 
@@ -50,6 +59,11 @@ public class PlayerAttacks : MonoBehaviour
     #endregion
 
     #region Magic Attacks
+
+    public void FireDamage(GameObject enemy)
+    {
+        enemy.GetComponent<EnemyCombat>().TakeFireDamage(playerStats.player.baseDamage);
+    }
 
     #endregion
 

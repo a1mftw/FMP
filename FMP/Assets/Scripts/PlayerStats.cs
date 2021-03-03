@@ -48,7 +48,6 @@ public class PlayerStats : MonoBehaviour
         public int feetMaxHealth;
 
     }
-
     public struct Player
     {
         public int playerLevel;
@@ -59,7 +58,6 @@ public class PlayerStats : MonoBehaviour
         public BodyPartHealth bodyPartHealth;
         public BuffDebuff buffs;
     }
-
     public enum Players
     {
         player,

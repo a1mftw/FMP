@@ -115,9 +115,6 @@ public class EnemyCombat : MonoBehaviour
         }
 
     }
-
-   
-
     public void TakePiercingDamage(int damage, PlayerAttacks.Target target) 
     {
         int damageDealt = damage;
@@ -184,6 +181,11 @@ public class EnemyCombat : MonoBehaviour
         {
             Destroy(this.gameObject);
         }
+    }
+
+    public void TakeFireDamage(int damage) 
+    {
+        
     }
     private void ApplyBodyPartDebuff(PlayerAttacks.Target target)
     {
