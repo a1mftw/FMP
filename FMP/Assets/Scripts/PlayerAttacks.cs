@@ -79,4 +79,15 @@ public class PlayerAttacks : MonoBehaviour
 
     #endregion
 
+    #region Overdrives
+    public void MyriadStrikes(GameObject enemy, int hits) 
+    {
+        if (hits>=30)
+        {
+            enemy.GetComponent<EnemyCombat>().TakeMyriadDamage(hits);
+        }
+        
+    }
+
+    #endregion
 }

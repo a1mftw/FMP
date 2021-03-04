@@ -183,6 +183,11 @@ public class EnemyCombat : MonoBehaviour
         }
     }
 
+    public void TakeMyriadDamage(int damage) 
+    {
+        enemyStats.foxEnemy.currentHealth -= damage;
+    }
+
     public void TakeFireDamage(int damage) 
     {
         

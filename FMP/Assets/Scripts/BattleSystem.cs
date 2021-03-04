@@ -123,12 +123,12 @@ public class BattleSystem : MonoBehaviour
 
     void enemyAction() 
     {
-        changeState(BattleState.PlayerTurn);
+        ChangeState(BattleState.PlayerTurn);
         playerStartAction = true;
     } 
 
 
-    public void changeState(BattleState stateToChange) 
+    public void ChangeState(BattleState stateToChange) 
     {
         state = stateToChange;
     }

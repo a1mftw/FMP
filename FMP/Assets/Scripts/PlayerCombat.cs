@@ -43,17 +43,22 @@ public class PlayerCombat : MonoBehaviour
     private bool spellTargeting = false;
     private bool changeStanceActive = false;
     private bool spellChoiceActive = false;
+    private bool overdriveTargeting = false;
+    private bool MyriadStrikes = false;
 
     private Text FirstButton;
     private Text SecondButton;
     private Text ThirdButton;
     private Text FourthButton;
 
+    public GameObject OverdriveText;
     public GameObject bodyPartUI;
     public GameObject ChangeStanceUI;
     public Button partHighlight;
     public Button spellHighlight;
 
+
+    private int hits = 0;
     private int bodyPartCount = 0;
     public bool BattleOver = false;
     
@@ -96,8 +101,6 @@ public class PlayerCombat : MonoBehaviour
             
         }
 
-        
-
         if (spellTargeting)
         {
             //Change between enemy
@@ -137,7 +140,7 @@ public class PlayerCombat : MonoBehaviour
                 spellTargeting = false;
                 firstPress = true;
                 cameraController.Play("BattleCamera");
-                battleSystem.changeState(BattleState.EnemyTurn);
+                battleSystem.ChangeState(BattleState.EnemyTurn);
 
             }
         }
@@ -161,6 +164,34 @@ public class PlayerCombat : MonoBehaviour
             }
         }
 
+        if (overdriveTargeting) 
+        {
+            //Change between enemy
+            if (Input.GetButtonDown("Right"))
+            {
+                //If theres more than 1 enemy change camera and target here
+            }
+
+            if (Input.GetButtonDown("Left"))
+            {
+                //If theres more than 1 enemy change camera and target here
+            }
+
+            if (Input.GetButtonDown("Submit"))
+            {
+                hits = 0;
+                overdriveTargeting = false;
+                OverdriveText.SetActive(true);
+                StartCoroutine("MyriadOverdrive");
+            }
+
+            if (Input.GetButtonDown("Cancel"))
+            {
+                overdriveTargeting = false;
+                cameraController.Play("BattleCamera");
+            }
+
+        }
 
         if (targeting)
         {
@@ -252,7 +283,7 @@ public class PlayerCombat : MonoBehaviour
                 firstPress = true;
                 cameraController.Play("BattleCamera");
                 bodyPartCount = 0;
-                battleSystem.changeState(BattleState.EnemyTurn);
+                battleSystem.ChangeState(BattleState.EnemyTurn);
             }
 
 
@@ -266,6 +297,16 @@ public class PlayerCombat : MonoBehaviour
             }
 
 
+        }
+
+        if (MyriadStrikes)
+        {
+            if (Input.GetButtonDown("Jump"))
+            {
+                ++hits;
+                OverdriveText.GetComponent<Text>().text = hits.ToString() + "/30 Hits";
+
+            }
         }
     }
 
@@ -355,6 +396,25 @@ public class PlayerCombat : MonoBehaviour
                 }
                 break;
             case Stances.Overdrive:
+                if (firstPress)
+                {
+                    FirstButton.text = "Myriad Strikes";
+                    SecondButton.text = "";
+                    ThirdButton.text = "";
+                    FourthButton.text = "Back";
+                    firstPress = false;
+                }
+                else
+                {
+                    if (!targeting && !changeStanceActive)
+                    {
+                        enemyTarget = battleSystem.enemyTarget;
+                        overdriveTargeting = true;
+
+                        //Change camera to enemy
+                        cameraController.Play("TargetingEnemy");
+                    }
+                }
                 break;
             default:
                 break;
@@ -470,7 +530,7 @@ public class PlayerCombat : MonoBehaviour
         }
         else
         {
-            if (!targeting && !changeStanceActive)
+            if (!targeting && !changeStanceActive && !overdriveTargeting && !MyriadStrikes)
             {
                 FirstButton.text = "Attack";
                 SecondButton.text = "Abilities";
@@ -1067,6 +1127,18 @@ public class PlayerCombat : MonoBehaviour
             }
 
         }
+    }
+
+    IEnumerator MyriadOverdrive() 
+    {
+        MyriadStrikes = true;
+        yield return new WaitForSeconds(5);
+        OverdriveText.SetActive(false);
+        MyriadStrikes = false;
+        firstPress = false;
+        playerAttacks.MyriadStrikes(enemyTarget,hits);
+        cameraController.Play("BattleCamera");
+        battleSystem.ChangeState(BattleState.EnemyTurn);
     }
 
 }
