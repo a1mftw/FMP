@@ -37,15 +37,10 @@ public class EnemyStats : MonoBehaviour
         public bool Scared;
         public bool Unatunned;
         public bool Unbalanced;
-        public bool Scorched;
         public bool Burning;
-        public bool Chilled;
         public bool Freezing;
-        public bool Wet;
         public bool Drowning;
-        public bool Dirty;
         public bool Poisoned;
-        public bool Shocked;
         public bool Electrified;
 
 
@@ -117,15 +112,10 @@ public class EnemyStats : MonoBehaviour
         foxEnemy.buffs.Scared = false;
         foxEnemy.buffs.Unatunned = false;
         foxEnemy.buffs.Unbalanced = false;
-        foxEnemy.buffs.Scorched = false;
         foxEnemy.buffs.Burning = false;
-        foxEnemy.buffs.Chilled = false;
         foxEnemy.buffs.Freezing = false;
-        foxEnemy.buffs.Wet = false;
         foxEnemy.buffs.Drowning = false;
-        foxEnemy.buffs.Dirty = false;
         foxEnemy.buffs.Poisoned = false;
-        foxEnemy.buffs.Shocked = false;
         foxEnemy.buffs.Electrified = false;
 
     }

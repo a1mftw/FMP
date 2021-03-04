@@ -124,15 +124,19 @@ public class PlayerCombat : MonoBehaviour
                         Debug.Log("Fire damage");
                         break;
                     case PlayerAttacks.Spells.Water:
+                        playerAttacks.WaterDamage(enemyTarget);
                         Debug.Log("Water damage");
                         break;
                     case PlayerAttacks.Spells.Air:
+                        playerAttacks.AirDamage(enemyTarget);
                         Debug.Log("Air damage");
                         break;
                     case PlayerAttacks.Spells.Earth:
+                        playerAttacks.EarthDamage(enemyTarget);
                         Debug.Log("Earth damage");
                         break;
                     case PlayerAttacks.Spells.Lightning:
+                        playerAttacks.LightningDamage(enemyTarget);
                         Debug.Log("Lightning damage");
                         break;
                 }
@@ -805,10 +809,6 @@ public class PlayerCombat : MonoBehaviour
     private void BuffDebuffs(bool player = false)
     {
         var image = new Color();
-
-        
-        
-
         if (player)
         {
             PlayerStats playerStats = GetComponent<PlayerStats>();

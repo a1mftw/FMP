@@ -14,6 +14,7 @@ public class PlayerAttacks : MonoBehaviour
 
     public enum Spells
     {
+        None,
         Fire,
         Water,
         Air,
@@ -63,6 +64,26 @@ public class PlayerAttacks : MonoBehaviour
     public void FireDamage(GameObject enemy)
     {
         enemy.GetComponent<EnemyCombat>().TakeFireDamage(playerStats.player.baseDamage);
+    }
+
+    public void WaterDamage(GameObject enemy)
+    {
+        enemy.GetComponent<EnemyCombat>().TakeWaterDamage(playerStats.player.baseDamage);
+    }
+
+    public void AirDamage(GameObject enemy)
+    {
+        enemy.GetComponent<EnemyCombat>().TakeAirDamage(playerStats.player.baseDamage);
+    }
+
+    public void EarthDamage(GameObject enemy)
+    {
+        enemy.GetComponent<EnemyCombat>().TakeEarthDamage(playerStats.player.baseDamage);
+    }
+
+    public void LightningDamage(GameObject enemy)
+    {
+        enemy.GetComponent<EnemyCombat>().TakeLightningDamage(playerStats.player.baseDamage);
     }
 
     #endregion
