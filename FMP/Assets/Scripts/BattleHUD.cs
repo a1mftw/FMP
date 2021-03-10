@@ -6,20 +6,161 @@ using UnityEngine.UI;
 public class BattleHUD : MonoBehaviour
 {
     // Start is called before the first frame update
+    public GameObject playerBodyParts;
+    public PlayerStats playerStats;
     public Slider hpSlider;
     public Slider mpSlider;
 
 
+
     public void SetHUD() 
     {
-       
-    
+        hpSlider.maxValue = playerStats.player.maxHealth;
+        mpSlider.maxValue = playerStats.player.maxHealth;
+        SetHP();
+        SetMP();
+        BodyTargetHP();
+        
     }
 
+    private void BodyTargetHP() 
+    {
 
-    public void SetHP(int hp) { }
+        //Head
+        if (playerStats.player.bodyPartHealth.headHealth <= 0)
+        {
+            playerBodyParts.transform.GetChild(0).GetComponent<Image>().color = Color.gray;
+        }
+        else if (playerStats.player.bodyPartHealth.headHealth <= playerStats.player.bodyPartHealth.headMaxHealth / 4)
+        {
+            playerBodyParts.transform.GetChild(0).GetComponent<Image>().color = Color.red;
+        }
+        else if (playerStats.player.bodyPartHealth.headHealth <= playerStats.player.bodyPartHealth.headMaxHealth / 2)
+        {
+            playerBodyParts.transform.GetChild(0).GetComponent<Image>().color = Color.yellow;
+        }
+        else
+        {
+            playerBodyParts.transform.GetChild(0).GetComponent<Image>().color = Color.green;
+        }
 
-    public void SetMP(int mp) { }
+
+        //Torso
+        if (playerStats.player.bodyPartHealth.torsoHealth <= 0)
+        {
+            playerBodyParts.transform.GetChild(1).GetComponent<Image>().color = Color.gray;
+        }
+        else if (playerStats.player.bodyPartHealth.torsoHealth <= playerStats.player.bodyPartHealth.torsoMaxHealth / 4)
+        {
+            playerBodyParts.transform.GetChild(1).GetComponent<Image>().color = Color.red;
+        }
+        else if (playerStats.player.bodyPartHealth.torsoHealth <= playerStats.player.bodyPartHealth.torsoMaxHealth / 2)
+        {
+            playerBodyParts.transform.GetChild(1).GetComponent<Image>().color = Color.yellow;
+        }
+        else
+        {
+            playerBodyParts.transform.GetChild(1).GetComponent<Image>().color = Color.green;
+        }
+
+        //Arms
+        if (playerStats.player.bodyPartHealth.armsHealth <= 0)
+        {
+            playerBodyParts.transform.GetChild(2).GetComponent<Image>().color = Color.gray;
+            playerBodyParts.transform.GetChild(2).GetChild(0).GetComponent<Image>().color = Color.gray;
+        }
+        else if (playerStats.player.bodyPartHealth.armsHealth <= playerStats.player.bodyPartHealth.armsMaxHealth / 4)
+        {
+            playerBodyParts.transform.GetChild(2).GetComponent<Image>().color = Color.red;
+            playerBodyParts.transform.GetChild(2).GetChild(0).GetComponent<Image>().color = Color.red;
+        }
+        else if (playerStats.player.bodyPartHealth.armsHealth <= playerStats.player.bodyPartHealth.armsMaxHealth / 2)
+        {
+            playerBodyParts.transform.GetChild(2).GetComponent<Image>().color = Color.yellow;
+            playerBodyParts.transform.GetChild(2).GetChild(0).GetComponent<Image>().color = Color.yellow;
+        }
+        else
+        {
+            playerBodyParts.transform.GetChild(2).GetComponent<Image>().color = Color.green;
+            playerBodyParts.transform.GetChild(2).GetChild(0).GetComponent<Image>().color = Color.green;
+        }
+
+        //Hands
+        if (playerStats.player.bodyPartHealth.handsHealth <= 0)
+        {
+            playerBodyParts.transform.GetChild(3).GetComponent<Image>().color = Color.gray;
+            playerBodyParts.transform.GetChild(3).GetChild(0).GetComponent<Image>().color = Color.gray;
+        }
+        else if (playerStats.player.bodyPartHealth.handsHealth <= playerStats.player.bodyPartHealth.handsMaxHealth / 4)
+        {
+            playerBodyParts.transform.GetChild(3).GetComponent<Image>().color = Color.red;
+            playerBodyParts.transform.GetChild(3).GetChild(0).GetComponent<Image>().color = Color.red;
+        }
+        else if (playerStats.player.bodyPartHealth.handsHealth <= playerStats.player.bodyPartHealth.handsMaxHealth / 2)
+        {
+            playerBodyParts.transform.GetChild(3).GetComponent<Image>().color = Color.yellow;
+            playerBodyParts.transform.GetChild(3).GetChild(0).GetComponent<Image>().color = Color.yellow;
+        }
+        else
+        {
+            playerBodyParts.transform.GetChild(3).GetComponent<Image>().color = Color.green;
+            playerBodyParts.transform.GetChild(3).GetChild(0).GetComponent<Image>().color = Color.green;
+        }
+
+        //Legs
+        if (playerStats.player.bodyPartHealth.legsHealth <= 0)
+        {
+            playerBodyParts.transform.GetChild(4).GetComponent<Image>().color = Color.gray;
+            playerBodyParts.transform.GetChild(4).GetChild(0).GetComponent<Image>().color = Color.gray;
+        }
+        else if (playerStats.player.bodyPartHealth.legsHealth <= playerStats.player.bodyPartHealth.legsMaxHealth / 4)
+        {
+            playerBodyParts.transform.GetChild(4).GetComponent<Image>().color = Color.red;
+            playerBodyParts.transform.GetChild(4).GetChild(0).GetComponent<Image>().color = Color.red;
+        }
+        else if (playerStats.player.bodyPartHealth.legsHealth <= playerStats.player.bodyPartHealth.legsMaxHealth / 2)
+        {
+            playerBodyParts.transform.GetChild(4).GetComponent<Image>().color = Color.yellow;
+            playerBodyParts.transform.GetChild(4).GetChild(0).GetComponent<Image>().color = Color.yellow;
+        }
+        else
+        {
+            playerBodyParts.transform.GetChild(4).GetComponent<Image>().color = Color.green;
+            playerBodyParts.transform.GetChild(4).GetChild(0).GetComponent<Image>().color = Color.green;
+        }
+
+        //Feet
+        if (playerStats.player.bodyPartHealth.feetHealth <= 0)
+        {
+            playerBodyParts.transform.GetChild(5).GetComponent<Image>().color = Color.gray;
+            playerBodyParts.transform.GetChild(5).GetChild(0).GetComponent<Image>().color = Color.gray;
+        }
+        else if (playerStats.player.bodyPartHealth.feetHealth <= playerStats.player.bodyPartHealth.feetMaxHealth / 4)
+        {
+            playerBodyParts.transform.GetChild(5).GetComponent<Image>().color = Color.red;
+            playerBodyParts.transform.GetChild(5).GetChild(0).GetComponent<Image>().color = Color.red;
+        }
+        else if (playerStats.player.bodyPartHealth.feetHealth <= playerStats.player.bodyPartHealth.feetMaxHealth / 2)
+        {
+            playerBodyParts.transform.GetChild(5).GetComponent<Image>().color = Color.yellow;
+            playerBodyParts.transform.GetChild(5).GetChild(0).GetComponent<Image>().color = Color.yellow;
+        }
+        else
+        {
+            playerBodyParts.transform.GetChild(5).GetComponent<Image>().color = Color.green;
+            playerBodyParts.transform.GetChild(5).GetChild(0).GetComponent<Image>().color = Color.green;
+        }
+    }
+
+    private void SetHP() 
+    {
+        hpSlider.value = playerStats.player.currentHealth;
+    }
+
+    private void SetMP() 
+    {
+        mpSlider.value = playerStats.player.currentHealth;
+    }
 
 
 }

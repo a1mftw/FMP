@@ -123,7 +123,9 @@ public class BattleSystem : MonoBehaviour
 
     void enemyAction() 
     {
-        ChangeState(BattleState.PlayerTurn);
+
+
+        enemyPrefab.GetComponent<EnemyCombat>().EnemyTurn();
         playerStartAction = true;
     } 
 

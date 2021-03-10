@@ -1125,7 +1125,6 @@ public class PlayerCombat : MonoBehaviour
                 image.a = 0.3f;
                 bodyPartUI.transform.GetChild(4).GetChild(5).GetChild(0).GetComponent<Image>().color = image;
             }
-
         }
     }
 

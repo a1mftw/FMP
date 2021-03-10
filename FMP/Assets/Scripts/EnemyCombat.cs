@@ -2,15 +2,24 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
+
+public enum ParryStance
+{
+    BludgeonStance,
+    PierceStance,
+    SlashStance,
+}
 
 public class EnemyCombat : MonoBehaviour
 {
 
-
-
     private PlayerAttacks playerAttacks;
+    private GameObject playerTarget;
     private EnemyStats enemyStats;
+    public BattleSystem battleSystem;
 
+    private bool attacking = false;
     private PlayerAttacks.Spells previousSpell = PlayerAttacks.Spells.None;
     private PlayerAttacks.Spells currentSpell = PlayerAttacks.Spells.None;
 
@@ -19,7 +28,47 @@ public class EnemyCombat : MonoBehaviour
         enemyStats = GetComponent<EnemyStats>();
         playerAttacks = GameObject.Find("Player").GetComponent<PlayerAttacks>();
 
-    }        
+    }
+
+
+    public void EnemyTurn() 
+    {
+        if (!attacking)
+        {
+            Debug.Log("Enemy Turn");
+
+            if (enemyStats.foxEnemy.buffs.Burning || enemyStats.foxEnemy.buffs.Drowning || enemyStats.foxEnemy.buffs.Freezing || enemyStats.foxEnemy.buffs.Poisoned || enemyStats.foxEnemy.buffs.Electrified)
+            {
+                enemyStats.foxEnemy.currentHealth -= Mathf.RoundToInt(enemyStats.foxEnemy.maxHealth * 0.05f);
+            }
+
+            StartCoroutine("TailSwipe");
+            
+        }
+    }
+
+    public void EndTurn() 
+    {
+    
+    }
+
+    #region EnemyActions
+
+    IEnumerator TailSwipe() 
+    {
+        attacking = true;
+        playerTarget = battleSystem.playerPrefab;
+        Debug.Log("Attacking");
+        yield return new WaitForSeconds(5f);
+        playerTarget.GetComponent<PlayerAttacks>().TakeTailSwipeDamage(enemyStats.foxEnemy.baseDamage,PlayerAttacks.Target.Torso);
+        battleSystem.ChangeState(BattleState.PlayerTurn);
+        attacking = false;
+
+    }
+
+    #endregion
+
+    #region ReceiveDamage-Physical
 
 
     public void TakeBludgeoningDamage(int damage,PlayerAttacks.Target target) 
@@ -188,10 +237,16 @@ public class EnemyCombat : MonoBehaviour
         }
     }
 
+    #endregion
+
+    #region RecieveDamage-Overdrive
+
     public void TakeMyriadDamage(int damage) 
     {
         enemyStats.foxEnemy.currentHealth -= damage;
     }
+
+    #endregion
 
     #region BasicSpellRecieveDamage
     public void TakeFireDamage(int damage)
@@ -287,8 +342,6 @@ public class EnemyCombat : MonoBehaviour
     #endregion
 
     #region Buff/Debuff/Ailments
-
-    
     private void ApplyBodyPartDebuff(PlayerAttacks.Target target)
     {
         switch (target)

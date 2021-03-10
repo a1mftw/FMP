@@ -84,7 +84,7 @@ public class PlayerStats : MonoBehaviour
         player.playerLevel = 1;
         player.baseDamage = 10;
         player.baseArmor = 5;
-        player.maxHealth = 100;
+        player.maxHealth = 200;
         player.currentHealth = player.maxHealth;
         player.bodyPartHealth.headMaxHealth = 40;
         player.bodyPartHealth.torsoMaxHealth = 40;
