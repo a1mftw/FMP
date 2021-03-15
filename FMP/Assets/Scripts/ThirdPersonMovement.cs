@@ -11,6 +11,7 @@ public class ThirdPersonMovement : MonoBehaviour
     public Transform Camera;
     public CharacterController charController;
     public TransitionController tranController;
+    public Animator playerAnimations;
 
     #endregion
 
@@ -48,10 +49,15 @@ public class ThirdPersonMovement : MonoBehaviour
                     moveDirection += Physics.gravity;
                 }
 
+                playerAnimations.SetBool("Walking", true);
 
-            
+
                 charController.Move(moveDirection.normalized * speed * Time.deltaTime);
 
+            }
+            else
+            {
+                playerAnimations.SetBool("Walking", false);
             }
 
         }

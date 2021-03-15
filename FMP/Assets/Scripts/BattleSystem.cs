@@ -90,6 +90,7 @@ public class BattleSystem : MonoBehaviour
     {
         if (playerStartAction)
         {
+            playerHUD.SetHUD();
             playerCombat.SetUI();
             playerStartAction = false;
         }

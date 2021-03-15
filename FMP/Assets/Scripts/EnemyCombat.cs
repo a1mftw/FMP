@@ -65,7 +65,16 @@ public class EnemyCombat : MonoBehaviour
         attacking = false;
 
     }
-
+    IEnumerator ClawAttack() 
+    {
+        attacking = true;
+        playerTarget = battleSystem.playerPrefab;
+        Debug.Log("Attacking");
+        yield return new WaitForSeconds(5f);
+        playerTarget.GetComponent<PlayerAttacks>().TakeTailSwipeDamage(enemyStats.foxEnemy.baseDamage, PlayerAttacks.Target.Torso);
+        battleSystem.ChangeState(BattleState.PlayerTurn);
+        attacking = false;
+    }
     #endregion
 
     #region ReceiveDamage-Physical

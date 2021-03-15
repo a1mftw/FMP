@@ -35,23 +35,25 @@ public class PlayerAttacks : MonoBehaviour
         Feet
     }
 
+    public Animator playerAnimations;
+    public Animator battleCamera;
     public PlayerStats playerStats;
 
     #region Physical Attacks
    
-    public void BludgeoningAttack(Target target, GameObject enemy) 
+    public void Blunt(Target target, GameObject enemy) 
     {
-        enemy.GetComponent<EnemyCombat>().TakeBludgeoningDamage(playerStats.player.baseDamage,target);
+        StartCoroutine(BludgeoningAttack(target, enemy));
     }
 
-    public void PiercingAttack(Target target, GameObject enemy) 
+    public void Pierce(Target target, GameObject enemy) 
     {
-        enemy.GetComponent<EnemyCombat>().TakePiercingDamage(playerStats.player.baseDamage, target);
+        StartCoroutine(PiercingAttack(target, enemy));
     }
 
-    public void SlashingAttack(Target target, GameObject enemy) 
+    public void Slash(Target target, GameObject enemy) 
     {
-        enemy.GetComponent<EnemyCombat>().TakeSlashingDamage(playerStats.player.baseDamage, target);
+        StartCoroutine(SlashingAttack(target,enemy));
     }
 
     #endregion
@@ -333,6 +335,86 @@ public class PlayerAttacks : MonoBehaviour
     }
 
     #endregion
+
+
+    IEnumerator SlashingAttack(Target target, GameObject enemy) 
+    {
+        yield return new WaitForSeconds(1);
+        var returnPos = gameObject.transform.position;
+        float step = (6 / (gameObject.transform.position - enemy.transform.position).magnitude) * Time.fixedDeltaTime;
+        float t = 0;
+
+        playerAnimations.SetBool("Sprinting", true);
+
+        while (Vector3.Distance(gameObject.transform.position,enemy.transform.position)>5)
+        {
+            t += step;
+            gameObject.transform.position = Vector3.Lerp(gameObject.transform.position, enemy.transform.position, t);
+            yield return new WaitForFixedUpdate();
+        }
+        playerAnimations.SetBool("Sprinting", false);
+        battleCamera.Play("StrikeState");
+        yield return new WaitForSeconds(0.5f);
+        playerAnimations.SetBool("Slashing", true);
+        yield return new WaitForSeconds(1);
+        enemy.GetComponent<EnemyCombat>().TakeSlashingDamage(playerStats.player.baseDamage, target);
+        playerAnimations.SetBool("Slashing", false);
+        gameObject.transform.position = returnPos;
+        battleCamera.Play("BattleCamera");
+
+    }
+    IEnumerator PiercingAttack(Target target, GameObject enemy)
+    {
+        yield return new WaitForSeconds(1);
+        var returnPos = gameObject.transform.position;
+        float step = (6 / (gameObject.transform.position - enemy.transform.position).magnitude) * Time.fixedDeltaTime;
+        float t = 0;
+
+        playerAnimations.SetBool("Sprinting", true);
+
+        while (Vector3.Distance(gameObject.transform.position, enemy.transform.position) > 5)
+        {
+            t += step;
+            gameObject.transform.position = Vector3.Lerp(gameObject.transform.position, enemy.transform.position, t);
+            yield return new WaitForFixedUpdate();
+        }
+        playerAnimations.SetBool("Sprinting", false);
+        battleCamera.Play("StrikeState");
+        yield return new WaitForSeconds(0.5f);
+        playerAnimations.SetBool("Piercing", true);
+        yield return new WaitForSeconds(1);
+        enemy.GetComponent<EnemyCombat>().TakePiercingDamage(playerStats.player.baseDamage, target);
+        playerAnimations.SetBool("Piercing", false);
+        gameObject.transform.position = returnPos;
+        battleCamera.Play("BattleCamera");
+
+    }
+    IEnumerator BludgeoningAttack(Target target, GameObject enemy)
+    {
+        yield return new WaitForSeconds(1);
+        var returnPos = gameObject.transform.position;
+        float step = (6 / (gameObject.transform.position - enemy.transform.position).magnitude) * Time.fixedDeltaTime;
+        float t = 0;
+
+        playerAnimations.SetBool("Sprinting", true);
+
+        while (Vector3.Distance(gameObject.transform.position, enemy.transform.position) > 5)
+        {
+            t += step;
+            gameObject.transform.position = Vector3.Lerp(gameObject.transform.position, enemy.transform.position, t);
+            yield return new WaitForFixedUpdate();
+        }
+        playerAnimations.SetBool("Sprinting", false);
+        battleCamera.Play("StrikeState");
+        yield return new WaitForSeconds(0.5f);
+        playerAnimations.SetBool("Blunt", true);
+        yield return new WaitForSeconds(1);
+        enemy.GetComponent<EnemyCombat>().TakeSlashingDamage(playerStats.player.baseDamage, target);
+        playerAnimations.SetBool("Blunt", false);
+        gameObject.transform.position = returnPos;
+        battleCamera.Play("BattleCamera");
+
+    }
 }
 
 

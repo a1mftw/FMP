@@ -240,13 +240,13 @@ public class PlayerCombat : MonoBehaviour
                         switch (attack)
                         {
                             case PlayerAttacks.Attacks.Bludgeoning:
-                                playerAttacks.BludgeoningAttack(target, enemyTarget);
+                                playerAttacks.Blunt(target, enemyTarget);
                                 break;
                             case PlayerAttacks.Attacks.Piercing:
-                                playerAttacks.PiercingAttack(target, enemyTarget);
+                                playerAttacks.Pierce(target, enemyTarget);
                                 break;
                             case PlayerAttacks.Attacks.Slashing:
-                                playerAttacks.SlashingAttack(target, enemyTarget);
+                                playerAttacks.Slash(target, enemyTarget);
                                 break;
                             default:
                                 break;
@@ -502,6 +502,7 @@ public class PlayerCombat : MonoBehaviour
                         enemyTarget = battleSystem.enemyTarget;
                         partHighlight.Select();
                         targeting = true;
+                        cameraController.Play("TargetingEnemy");
 
 
                         //Change color of parts if they are damaged
