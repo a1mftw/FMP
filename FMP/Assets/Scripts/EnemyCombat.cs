@@ -59,11 +59,34 @@ public class EnemyCombat : MonoBehaviour
         attacking = true;
         playerTarget = battleSystem.playerPrefab;
         Debug.Log("Attacking");
-        yield return new WaitForSeconds(5f);
-        playerTarget.GetComponent<PlayerAttacks>().TakeTailSwipeDamage(enemyStats.foxEnemy.baseDamage,PlayerAttacks.Target.Torso);
-        battleSystem.ChangeState(BattleState.PlayerTurn);
-        attacking = false;
 
+        yield return new WaitForSeconds(1);
+        var returnPos = gameObject.transform.position;
+        float step = (6 / (gameObject.transform.position - playerTarget.transform.position).magnitude) * Time.fixedDeltaTime;
+        float t = 0;
+
+        //playerAnimations.SetBool("Sprinting", true);
+
+        while (Vector3.Distance(gameObject.transform.position, playerTarget.transform.position) > 5)
+        {
+            t += step;
+            gameObject.transform.position = Vector3.Lerp(gameObject.transform.position, playerTarget.transform.position, t);
+            yield return new WaitForFixedUpdate();
+        }
+
+        //playerAnimations.SetBool("Sprinting", false);
+        //battleCamera.Play("StrikeState");
+        yield return new WaitForSeconds(0.5f);
+        //playerAnimations.SetBool("Slashing", true);
+        yield return new WaitForSeconds(1);
+        playerTarget.GetComponent<PlayerAttacks>().TakeTailSwipeDamage(enemyStats.foxEnemy.baseDamage, PlayerAttacks.Target.Torso);
+        //playerAnimations.SetBool("Slashing", false);
+        gameObject.transform.position = returnPos;
+        //battleCamera.Play("BattleCamera");
+
+        battleSystem.ChangeState(BattleState.PlayerTurn);
+
+        attacking = false;
     }
     IEnumerator ClawAttack() 
     {

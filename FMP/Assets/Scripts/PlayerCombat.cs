@@ -14,6 +14,7 @@ public class PlayerCombat : MonoBehaviour
     public GameObject PlayerUI;
     public BattleSystem battleSystem;
     public PlayerAttacks playerAttacks;
+    public GameObject spellPlaceHolder;
 
     public enum Stances 
     {
@@ -34,6 +35,7 @@ public class PlayerCombat : MonoBehaviour
     public PlayerAttacks.Spells spell;
     public PlayerAttacks.Target target;
     public Animator cameraController;
+    public AnimationManager animationManager;
 
     private GameObject enemyTarget;
 
@@ -120,23 +122,23 @@ public class PlayerCombat : MonoBehaviour
                 switch (spell)
                 {
                     case PlayerAttacks.Spells.Fire:
-                        playerAttacks.FireDamage(enemyTarget);
+                        playerAttacks.FireDamage(animationManager.GetMagicParticle(),enemyTarget);
                         Debug.Log("Fire damage");
                         break;
                     case PlayerAttacks.Spells.Water:
-                        playerAttacks.WaterDamage(enemyTarget);
+                        playerAttacks.WaterDamage(animationManager.GetMagicParticle(), enemyTarget);
                         Debug.Log("Water damage");
                         break;
                     case PlayerAttacks.Spells.Air:
-                        playerAttacks.AirDamage(enemyTarget);
+                        playerAttacks.AirDamage(animationManager.GetMagicParticle(), enemyTarget);
                         Debug.Log("Air damage");
                         break;
                     case PlayerAttacks.Spells.Earth:
-                        playerAttacks.EarthDamage(enemyTarget);
+                        playerAttacks.EarthDamage(animationManager.GetMagicParticle(), enemyTarget);
                         Debug.Log("Earth damage");
                         break;
                     case PlayerAttacks.Spells.Lightning:
-                        playerAttacks.LightningDamage(enemyTarget);
+                        playerAttacks.LightningDamage(animationManager.GetMagicParticle(), enemyTarget);
                         Debug.Log("Lightning damage");
                         break;
                 }
@@ -153,14 +155,32 @@ public class PlayerCombat : MonoBehaviour
         {
             if (Input.GetButtonDown("Up"))
             {
+                
                 spellListControl.MoveOneUnitUp();
+                if (spellListControl.GetCenteredContentID()+1>4)
+                {
+                    animationManager.MagicCastParticle(AnimationManager.Effects.Fire, spellPlaceHolder.transform.position);
+                }
+                else
+                {
+                    animationManager.MagicCastParticle((AnimationManager.Effects)spellListControl.GetCenteredContentID()+1, spellPlaceHolder.transform.position);
+                }
+                
             }
 
             if (Input.GetButtonDown("Down"))
             {
+                
                 spellListControl.MoveOneUnitDown();
+                if (spellListControl.GetCenteredContentID() - 1 < 0)
+                {
+                    animationManager.MagicCastParticle(AnimationManager.Effects.Electric, spellPlaceHolder.transform.position);
+                }
+                else
+                {
+                    animationManager.MagicCastParticle((AnimationManager.Effects)spellListControl.GetCenteredContentID() - 1, spellPlaceHolder.transform.position);
+                }
             }
-
 
             if (Input.GetButtonDown("Submit"))
             {
@@ -381,6 +401,7 @@ public class PlayerCombat : MonoBehaviour
                     magicSpellList.SetActive(true);
                     spellHighlight.Select();
                     spellChoiceActive = true;
+                    animationManager.MagicCastParticle((AnimationManager.Effects)spellListControl.GetCenteredContentID(),spellPlaceHolder.transform.position);
                     firstPress = false;
                 }
                 break;

@@ -15,13 +15,14 @@ public class PlayerAttacks : MonoBehaviour
 
     public enum Spells
     {
-        None,
+        
         Fire,
         Water,
         Air,
         Earth,
         Lightning,
-    
+        None,
+
     }
 
 
@@ -45,12 +46,10 @@ public class PlayerAttacks : MonoBehaviour
     {
         StartCoroutine(BludgeoningAttack(target, enemy));
     }
-
     public void Pierce(Target target, GameObject enemy) 
     {
         StartCoroutine(PiercingAttack(target, enemy));
     }
-
     public void Slash(Target target, GameObject enemy) 
     {
         StartCoroutine(SlashingAttack(target,enemy));
@@ -64,29 +63,29 @@ public class PlayerAttacks : MonoBehaviour
 
     #region Magic Attacks
 
-    public void FireDamage(GameObject enemy)
+    public void FireDamage(GameObject particleEffect, GameObject enemy)
     {
-        enemy.GetComponent<EnemyCombat>().TakeFireDamage(playerStats.player.baseDamage);
+        StartCoroutine(SpellBall(particleEffect, enemy,Spells.Fire));
     }
 
-    public void WaterDamage(GameObject enemy)
+    public void WaterDamage(GameObject particleEffect,GameObject enemy)
     {
-        enemy.GetComponent<EnemyCombat>().TakeWaterDamage(playerStats.player.baseDamage);
+        StartCoroutine(SpellBall(particleEffect, enemy, Spells.Water));
     }
 
-    public void AirDamage(GameObject enemy)
+    public void AirDamage(GameObject particleEffect, GameObject enemy)
     {
-        enemy.GetComponent<EnemyCombat>().TakeAirDamage(playerStats.player.baseDamage);
+        StartCoroutine(SpellBall(particleEffect, enemy, Spells.Air));
     }
 
-    public void EarthDamage(GameObject enemy)
+    public void EarthDamage(GameObject particleEffect, GameObject enemy)
     {
-        enemy.GetComponent<EnemyCombat>().TakeEarthDamage(playerStats.player.baseDamage);
+        StartCoroutine(SpellBall(particleEffect, enemy, Spells.Earth));
     }
 
-    public void LightningDamage(GameObject enemy)
+    public void LightningDamage(GameObject particleEffect, GameObject enemy)
     {
-        enemy.GetComponent<EnemyCombat>().TakeLightningDamage(playerStats.player.baseDamage);
+        StartCoroutine(SpellBall(particleEffect, enemy, Spells.Lightning));
     }
 
     #endregion
@@ -352,6 +351,7 @@ public class PlayerAttacks : MonoBehaviour
             gameObject.transform.position = Vector3.Lerp(gameObject.transform.position, enemy.transform.position, t);
             yield return new WaitForFixedUpdate();
         }
+
         playerAnimations.SetBool("Sprinting", false);
         battleCamera.Play("StrikeState");
         yield return new WaitForSeconds(0.5f);
@@ -415,6 +415,47 @@ public class PlayerAttacks : MonoBehaviour
         battleCamera.Play("BattleCamera");
 
     }
+    IEnumerator SpellBall(GameObject particle, GameObject enemy, Spells spellType)
+    {
+        yield return new WaitForSeconds(1);
+
+        float step = (6 / (particle.transform.position - enemy.transform.position).magnitude) * Time.fixedDeltaTime;
+        float t = 0;
+
+        while (Vector3.Distance(particle.transform.position, enemy.transform.position) > 1)
+        {
+            t += step;
+            particle.transform.position = Vector3.Lerp(particle.transform.position, enemy.transform.position, t);
+            yield return new WaitForFixedUpdate();
+        }
+
+        switch (spellType)
+        {
+            case Spells.Fire:
+                enemy.GetComponent<EnemyCombat>().TakeFireDamage(playerStats.player.baseDamage);
+                break;
+            case Spells.Water:
+                enemy.GetComponent<EnemyCombat>().TakeWaterDamage(playerStats.player.baseDamage);
+                break;
+            case Spells.Air:
+                enemy.GetComponent<EnemyCombat>().TakeAirDamage(playerStats.player.baseDamage);
+                break;
+            case Spells.Earth:
+                enemy.GetComponent<EnemyCombat>().TakeEarthDamage(playerStats.player.baseDamage);
+                break;
+            case Spells.Lightning:
+                enemy.GetComponent<EnemyCombat>().TakeLightningDamage(playerStats.player.baseDamage);
+                break;
+        }
+        
+        Destroy(particle);
+        battleCamera.Play("BattleCamera");
+
+    }
+
+
+
+
 }
 
 
