@@ -36,9 +36,11 @@ public class PlayerAttacks : MonoBehaviour
         Feet
     }
 
+    public DamageNumber damageNumber;
     public Animator playerAnimations;
     public Animator battleCamera;
     public PlayerStats playerStats;
+    public BattleSystem battleSystem;
 
     #region Physical Attacks
    
@@ -200,7 +202,7 @@ public class PlayerAttacks : MonoBehaviour
         }
 
         playerStats.player.currentHealth -= damageDealt;
-
+        damageNumber.Create(transform.position, damageDealt, false);
 
         Debug.Log("Torso Health: " + playerStats.player.bodyPartHealth.torsoHealth);
         Debug.Log("Dealt " + damageDealt + " damage\nRemains " + playerStats.player.currentHealth + " HP");
@@ -338,6 +340,7 @@ public class PlayerAttacks : MonoBehaviour
 
     IEnumerator SlashingAttack(Target target, GameObject enemy) 
     {
+        battleCamera.Play("BattleCamera");
         yield return new WaitForSeconds(1);
         var returnPos = gameObject.transform.position;
         float step = (6 / (gameObject.transform.position - enemy.transform.position).magnitude) * Time.fixedDeltaTime;
@@ -361,10 +364,12 @@ public class PlayerAttacks : MonoBehaviour
         playerAnimations.SetBool("Slashing", false);
         gameObject.transform.position = returnPos;
         battleCamera.Play("BattleCamera");
+        battleSystem.ChangeState(BattleState.EnemyTurn);
 
     }
     IEnumerator PiercingAttack(Target target, GameObject enemy)
     {
+        battleCamera.Play("BattleCamera");
         yield return new WaitForSeconds(1);
         var returnPos = gameObject.transform.position;
         float step = (6 / (gameObject.transform.position - enemy.transform.position).magnitude) * Time.fixedDeltaTime;
@@ -387,10 +392,12 @@ public class PlayerAttacks : MonoBehaviour
         playerAnimations.SetBool("Piercing", false);
         gameObject.transform.position = returnPos;
         battleCamera.Play("BattleCamera");
+        battleSystem.ChangeState(BattleState.EnemyTurn);
 
     }
     IEnumerator BludgeoningAttack(Target target, GameObject enemy)
     {
+        battleCamera.Play("BattleCamera");
         yield return new WaitForSeconds(1);
         var returnPos = gameObject.transform.position;
         float step = (6 / (gameObject.transform.position - enemy.transform.position).magnitude) * Time.fixedDeltaTime;
@@ -409,10 +416,11 @@ public class PlayerAttacks : MonoBehaviour
         yield return new WaitForSeconds(0.5f);
         playerAnimations.SetBool("Blunt", true);
         yield return new WaitForSeconds(1);
-        enemy.GetComponent<EnemyCombat>().TakeSlashingDamage(playerStats.player.baseDamage, target);
+        enemy.GetComponent<EnemyCombat>().TakeBludgeoningDamage(playerStats.player.baseDamage, target);
         playerAnimations.SetBool("Blunt", false);
         gameObject.transform.position = returnPos;
         battleCamera.Play("BattleCamera");
+        battleSystem.ChangeState(BattleState.EnemyTurn);
 
     }
     IEnumerator SpellBall(GameObject particle, GameObject enemy, Spells spellType)
@@ -450,6 +458,7 @@ public class PlayerAttacks : MonoBehaviour
         
         Destroy(particle);
         battleCamera.Play("BattleCamera");
+        battleSystem.ChangeState(BattleState.EnemyTurn);
 
     }
 

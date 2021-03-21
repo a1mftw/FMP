@@ -52,6 +52,12 @@ public class AnimationManager : MonoBehaviour
         return magicGO;
     }
 
+    public void RemoveSpells() 
+    {
+        Destroy(magicGO);
+        Destroy(magicCircleGO);
+    }
+
 
 
 }

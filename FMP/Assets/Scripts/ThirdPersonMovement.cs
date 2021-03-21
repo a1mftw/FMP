@@ -69,7 +69,7 @@ public class ThirdPersonMovement : MonoBehaviour
     {
         if (other.tag == "Enemy" && canControl)
         {
-
+            playerAnimations.SetBool("Walking", false);
             canControl = false;
             PreviousPos = transform.position;
             tranController.StartBattle(other.gameObject);

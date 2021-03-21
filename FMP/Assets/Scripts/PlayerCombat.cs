@@ -7,6 +7,13 @@ using UnityEngine.UI;
 public class PlayerCombat : MonoBehaviour
 {
 
+    public Material outlineMaterial;
+    private List<Material> matArray;
+    private Material[] originalMaterials;
+    private SkinnedMeshRenderer targetRenderer;
+    private SkinnedMeshRenderer currRenderer;
+
+
     public ListPositionCtrl spellListControl;
 
     public GameObject magicSpellList;
@@ -105,6 +112,7 @@ public class PlayerCombat : MonoBehaviour
 
         if (spellTargeting)
         {
+            TargetShader(true);
             //Change between enemy
             if (Input.GetButtonDown("Right"))
             {
@@ -146,8 +154,17 @@ public class PlayerCombat : MonoBehaviour
                 spellTargeting = false;
                 firstPress = true;
                 cameraController.Play("BattleCamera");
-                battleSystem.ChangeState(BattleState.EnemyTurn);
 
+            }
+
+            if (Input.GetButtonDown("Cancel"))
+            {
+                spellChoiceActive = true;
+                cameraController.Play("MagicState");
+                magicSpellList.SetActive(true);
+                spellHighlight.Select();
+                spellTargeting = false;
+                animationManager.MagicCastParticle((AnimationManager.Effects)spellListControl.GetCenteredContentID(), spellPlaceHolder.transform.position);
             }
         }
 
@@ -186,10 +203,19 @@ public class PlayerCombat : MonoBehaviour
             {
                 ChooseSpellTarget(spellListControl.GetCenteredContentID());
             }
+            if (Input.GetButtonDown("Cancel"))
+            {
+                spellChoiceActive = false;
+                animationManager.RemoveSpells();
+                firstPress = true;
+                magicSpellList.SetActive(false);
+                cameraController.Play("MagicState");
+            }
         }
 
         if (overdriveTargeting) 
         {
+            TargetShader(true);
             //Change between enemy
             if (Input.GetButtonDown("Right"))
             {
@@ -211,6 +237,7 @@ public class PlayerCombat : MonoBehaviour
 
             if (Input.GetButtonDown("Cancel"))
             {
+                TargetShader(false);
                 overdriveTargeting = false;
                 cameraController.Play("BattleCamera");
             }
@@ -219,6 +246,7 @@ public class PlayerCombat : MonoBehaviour
 
         if (targeting)
         {
+            TargetShader(true);
 
             //Change between enemy
             if (Input.GetButtonDown("Right"))
@@ -305,14 +333,13 @@ public class PlayerCombat : MonoBehaviour
                 bodyPartUI.SetActive(false);
                 targeting = false;
                 firstPress = true;
-                cameraController.Play("BattleCamera");
                 bodyPartCount = 0;
-                battleSystem.ChangeState(BattleState.EnemyTurn);
             }
 
 
             if (Input.GetButtonDown("Cancel")) 
             {
+                TargetShader(false);
                 targeting = false;
                 bodyPartCount = 0;
                 target = PlayerAttacks.Target.Head;
@@ -333,8 +360,6 @@ public class PlayerCombat : MonoBehaviour
             }
         }
     }
-
-
     public void SetUI() 
     {
 
@@ -353,7 +378,6 @@ public class PlayerCombat : MonoBehaviour
 
         ChangeStance(stance);
     }
-
     public void FirstButtonAction() 
     {
 
@@ -363,7 +387,6 @@ public class PlayerCombat : MonoBehaviour
                 
                 if (firstPress)
                 {
-
                     FirstButton.text = "Bludgeoning";
                     SecondButton.text = "Piercing";
                     ThirdButton.text = "Slashing";
@@ -792,7 +815,6 @@ public class PlayerCombat : MonoBehaviour
             bodyPartUI.transform.GetChild(2).GetChild(5).GetComponent<Image>().color = Color.green;
         }
     }
-
     public void ChooseSpellTarget(int spellChosen) 
     {
         spell = (PlayerAttacks.Spells)spellChosen;
@@ -803,7 +825,6 @@ public class PlayerCombat : MonoBehaviour
         cameraController.Play("TargetingEnemy");
 
     }
-
     void ChangeStance(Stances newStance) 
     {
         stance = newStance;
@@ -827,7 +848,6 @@ public class PlayerCombat : MonoBehaviour
         changeStanceActive = false;
         firstPress = true;
     }
-
     private void BuffDebuffs(bool player = false)
     {
         var image = new Color();
@@ -1149,7 +1169,6 @@ public class PlayerCombat : MonoBehaviour
             }
         }
     }
-
     IEnumerator MyriadOverdrive() 
     {
         MyriadStrikes = true;
@@ -1160,6 +1179,25 @@ public class PlayerCombat : MonoBehaviour
         playerAttacks.MyriadStrikes(enemyTarget,hits);
         cameraController.Play("BattleCamera");
         battleSystem.ChangeState(BattleState.EnemyTurn);
+    }
+    void TargetShader(bool highlight = true) 
+    {
+        currRenderer = enemyTarget.transform.GetChild(0).GetComponent<SkinnedMeshRenderer>();
+
+        if (!highlight)
+        {
+            currRenderer.materials = originalMaterials;
+
+         }
+       else
+        {
+            originalMaterials = currRenderer.materials;
+            matArray = new List<Material>(currRenderer.materials);
+            matArray.Add(outlineMaterial);
+            currRenderer.materials = matArray.ToArray();
+            targetRenderer = currRenderer;
+        }
+    
     }
 
 }

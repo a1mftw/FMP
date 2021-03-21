@@ -13,11 +13,11 @@ public enum ParryStance
 
 public class EnemyCombat : MonoBehaviour
 {
-
-    private PlayerAttacks playerAttacks;
     private GameObject playerTarget;
     private EnemyStats enemyStats;
     public BattleSystem battleSystem;
+    public Animator foxAnimation;
+    public DamageNumber damageNumber;
 
     private bool attacking = false;
     private PlayerAttacks.Spells previousSpell = PlayerAttacks.Spells.None;
@@ -26,7 +26,6 @@ public class EnemyCombat : MonoBehaviour
     void Start() 
     {
         enemyStats = GetComponent<EnemyStats>();
-        playerAttacks = GameObject.Find("Player").GetComponent<PlayerAttacks>();
 
     }
 
@@ -65,7 +64,7 @@ public class EnemyCombat : MonoBehaviour
         float step = (6 / (gameObject.transform.position - playerTarget.transform.position).magnitude) * Time.fixedDeltaTime;
         float t = 0;
 
-        //playerAnimations.SetBool("Sprinting", true);
+        foxAnimation.SetBool("Running", true);
 
         while (Vector3.Distance(gameObject.transform.position, playerTarget.transform.position) > 5)
         {
@@ -74,18 +73,13 @@ public class EnemyCombat : MonoBehaviour
             yield return new WaitForFixedUpdate();
         }
 
-        //playerAnimations.SetBool("Sprinting", false);
-        //battleCamera.Play("StrikeState");
-        yield return new WaitForSeconds(0.5f);
-        //playerAnimations.SetBool("Slashing", true);
+        foxAnimation.SetBool("Running", false);
+        foxAnimation.SetBool("TailSwipe", true);
         yield return new WaitForSeconds(1);
         playerTarget.GetComponent<PlayerAttacks>().TakeTailSwipeDamage(enemyStats.foxEnemy.baseDamage, PlayerAttacks.Target.Torso);
-        //playerAnimations.SetBool("Slashing", false);
+        foxAnimation.SetBool("TailSwipe", false);
         gameObject.transform.position = returnPos;
-        //battleCamera.Play("BattleCamera");
-
         battleSystem.ChangeState(BattleState.PlayerTurn);
-
         attacking = false;
     }
     IEnumerator ClawAttack() 
@@ -93,8 +87,27 @@ public class EnemyCombat : MonoBehaviour
         attacking = true;
         playerTarget = battleSystem.playerPrefab;
         Debug.Log("Attacking");
-        yield return new WaitForSeconds(5f);
+
+        yield return new WaitForSeconds(1);
+        var returnPos = gameObject.transform.position;
+        float step = (6 / (gameObject.transform.position - playerTarget.transform.position).magnitude) * Time.fixedDeltaTime;
+        float t = 0;
+
+        foxAnimation.SetBool("Running", true);
+
+        while (Vector3.Distance(gameObject.transform.position, playerTarget.transform.position) > 5)
+        {
+            t += step;
+            gameObject.transform.position = Vector3.Lerp(gameObject.transform.position, playerTarget.transform.position, t);
+            yield return new WaitForFixedUpdate();
+        }
+
+        foxAnimation.SetBool("Running", false);
+        foxAnimation.SetBool("Claw", true);
+        yield return new WaitForSeconds(1);
         playerTarget.GetComponent<PlayerAttacks>().TakeTailSwipeDamage(enemyStats.foxEnemy.baseDamage, PlayerAttacks.Target.Torso);
+        foxAnimation.SetBool("Claw", false);
+        gameObject.transform.position = returnPos;
         battleSystem.ChangeState(BattleState.PlayerTurn);
         attacking = false;
     }
@@ -189,7 +202,7 @@ public class EnemyCombat : MonoBehaviour
 
         enemyStats.foxEnemy.currentHealth -= damageDealt;
 
-
+        damageNumber.Create(transform.position, damageDealt, false);
         Debug.Log("HeadHealth: " + enemyStats.foxEnemy.bodyPartHealth.headHealth);
         Debug.Log("Dealt " + damageDealt + " damage\nRemains " + enemyStats.foxEnemy.currentHealth + " HP" );
 
@@ -227,6 +240,7 @@ public class EnemyCombat : MonoBehaviour
         }
 
         enemyStats.foxEnemy.currentHealth -= damageDealt;
+        damageNumber.Create(transform.position, damageDealt, false);
         Debug.Log("HeadHealth: " + enemyStats.foxEnemy.bodyPartHealth.headHealth);
         Debug.Log("Dealt " + damageDealt + " damage\nRemains " + enemyStats.foxEnemy.currentHealth + " HP");
         if (enemyStats.foxEnemy.currentHealth <= 0)
@@ -261,6 +275,7 @@ public class EnemyCombat : MonoBehaviour
         }
 
         enemyStats.foxEnemy.currentHealth -= damageDealt;
+        damageNumber.Create(transform.position, damageDealt, false);
         Debug.Log("HeadHealth: " + enemyStats.foxEnemy.bodyPartHealth.headHealth);
         Debug.Log("Dealt " + damageDealt + " damage\nRemains " + enemyStats.foxEnemy.currentHealth + " HP");
         if (enemyStats.foxEnemy.currentHealth <= 0)
@@ -275,6 +290,7 @@ public class EnemyCombat : MonoBehaviour
 
     public void TakeMyriadDamage(int damage) 
     {
+        damageNumber.Create(transform.position, damage, false);
         enemyStats.foxEnemy.currentHealth -= damage;
     }
 
@@ -295,7 +311,7 @@ public class EnemyCombat : MonoBehaviour
             previousSpell = currentSpell;
         }
 
-
+        damageNumber.Create(transform.position, damage, false);
         enemyStats.foxEnemy.currentHealth -= damage;
 
     }
@@ -313,7 +329,7 @@ public class EnemyCombat : MonoBehaviour
             previousSpell = currentSpell;
         }
 
-
+        damageNumber.Create(transform.position, damage, false);
         enemyStats.foxEnemy.currentHealth -= damage;
 
     }
@@ -331,7 +347,7 @@ public class EnemyCombat : MonoBehaviour
             previousSpell = currentSpell;
         }
 
-
+        damageNumber.Create(transform.position, damage, false);
         enemyStats.foxEnemy.currentHealth -= damage;
 
     }
@@ -349,7 +365,7 @@ public class EnemyCombat : MonoBehaviour
             previousSpell = currentSpell;
         }
 
-
+        damageNumber.Create(transform.position, damage, false);
         enemyStats.foxEnemy.currentHealth -= damage;
 
     }
@@ -367,7 +383,7 @@ public class EnemyCombat : MonoBehaviour
             previousSpell = currentSpell;
         }
 
-
+        damageNumber.Create(transform.position, damage, false);
         enemyStats.foxEnemy.currentHealth -= damage;
 
     }
