@@ -337,7 +337,6 @@ public class PlayerAttacks : MonoBehaviour
 
     #endregion
 
-
     IEnumerator SlashingAttack(Target target, GameObject enemy) 
     {
         battleCamera.Play("BattleCamera");
@@ -425,6 +424,7 @@ public class PlayerAttacks : MonoBehaviour
     }
     IEnumerator SpellBall(GameObject particle, GameObject enemy, Spells spellType)
     {
+        playerStats.player.currentMp -= 10;
         yield return new WaitForSeconds(1);
 
         float step = (6 / (particle.transform.position - enemy.transform.position).magnitude) * Time.fixedDeltaTime;

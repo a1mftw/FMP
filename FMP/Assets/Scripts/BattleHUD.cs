@@ -12,18 +12,16 @@ public class BattleHUD : MonoBehaviour
     public Slider mpSlider;
 
 
-
-    public void SetHUD() 
+    public void SetHUD()
     {
         hpSlider.maxValue = playerStats.player.maxHealth;
         mpSlider.maxValue = playerStats.player.maxHealth;
         SetHP();
         SetMP();
         BodyTargetHP();
-        
-    }
 
-    private void BodyTargetHP() 
+    }
+    private void BodyTargetHP()
     {
 
         //Head
@@ -151,15 +149,52 @@ public class BattleHUD : MonoBehaviour
             playerBodyParts.transform.GetChild(5).GetChild(0).GetComponent<Image>().color = Color.green;
         }
     }
-
-    private void SetHP() 
+    private void SetHP()
     {
         hpSlider.value = playerStats.player.currentHealth;
     }
-
-    private void SetMP() 
+    private void SetMP()
     {
-        mpSlider.value = playerStats.player.currentHealth;
+        mpSlider.value = playerStats.player.currentMp;
+    }
+
+    public void BodyPartColor(int currentHealth, int maxHealth, int part, GameObject BodyUI)
+    {
+        if (currentHealth <= 0)
+        {
+            BodyUI.transform.GetChild(2).GetChild(part).GetComponent<Image>().color = Color.gray;
+        }
+        else if (currentHealth <= maxHealth / 4)
+        {
+            BodyUI.transform.GetChild(2).GetChild(part).GetComponent<Image>().color = Color.red;
+        }
+        else if (currentHealth <= maxHealth / 2)
+        {
+            BodyUI.transform.GetChild(2).GetChild(part).GetComponent<Image>().color = Color.yellow;
+        }
+        else
+        {
+            BodyUI.transform.GetChild(2).GetChild(part).GetComponent<Image>().color = Color.green;
+        }
+    }
+    public void BuffDebuffColor(bool buff,GameObject BodyUI,int child,int status) 
+    {
+        var image = new Color();
+
+        if (buff)
+        {
+            image = BodyUI.transform.GetChild(child).GetChild(status).GetChild(0).GetComponent<Image>().color;
+            image.a = 1f;
+            BodyUI.transform.GetChild(child).GetChild(status).GetChild(0).GetComponent<Image>().color = image;
+        }
+        else
+        {
+            image = BodyUI.transform.GetChild(child).GetChild(status).GetChild(0).GetComponent<Image>().color;
+            image.a = 0.3f;
+            BodyUI.transform.GetChild(child).GetChild(status).GetChild(0).GetComponent<Image>().color = image;
+        }
+        
+
     }
 
 

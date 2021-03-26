@@ -13,6 +13,7 @@ public class AnimationManager : MonoBehaviour
         Earth,
         Electric,
         MagicCircle,
+        AlchemyCircle,
     }
 
     [System.Serializable]
@@ -54,8 +55,22 @@ public class AnimationManager : MonoBehaviour
 
     public void RemoveSpells() 
     {
-        Destroy(magicGO);
-        Destroy(magicCircleGO);
+        if (magicGO)
+        {
+            Destroy(magicGO);
+        }
+
+        if (magicCircleGO)
+        {
+            Destroy(magicCircleGO);
+        }
+        
+        
+    }
+
+    public void AlchemyMagic() 
+    {
+        magicCircleGO = Instantiate(particleEffects[6].particle, transform.position, Quaternion.identity);
     }
 
 

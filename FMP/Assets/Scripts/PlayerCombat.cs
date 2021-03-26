@@ -7,6 +7,35 @@ using UnityEngine.UI;
 public class PlayerCombat : MonoBehaviour
 {
 
+    public enum UIStates 
+    {
+        EnemyTurn,
+        Action,
+        PhysicalNormal,
+        PhysicalAttacks,
+        PhysicalAbilities,
+        MagicNormal,
+        MagicAttacks,
+        MagicAbilities,
+        AlchemyNormal,
+        AlchemyAttacks,
+        AlchemyAbilities,
+        OverdriveNormal,
+        OverdriveAttacks,
+        OverdriveAbilities
+    }
+    public enum Stances
+    {
+        Physical,
+        Magic,
+        Alchemy,
+        Overdrive
+
+    }
+
+    public UIStates uiState = UIStates.PhysicalNormal;
+
+
     public Material outlineMaterial;
     private List<Material> matArray;
     private Material[] originalMaterials;
@@ -22,15 +51,7 @@ public class PlayerCombat : MonoBehaviour
     public BattleSystem battleSystem;
     public PlayerAttacks playerAttacks;
     public GameObject spellPlaceHolder;
-
-    public enum Stances 
-    {
-        Physical,
-        Magic,
-        Alchemy,
-        Overdrive
-
-    }
+    public BattleHUD battleHUD;
 
     public Sprite physicalImage;
     public Sprite magicImage;
@@ -46,13 +67,10 @@ public class PlayerCombat : MonoBehaviour
 
     private GameObject enemyTarget;
 
-    private bool firstPress = true;
     private bool targeting = false;
     private bool playerTargeting = false;
-    private bool spellTargeting = false;
     private bool changeStanceActive = false;
     private bool spellChoiceActive = false;
-    private bool overdriveTargeting = false;
     private bool MyriadStrikes = false;
 
     private Text FirstButton;
@@ -70,10 +88,14 @@ public class PlayerCombat : MonoBehaviour
     private int hits = 0;
     private int bodyPartCount = 0;
     public bool BattleOver = false;
+    private bool cancel = false;
     
 
     private void Update()
     {
+
+        cancel = false;
+
         if (BattleOver)
         {
                 Flee();
@@ -108,64 +130,6 @@ public class PlayerCombat : MonoBehaviour
 
             
             
-        }
-
-        if (spellTargeting)
-        {
-            TargetShader(true);
-            //Change between enemy
-            if (Input.GetButtonDown("Right"))
-            {
-                //If theres more than 1 enemy change camera and target here
-            }
-
-            if (Input.GetButtonDown("Left"))
-            {
-                //If theres more than 1 enemy change camera and target here
-            }
-
-            if (Input.GetButtonDown("Submit"))
-            {
-
-                switch (spell)
-                {
-                    case PlayerAttacks.Spells.Fire:
-                        playerAttacks.FireDamage(animationManager.GetMagicParticle(),enemyTarget);
-                        Debug.Log("Fire damage");
-                        break;
-                    case PlayerAttacks.Spells.Water:
-                        playerAttacks.WaterDamage(animationManager.GetMagicParticle(), enemyTarget);
-                        Debug.Log("Water damage");
-                        break;
-                    case PlayerAttacks.Spells.Air:
-                        playerAttacks.AirDamage(animationManager.GetMagicParticle(), enemyTarget);
-                        Debug.Log("Air damage");
-                        break;
-                    case PlayerAttacks.Spells.Earth:
-                        playerAttacks.EarthDamage(animationManager.GetMagicParticle(), enemyTarget);
-                        Debug.Log("Earth damage");
-                        break;
-                    case PlayerAttacks.Spells.Lightning:
-                        playerAttacks.LightningDamage(animationManager.GetMagicParticle(), enemyTarget);
-                        Debug.Log("Lightning damage");
-                        break;
-                }
-
-                spellTargeting = false;
-                firstPress = true;
-                cameraController.Play("BattleCamera");
-
-            }
-
-            if (Input.GetButtonDown("Cancel"))
-            {
-                spellChoiceActive = true;
-                cameraController.Play("MagicState");
-                magicSpellList.SetActive(true);
-                spellHighlight.Select();
-                spellTargeting = false;
-                animationManager.MagicCastParticle((AnimationManager.Effects)spellListControl.GetCenteredContentID(), spellPlaceHolder.transform.position);
-            }
         }
 
         if (spellChoiceActive)
@@ -203,45 +167,18 @@ public class PlayerCombat : MonoBehaviour
             {
                 ChooseSpellTarget(spellListControl.GetCenteredContentID());
             }
-            if (Input.GetButtonDown("Cancel"))
-            {
-                spellChoiceActive = false;
-                animationManager.RemoveSpells();
-                firstPress = true;
-                magicSpellList.SetActive(false);
-                cameraController.Play("MagicState");
-            }
-        }
 
-        if (overdriveTargeting) 
-        {
-            TargetShader(true);
-            //Change between enemy
-            if (Input.GetButtonDown("Right"))
+            if (!cancel)
             {
-                //If theres more than 1 enemy change camera and target here
+                if (Input.GetButtonDown("Cancel"))
+                {
+                    spellChoiceActive = false;
+                    animationManager.RemoveSpells();
+                    
+                    magicSpellList.SetActive(false);
+                    cameraController.Play("BattleCamera");
+                }
             }
-
-            if (Input.GetButtonDown("Left"))
-            {
-                //If theres more than 1 enemy change camera and target here
-            }
-
-            if (Input.GetButtonDown("Submit"))
-            {
-                hits = 0;
-                overdriveTargeting = false;
-                OverdriveText.SetActive(true);
-                StartCoroutine("MyriadOverdrive");
-            }
-
-            if (Input.GetButtonDown("Cancel"))
-            {
-                TargetShader(false);
-                overdriveTargeting = false;
-                cameraController.Play("BattleCamera");
-            }
-
         }
 
         if (targeting)
@@ -259,26 +196,27 @@ public class PlayerCombat : MonoBehaviour
                 //If theres more than 1 enemy change camera and target here
             }
 
-
-            //Change between body part
-            if (Input.GetButtonDown("Up"))
+            if (stance == Stances.Physical)
             {
-                if (--bodyPartCount < 0)
+                target = (PlayerAttacks.Target)bodyPartCount;
+                //Change between body part
+                if (Input.GetButtonDown("Up"))
                 {
-                    bodyPartCount = 5;
+                    if (--bodyPartCount < 0)
+                    {
+                        bodyPartCount = 5;
+                    }
+                }
+
+                if (Input.GetButtonDown("Down"))
+                {
+                    if (++bodyPartCount > 5)
+                    {
+                        bodyPartCount = 0;
+
+                    }
                 }
             }
-
-            if (Input.GetButtonDown("Down"))
-            {
-                if (++bodyPartCount > 5)
-                {
-                    bodyPartCount = 0;
-
-                }
-            }
-
-            target = (PlayerAttacks.Target)bodyPartCount;
 
             if (Input.GetButtonDown("Submit"))
             {
@@ -299,8 +237,34 @@ public class PlayerCombat : MonoBehaviour
                             default:
                                 break;
                         }
+                        bodyPartUI.SetActive(false);
                         break;
                     case Stances.Magic:
+                        switch (spell)
+                        {
+                            case PlayerAttacks.Spells.Fire:
+                                playerAttacks.FireDamage(animationManager.GetMagicParticle(), enemyTarget);
+                                Debug.Log("Fire damage");
+                                break;
+                            case PlayerAttacks.Spells.Water:
+                                playerAttacks.WaterDamage(animationManager.GetMagicParticle(), enemyTarget);
+                                Debug.Log("Water damage");
+                                break;
+                            case PlayerAttacks.Spells.Air:
+                                playerAttacks.AirDamage(animationManager.GetMagicParticle(), enemyTarget);
+                                Debug.Log("Air damage");
+                                break;
+                            case PlayerAttacks.Spells.Earth:
+                                playerAttacks.EarthDamage(animationManager.GetMagicParticle(), enemyTarget);
+                                Debug.Log("Earth damage");
+                                break;
+                            case PlayerAttacks.Spells.Lightning:
+                                playerAttacks.LightningDamage(animationManager.GetMagicParticle(), enemyTarget);
+                                Debug.Log("Lightning damage");
+                                break;
+                        }
+                        cameraController.Play("BattleCamera");
+
                         break;
                     case Stances.Alchemy:
 
@@ -321,21 +285,22 @@ public class PlayerCombat : MonoBehaviour
                             default:
                                 break;
                         }
+
+                        bodyPartUI.SetActive(false);
                         break;
 
                     case Stances.Overdrive:
+                        hits = 0;
+                        OverdriveText.SetActive(true);
+                        StartCoroutine("MyriadOverdrive");
                         break;
                     default:
                         break;
                 }
                 
-
-                bodyPartUI.SetActive(false);
                 targeting = false;
-                firstPress = true;
                 bodyPartCount = 0;
             }
-
 
             if (Input.GetButtonDown("Cancel")) 
             {
@@ -343,8 +308,31 @@ public class PlayerCombat : MonoBehaviour
                 targeting = false;
                 bodyPartCount = 0;
                 target = PlayerAttacks.Target.Head;
-                bodyPartUI.SetActive(false);
-                cameraController.Play("BattleCamera");
+
+                switch (stance)
+                {
+                    case Stances.Physical:
+                        bodyPartUI.SetActive(false);
+                        cameraController.Play("BattleCamera");
+                        break;
+                    case Stances.Magic:
+                        cancel = true;
+                        spellChoiceActive = true;
+                        cameraController.Play("MagicState");
+                        magicSpellList.SetActive(true);
+                        spellHighlight.Select();
+                        animationManager.MagicCastParticle((AnimationManager.Effects)spellListControl.GetCenteredContentID(), spellPlaceHolder.transform.position);
+                        break;
+                    case Stances.Alchemy:
+                        cameraController.Play("BattleCamera");
+                        break;
+                    case Stances.Overdrive:
+                        cameraController.Play("BattleCamera");
+                        break;
+                    default:
+                        break;
+                }
+             
             }
 
 
@@ -370,100 +358,97 @@ public class PlayerCombat : MonoBehaviour
         ThirdButton = GameObject.Find("FunctionText3").GetComponent<Text>();
         FourthButton = GameObject.Find("FunctionText4").GetComponent<Text>();
 
+
         FirstButton.text = "Attack";
         SecondButton.text = "Abilities";
         ThirdButton.text = "Change Stance";
         FourthButton.text = "Flee";
-        firstPress = true;
+        
 
         ChangeStance(stance);
     }
     public void FirstButtonAction() 
     {
-
-        switch (stance)
+        switch (uiState)
         {
-            case Stances.Physical:
-                
-                if (firstPress)
-                {
-                    FirstButton.text = "Bludgeoning";
-                    SecondButton.text = "Piercing";
-                    ThirdButton.text = "Slashing";
-                    FourthButton.text = "Back";
-                    firstPress = false;
-
-                }
-                else
-                {
-                    if (!targeting && !changeStanceActive)
-                    {
-                        attack = PlayerAttacks.Attacks.Bludgeoning;
-                        enemyTarget = battleSystem.enemyTarget;
-                        partHighlight.Select();
-                        targeting = true;
-                        //Change camera to enemy
-                        cameraController.Play("TargetingEnemy");
-
-
-                        //Change color of parts if they are damaged
-                        EnemyColorTargetSystem();
-                        BuffDebuffs();
-
-
-                        //Show body part select
-                        bodyPartUI.SetActive(true);
-                    }
-                }
-
+            case UIStates.PhysicalNormal:
+                FirstButton.text = "Bludgeoning";
+                SecondButton.text = "Piercing";
+                ThirdButton.text = "Slashing";
+                FourthButton.text = "Back";
+                uiState = UIStates.PhysicalAttacks;
                 break;
-            case Stances.Magic:
-                if (firstPress)
-                {
-                    cameraController.Play("MagicState");
-                    magicSpellList.SetActive(true);
-                    spellHighlight.Select();
-                    spellChoiceActive = true;
-                    animationManager.MagicCastParticle((AnimationManager.Effects)spellListControl.GetCenteredContentID(),spellPlaceHolder.transform.position);
-                    firstPress = false;
-                }
-                break;
-            case Stances.Alchemy:
-                if (firstPress)
-                {
-                    cameraController.Play("AlchemyState");
+
+            case UIStates.PhysicalAttacks:
+                    uiState = UIStates.Action;
+                    attack = PlayerAttacks.Attacks.Bludgeoning;
+                    enemyTarget = battleSystem.enemyTarget;
                     partHighlight.Select();
                     targeting = true;
-
+                    //Change camera to enemy
+                    cameraController.Play("TargetingEnemy");
                     //Change color of parts if they are damaged
-                    PlayerColorTargetSystem();
-                    BuffDebuffs(true);
-
+                    EnemyColorTargetSystem();
+                    //Show buffs/debuffs of selected enemy
+                    BuffDebuffs();
                     //Show body part select
                     bodyPartUI.SetActive(true);
-                }
                 break;
-            case Stances.Overdrive:
-                if (firstPress)
-                {
-                    FirstButton.text = "Myriad Strikes";
-                    SecondButton.text = "";
-                    ThirdButton.text = "";
-                    FourthButton.text = "Back";
-                    firstPress = false;
-                }
-                else
-                {
-                    if (!targeting && !changeStanceActive)
-                    {
-                        enemyTarget = battleSystem.enemyTarget;
-                        overdriveTargeting = true;
 
-                        //Change camera to enemy
-                        cameraController.Play("TargetingEnemy");
-                    }
-                }
+            case UIStates.PhysicalAbilities:
                 break;
+
+            case UIStates.MagicNormal:
+                uiState = UIStates.MagicAttacks;
+                cameraController.Play("MagicState");
+                magicSpellList.SetActive(true);
+                spellHighlight.Select();
+                spellChoiceActive = true;
+                animationManager.MagicCastParticle((AnimationManager.Effects)spellListControl.GetCenteredContentID(), spellPlaceHolder.transform.position);
+                break;
+
+            case UIStates.MagicAttacks:
+                break;
+
+            case UIStates.MagicAbilities:
+                break;
+
+            case UIStates.AlchemyNormal:
+                cameraController.Play("AlchemyState");
+                partHighlight.Select();
+                targeting = true;
+                //Change color of parts if they are damaged
+                PlayerColorTargetSystem();
+                //Show player buffs/Debuffs
+                BuffDebuffs(true);
+                animationManager.AlchemyMagic();
+                //Show body part select
+                bodyPartUI.SetActive(true);
+                break;
+
+            case UIStates.AlchemyAttacks:
+                break;
+            case UIStates.AlchemyAbilities:
+                break;
+            case UIStates.OverdriveNormal:
+                FirstButton.text = "Myriad Strikes";
+                SecondButton.text = "";
+                ThirdButton.text = "";
+                FourthButton.text = "Back";
+                uiState = UIStates.OverdriveAttacks;
+                break;
+
+            case UIStates.OverdriveAttacks:
+                    uiState = UIStates.Action;
+                    enemyTarget = battleSystem.enemyTarget;
+                    targeting = true;
+                    //Change camera to enemy
+                    cameraController.Play("TargetingEnemy");
+                break;
+
+            case UIStates.OverdriveAbilities:
+                break;
+
             default:
                 break;
         }
@@ -471,123 +456,218 @@ public class PlayerCombat : MonoBehaviour
     }
     public void SecondButtonAction() 
     {
-       
-            switch (stance)
-            {
-                case Stances.Physical:
-                    
-                    if (firstPress)
-                    {
-                        FirstButton.text = "War Cry";
-                        SecondButton.text = "Piercing Gaze";
-                        ThirdButton.text = "Meditate";
-                        FourthButton.text = "Back";
-                        firstPress = false;
-                }
-                    else
-                    {
-                    if (!targeting && !changeStanceActive)
-                    {
-                        attack = PlayerAttacks.Attacks.Piercing;
-                        enemyTarget = battleSystem.enemyTarget;
-                        partHighlight.Select();
-                        targeting = true;
-
-
-                        //Change camera to enemy
-                        cameraController.Play("TargetingEnemy");
-
-
-                        //Change color of parts if they are damaged
-                        EnemyColorTargetSystem();
-                        //Turn the buff debuff UI on
-                        BuffDebuffs();
-
-
-                        //Show body part select
-                        bodyPartUI.SetActive(true);
-                    }
-                }
-
+        switch (uiState)
+        {
+            case UIStates.PhysicalNormal:
+                FirstButton.text = "War Cry";
+                SecondButton.text = "Piercing Gaze";
+                ThirdButton.text = "Meditate";
+                FourthButton.text = "Back";
+                uiState = UIStates.PhysicalAbilities;
                 break;
-                case Stances.Magic:
-                    break;
-                case Stances.Alchemy:
-                    
 
+            case UIStates.PhysicalAttacks:
+                uiState = UIStates.Action;
+                attack = PlayerAttacks.Attacks.Piercing;
+                enemyTarget = battleSystem.enemyTarget;
+                partHighlight.Select();
+                targeting = true;
+                //Change camera to enemy
+                cameraController.Play("TargetingEnemy");
+                //Change color of parts if they are damaged
+                EnemyColorTargetSystem();
+                //Turn the buff debuff UI on
+                BuffDebuffs();
+                //Show body part select
+                bodyPartUI.SetActive(true);
+                break;
 
-                    break;
-                case Stances.Overdrive:
-                    break;
-            }
-        
-       
+            case UIStates.PhysicalAbilities:
+                break;
 
-        
+            case UIStates.MagicNormal:
+                break;
 
+            case UIStates.MagicAttacks:
+                break;
+
+            case UIStates.MagicAbilities:
+                break;
+
+            case UIStates.AlchemyNormal:
+                break;
+
+            case UIStates.AlchemyAttacks:
+                break;
+
+            case UIStates.AlchemyAbilities:
+                break;
+
+            case UIStates.OverdriveNormal:
+                break;
+
+            case UIStates.OverdriveAttacks:
+                break;
+
+            case UIStates.OverdriveAbilities:
+                break;
+
+            default:
+                break;
+        }
     }
     public void ThirdButtonAction() 
     {
-        if (firstPress)
+
+        switch (uiState)
         {
-            changeStanceActive = true;
-            ChangeStanceUI.SetActive(true);
-            firstPress = false;
-        }
-        else
-        {
+            case UIStates.PhysicalNormal:
+                changeStanceActive = true;
+                ChangeStanceUI.SetActive(true);
+                break;
 
-            switch (stance)
-            {
-                case Stances.Physical:
-                    if (!targeting && !changeStanceActive)
-                    {
-                        attack = PlayerAttacks.Attacks.Slashing;
-                        enemyTarget = battleSystem.enemyTarget;
-                        partHighlight.Select();
-                        targeting = true;
-                        cameraController.Play("TargetingEnemy");
+            case UIStates.PhysicalAttacks:
+                uiState = UIStates.Action;
+                attack = PlayerAttacks.Attacks.Slashing;
+                enemyTarget = battleSystem.enemyTarget;
+                partHighlight.Select();
+                targeting = true;
+                cameraController.Play("TargetingEnemy");
+                //Change color of parts if they are damaged
+                EnemyColorTargetSystem();
+                BuffDebuffs();
+                //Show body part select
+                bodyPartUI.SetActive(true);
+                break;
 
+            case UIStates.PhysicalAbilities:
+                break;
 
-                        //Change color of parts if they are damaged
-                        EnemyColorTargetSystem();
-                        BuffDebuffs();
+            case UIStates.MagicNormal:
+                changeStanceActive = true;
+                ChangeStanceUI.SetActive(true);
+                break;
 
+            case UIStates.MagicAttacks:
+                break;
 
-                        //Show body part select
-                        bodyPartUI.SetActive(true);
-                    }
-                    break;
-                case Stances.Magic:
-                    break;
-                case Stances.Alchemy:
-                    break;
-                case Stances.Overdrive:
-                    break;
-                default:
-                    break;
-            }
-            
+            case UIStates.MagicAbilities:
+                break;
+
+            case UIStates.AlchemyNormal:
+                changeStanceActive = true;
+                ChangeStanceUI.SetActive(true);
+                break;
+
+            case UIStates.AlchemyAttacks:
+                break;
+
+            case UIStates.AlchemyAbilities:
+                break;
+
+            case UIStates.OverdriveNormal:
+                changeStanceActive = true;
+                ChangeStanceUI.SetActive(true);
+                break;
+
+            case UIStates.OverdriveAttacks:
+                break;
+
+            case UIStates.OverdriveAbilities:
+                break;
+
+            default:
+                break;
         }
 
     }
     public void FourthButtonAction() 
     {
-        if (firstPress && !changeStanceActive)
+        switch (uiState)
         {
-            Flee();
-        }
-        else
-        {
-            if (!targeting && !changeStanceActive && !overdriveTargeting && !MyriadStrikes)
-            {
+            case UIStates.PhysicalNormal:
+                Flee();
+                break;
+
+            case UIStates.PhysicalAttacks:
+                uiState = UIStates.PhysicalNormal;
                 FirstButton.text = "Attack";
                 SecondButton.text = "Abilities";
                 ThirdButton.text = "Change Stance";
                 FourthButton.text = "Flee";
-                firstPress = true;
-            }
-        }
+                break;
+
+            case UIStates.PhysicalAbilities:
+                uiState = UIStates.PhysicalNormal;
+                FirstButton.text = "Attack";
+                SecondButton.text = "Abilities";
+                ThirdButton.text = "Change Stance";
+                FourthButton.text = "Flee";
+                break;
+
+            case UIStates.MagicNormal:
+                Flee();
+                break;
+
+            case UIStates.MagicAttacks:
+                uiState = UIStates.PhysicalNormal;
+                FirstButton.text = "Attack";
+                SecondButton.text = "Abilities";
+                ThirdButton.text = "Change Stance";
+                FourthButton.text = "Flee";
+                break;
+
+            case UIStates.MagicAbilities:
+                uiState = UIStates.PhysicalNormal;
+                FirstButton.text = "Attack";
+                SecondButton.text = "Abilities";
+                ThirdButton.text = "Change Stance";
+                FourthButton.text = "Flee";
+                break;
+
+            case UIStates.AlchemyNormal:
+                Flee();
+                break;
+
+            case UIStates.AlchemyAttacks:
+                uiState = UIStates.PhysicalNormal;
+                FirstButton.text = "Attack";
+                SecondButton.text = "Abilities";
+                ThirdButton.text = "Change Stance";
+                FourthButton.text = "Flee";
+                break;
+
+            case UIStates.AlchemyAbilities:
+                uiState = UIStates.PhysicalNormal;
+                FirstButton.text = "Attack";
+                SecondButton.text = "Abilities";
+                ThirdButton.text = "Change Stance";
+                FourthButton.text = "Flee";
+                break;
+
+            case UIStates.OverdriveNormal:
+                Flee();
+                break;
+
+            case UIStates.OverdriveAttacks:
+                uiState = UIStates.PhysicalNormal;
+                FirstButton.text = "Attack";
+                SecondButton.text = "Abilities";
+                ThirdButton.text = "Change Stance";
+                FourthButton.text = "Flee";
+                break;
+
+            case UIStates.OverdriveAbilities:
+                uiState = UIStates.PhysicalNormal;
+                FirstButton.text = "Attack";
+                SecondButton.text = "Abilities";
+                ThirdButton.text = "Change Stance";
+                FourthButton.text = "Flee";
+                break;
+
+            default:
+                break;
+        } 
     }
     void Flee() 
     {
@@ -598,111 +678,15 @@ public class PlayerCombat : MonoBehaviour
     {
         EnemyStats enemyStats = enemyTarget.GetComponent<EnemyStats>();
 
-        bodyPartUI.transform.GetChild(1).GetComponent<Slider>().maxValue = enemyStats.foxEnemy.maxHealth;
-        bodyPartUI.transform.GetChild(1).GetComponent<Slider>().value = enemyStats.foxEnemy.currentHealth;
+        bodyPartUI.transform.GetChild(1).GetComponent<Slider>().maxValue = enemyStats.enemy.maxHealth;
+        bodyPartUI.transform.GetChild(1).GetComponent<Slider>().value = enemyStats.enemy.currentHealth;
 
-        if (enemyStats.foxEnemy.bodyPartHealth.headHealth <= 0)
-        {
-            bodyPartUI.transform.GetChild(2).GetChild(0).GetComponent<Image>().color = Color.gray;
-        }
-        else if(enemyStats.foxEnemy.bodyPartHealth.headHealth <= enemyStats.foxEnemy.bodyPartHealth.headMaxHealth / 4)
-        {
-            bodyPartUI.transform.GetChild(2).GetChild(0).GetComponent<Image>().color = Color.red;
-        }
-        else if(enemyStats.foxEnemy.bodyPartHealth.headHealth <= enemyStats.foxEnemy.bodyPartHealth.headMaxHealth / 2)
-        {
-            bodyPartUI.transform.GetChild(2).GetChild(0).GetComponent<Image>().color = Color.yellow;
-        }
-        else
-        {
-            bodyPartUI.transform.GetChild(2).GetChild(0).GetComponent<Image>().color = Color.green;
-        }
-
-        if (enemyStats.foxEnemy.bodyPartHealth.torsoHealth <= 0)
-        {
-            bodyPartUI.transform.GetChild(2).GetChild(1).GetComponent<Image>().color = Color.gray;
-        }
-        else if (enemyStats.foxEnemy.bodyPartHealth.torsoHealth <= enemyStats.foxEnemy.bodyPartHealth.torsoMaxHealth / 4)
-        {
-            bodyPartUI.transform.GetChild(2).GetChild(1).GetComponent<Image>().color = Color.red;
-        }
-        else if (enemyStats.foxEnemy.bodyPartHealth.torsoHealth <= enemyStats.foxEnemy.bodyPartHealth.torsoMaxHealth / 2)
-        {
-            bodyPartUI.transform.GetChild(2).GetChild(1).GetComponent<Image>().color = Color.yellow;
-        }
-        else
-        {
-            bodyPartUI.transform.GetChild(2).GetChild(1).GetComponent<Image>().color = Color.green;
-        }
-
-
-        if (enemyStats.foxEnemy.bodyPartHealth.armsHealth <= 0)
-        {
-            bodyPartUI.transform.GetChild(2).GetChild(2).GetComponent<Image>().color = Color.gray;
-        }
-        else if (enemyStats.foxEnemy.bodyPartHealth.armsHealth <= enemyStats.foxEnemy.bodyPartHealth.armsMaxHealth / 4)
-        {
-            bodyPartUI.transform.GetChild(2).GetChild(2).GetComponent<Image>().color = Color.red;
-        }
-        else if (enemyStats.foxEnemy.bodyPartHealth.armsHealth <= enemyStats.foxEnemy.bodyPartHealth.armsMaxHealth / 2)
-        {
-            bodyPartUI.transform.GetChild(2).GetChild(2).GetComponent<Image>().color = Color.yellow;
-        }
-        else
-        {
-            bodyPartUI.transform.GetChild(2).GetChild(2).GetComponent<Image>().color = Color.green;
-        }
-
-        if (enemyStats.foxEnemy.bodyPartHealth.handsHealth <= 0)
-        {
-            bodyPartUI.transform.GetChild(2).GetChild(3).GetComponent<Image>().color = Color.gray;
-        }
-        else if (enemyStats.foxEnemy.bodyPartHealth.handsHealth <= enemyStats.foxEnemy.bodyPartHealth.handsMaxHealth / 4)
-        {
-            bodyPartUI.transform.GetChild(2).GetChild(3).GetComponent<Image>().color = Color.red;
-        }
-        else if (enemyStats.foxEnemy.bodyPartHealth.handsHealth <= enemyStats.foxEnemy.bodyPartHealth.handsMaxHealth / 2)
-        {
-            bodyPartUI.transform.GetChild(2).GetChild(3).GetComponent<Image>().color = Color.yellow;
-        }
-        else
-        {
-            bodyPartUI.transform.GetChild(2).GetChild(3).GetComponent<Image>().color = Color.green;
-        }
-
-        if (enemyStats.foxEnemy.bodyPartHealth.legsHealth <= 0)
-        {
-            bodyPartUI.transform.GetChild(2).GetChild(4).GetComponent<Image>().color = Color.gray;
-        }
-        else if (enemyStats.foxEnemy.bodyPartHealth.legsHealth <= enemyStats.foxEnemy.bodyPartHealth.legsMaxHealth / 4)
-        {
-            bodyPartUI.transform.GetChild(2).GetChild(4).GetComponent<Image>().color = Color.red;
-        }
-        else if (enemyStats.foxEnemy.bodyPartHealth.legsHealth <= enemyStats.foxEnemy.bodyPartHealth.legsMaxHealth / 2)
-        {
-            bodyPartUI.transform.GetChild(2).GetChild(4).GetComponent<Image>().color = Color.yellow;
-        }
-        else
-        {
-            bodyPartUI.transform.GetChild(2).GetChild(4).GetComponent<Image>().color = Color.green;
-        }
-
-        if (enemyStats.foxEnemy.bodyPartHealth.feetHealth <= 0)
-        {
-            bodyPartUI.transform.GetChild(2).GetChild(5).GetComponent<Image>().color = Color.gray;
-        }
-        else if (enemyStats.foxEnemy.bodyPartHealth.feetHealth <= enemyStats.foxEnemy.bodyPartHealth.feetMaxHealth / 4)
-        {
-            bodyPartUI.transform.GetChild(2).GetChild(5).GetComponent<Image>().color = Color.red;
-        }
-        else if (enemyStats.foxEnemy.bodyPartHealth.feetHealth <= enemyStats.foxEnemy.bodyPartHealth.feetMaxHealth / 2)
-        {
-            bodyPartUI.transform.GetChild(2).GetChild(5).GetComponent<Image>().color = Color.yellow;
-        }
-        else
-        {
-            bodyPartUI.transform.GetChild(2).GetChild(5).GetComponent<Image>().color = Color.green;
-        }
+        battleHUD.BodyPartColor(enemyStats.enemy.bodyPartHealth.headHealth, enemyStats.enemy.bodyPartHealth.headMaxHealth, 0, bodyPartUI);
+        battleHUD.BodyPartColor(enemyStats.enemy.bodyPartHealth.torsoHealth, enemyStats.enemy.bodyPartHealth.torsoMaxHealth, 1, bodyPartUI);
+        battleHUD.BodyPartColor(enemyStats.enemy.bodyPartHealth.armsHealth, enemyStats.enemy.bodyPartHealth.armsMaxHealth, 2, bodyPartUI);
+        battleHUD.BodyPartColor(enemyStats.enemy.bodyPartHealth.handsHealth, enemyStats.enemy.bodyPartHealth.handsMaxHealth, 3, bodyPartUI);
+        battleHUD.BodyPartColor(enemyStats.enemy.bodyPartHealth.legsHealth, enemyStats.enemy.bodyPartHealth.legsMaxHealth, 4, bodyPartUI);
+        battleHUD.BodyPartColor(enemyStats.enemy.bodyPartHealth.feetHealth, enemyStats.enemy.bodyPartHealth.feetMaxHealth, 5, bodyPartUI);
 
     }
     void PlayerColorTargetSystem() 
@@ -712,108 +696,12 @@ public class PlayerCombat : MonoBehaviour
         bodyPartUI.transform.GetChild(1).GetComponent<Slider>().maxValue = playerStats.player.maxHealth;
         bodyPartUI.transform.GetChild(1).GetComponent<Slider>().value = playerStats.player.currentHealth;
 
-        if (playerStats.player.bodyPartHealth.headHealth <= 0)
-        {
-            bodyPartUI.transform.GetChild(2).GetChild(0).GetComponent<Image>().color = Color.gray;
-        }
-        else if (playerStats.player.bodyPartHealth.headHealth <= playerStats.player.bodyPartHealth.headMaxHealth / 4)
-        {
-            bodyPartUI.transform.GetChild(2).GetChild(0).GetComponent<Image>().color = Color.red;
-        }
-        else if (playerStats.player.bodyPartHealth.headHealth <= playerStats.player.bodyPartHealth.headMaxHealth / 2)
-        {
-            bodyPartUI.transform.GetChild(2).GetChild(0).GetComponent<Image>().color = Color.yellow;
-        }
-        else
-        {
-            bodyPartUI.transform.GetChild(2).GetChild(0).GetComponent<Image>().color = Color.green;
-        }
-
-        if (playerStats.player.bodyPartHealth.torsoHealth <= 0)
-        {
-            bodyPartUI.transform.GetChild(2).GetChild(1).GetComponent<Image>().color = Color.gray;
-        }
-        else if (playerStats.player.bodyPartHealth.torsoHealth <= playerStats.player.bodyPartHealth.torsoMaxHealth / 4)
-        {
-            bodyPartUI.transform.GetChild(2).GetChild(1).GetComponent<Image>().color = Color.red;
-        }
-        else if (playerStats.player.bodyPartHealth.torsoHealth <= playerStats.player.bodyPartHealth.torsoMaxHealth / 2)
-        {
-            bodyPartUI.transform.GetChild(2).GetChild(1).GetComponent<Image>().color = Color.yellow;
-        }
-        else
-        {
-            bodyPartUI.transform.GetChild(2).GetChild(1).GetComponent<Image>().color = Color.green;
-        }
-
-
-        if (playerStats.player.bodyPartHealth.armsHealth <= 0)
-        {
-            bodyPartUI.transform.GetChild(2).GetChild(2).GetComponent<Image>().color = Color.gray;
-        }
-        else if (playerStats.player.bodyPartHealth.armsHealth <= playerStats.player.bodyPartHealth.armsMaxHealth / 4)
-        {
-            bodyPartUI.transform.GetChild(2).GetChild(2).GetComponent<Image>().color = Color.red;
-        }
-        else if (playerStats.player.bodyPartHealth.armsHealth <= playerStats.player.bodyPartHealth.armsMaxHealth / 2)
-        {
-            bodyPartUI.transform.GetChild(2).GetChild(2).GetComponent<Image>().color = Color.yellow;
-        }
-        else
-        {
-            bodyPartUI.transform.GetChild(2).GetChild(2).GetComponent<Image>().color = Color.green;
-        }
-
-        if (playerStats.player.bodyPartHealth.handsHealth <= 0)
-        {
-            bodyPartUI.transform.GetChild(2).GetChild(3).GetComponent<Image>().color = Color.gray;
-        }
-        else if (playerStats.player.bodyPartHealth.handsHealth <= playerStats.player.bodyPartHealth.handsMaxHealth / 4)
-        {
-            bodyPartUI.transform.GetChild(2).GetChild(3).GetComponent<Image>().color = Color.red;
-        }
-        else if (playerStats.player.bodyPartHealth.handsHealth <= playerStats.player.bodyPartHealth.handsMaxHealth / 2)
-        {
-            bodyPartUI.transform.GetChild(2).GetChild(3).GetComponent<Image>().color = Color.yellow;
-        }
-        else
-        {
-            bodyPartUI.transform.GetChild(2).GetChild(3).GetComponent<Image>().color = Color.green;
-        }
-
-        if (playerStats.player.bodyPartHealth.legsHealth <= 0)
-        {
-            bodyPartUI.transform.GetChild(2).GetChild(4).GetComponent<Image>().color = Color.gray;
-        }
-        else if (playerStats.player.bodyPartHealth.legsHealth <= playerStats.player.bodyPartHealth.legsMaxHealth / 4)
-        {
-            bodyPartUI.transform.GetChild(2).GetChild(4).GetComponent<Image>().color = Color.red;
-        }
-        else if (playerStats.player.bodyPartHealth.legsHealth <= playerStats.player.bodyPartHealth.legsMaxHealth / 2)
-        {
-            bodyPartUI.transform.GetChild(2).GetChild(4).GetComponent<Image>().color = Color.yellow;
-        }
-        else
-        {
-            bodyPartUI.transform.GetChild(2).GetChild(4).GetComponent<Image>().color = Color.green;
-        }
-
-        if (playerStats.player.bodyPartHealth.feetHealth <= 0)
-        {
-            bodyPartUI.transform.GetChild(2).GetChild(5).GetComponent<Image>().color = Color.gray;
-        }
-        else if (playerStats.player.bodyPartHealth.feetHealth <= playerStats.player.bodyPartHealth.feetMaxHealth / 4)
-        {
-            bodyPartUI.transform.GetChild(2).GetChild(5).GetComponent<Image>().color = Color.red;
-        }
-        else if (playerStats.player.bodyPartHealth.feetHealth <= playerStats.player.bodyPartHealth.feetMaxHealth / 2)
-        {
-            bodyPartUI.transform.GetChild(2).GetChild(5).GetComponent<Image>().color = Color.yellow;
-        }
-        else
-        {
-            bodyPartUI.transform.GetChild(2).GetChild(5).GetComponent<Image>().color = Color.green;
-        }
+        battleHUD.BodyPartColor(playerStats.player.bodyPartHealth.headHealth, playerStats.player.bodyPartHealth.headMaxHealth, 0, bodyPartUI);
+        battleHUD.BodyPartColor(playerStats.player.bodyPartHealth.torsoHealth, playerStats.player.bodyPartHealth.torsoMaxHealth, 1, bodyPartUI);
+        battleHUD.BodyPartColor(playerStats.player.bodyPartHealth.armsHealth, playerStats.player.bodyPartHealth.armsMaxHealth, 2, bodyPartUI);
+        battleHUD.BodyPartColor(playerStats.player.bodyPartHealth.handsHealth, playerStats.player.bodyPartHealth.handsMaxHealth, 3, bodyPartUI);
+        battleHUD.BodyPartColor(playerStats.player.bodyPartHealth.legsHealth, playerStats.player.bodyPartHealth.legsMaxHealth, 4, bodyPartUI);
+        battleHUD.BodyPartColor(playerStats.player.bodyPartHealth.feetHealth, playerStats.player.bodyPartHealth.feetMaxHealth, 5, bodyPartUI);
     }
     public void ChooseSpellTarget(int spellChosen) 
     {
@@ -821,353 +709,41 @@ public class PlayerCombat : MonoBehaviour
         enemyTarget = battleSystem.enemyTarget;
         magicSpellList.SetActive(false);
         spellChoiceActive = false;
-        spellTargeting = true;
+        targeting = true;
         cameraController.Play("TargetingEnemy");
 
     }
-    void ChangeStance(Stances newStance) 
-    {
-        stance = newStance;
-
-        switch (stance)
-        {
-            case Stances.Physical:
-                PlayerUI.transform.GetChild(2).GetChild(1).GetComponent<Image>().sprite = physicalImage;
-                break;
-            case Stances.Magic:
-                PlayerUI.transform.GetChild(2).GetChild(1).GetComponent<Image>().sprite = magicImage;
-                break;
-            case Stances.Alchemy:
-                PlayerUI.transform.GetChild(2).GetChild(1).GetComponent<Image>().sprite = alchemyImage;
-                break;
-            case Stances.Overdrive:
-                PlayerUI.transform.GetChild(2).GetChild(1).GetComponent<Image>().sprite = overdriveImage;
-                break;
-        }
-
-        changeStanceActive = false;
-        firstPress = true;
-    }
     private void BuffDebuffs(bool player = false)
     {
-        var image = new Color();
-        if (player)
-        {
-            PlayerStats playerStats = GetComponent<PlayerStats>();
-            if (playerStats.player.buffs.headDebuff)
-            {
-                image = bodyPartUI.transform.GetChild(3).GetChild(0).GetChild(0).GetComponent<Image>().color;
-                image.a = 1f;
-                bodyPartUI.transform.GetChild(3).GetChild(0).GetChild(0).GetComponent<Image>().color = image;
-            }
-            else
-            {
-                image = bodyPartUI.transform.GetChild(3).GetChild(0).GetChild(0).GetComponent<Image>().color;
-                image.a = 0.3f;
-                bodyPartUI.transform.GetChild(3).GetChild(0).GetChild(0).GetComponent<Image>().color = image;
-            }
+        PlayerStats playerStats = GetComponent<PlayerStats>();
+        EnemyStats enemyStats = enemyTarget.GetComponent<EnemyStats>();
 
+        battleHUD.BuffDebuffColor(playerStats.player.buffs.headDebuff, bodyPartUI, 3, 0);
+        battleHUD.BuffDebuffColor(playerStats.player.buffs.torsoDebuff, bodyPartUI, 3, 1);
+        battleHUD.BuffDebuffColor(playerStats.player.buffs.armsDebuff, bodyPartUI, 3, 2);
+        battleHUD.BuffDebuffColor(playerStats.player.buffs.handsDebuff, bodyPartUI, 3, 3);
+        battleHUD.BuffDebuffColor(playerStats.player.buffs.legsDebuff, bodyPartUI, 3, 4);
+        battleHUD.BuffDebuffColor(playerStats.player.buffs.feetDebuff, bodyPartUI, 3, 5);
+        battleHUD.BuffDebuffColor(enemyStats.enemy.buffs.headDebuff, bodyPartUI, 3, 0);
+        battleHUD.BuffDebuffColor(enemyStats.enemy.buffs.headDebuff, bodyPartUI, 3, 1);
+        battleHUD.BuffDebuffColor(enemyStats.enemy.buffs.headDebuff, bodyPartUI, 3, 2);
+        battleHUD.BuffDebuffColor(enemyStats.enemy.buffs.headDebuff, bodyPartUI, 3, 3);
+        battleHUD.BuffDebuffColor(enemyStats.enemy.buffs.headDebuff, bodyPartUI, 3, 4);
+        battleHUD.BuffDebuffColor(enemyStats.enemy.buffs.headDebuff, bodyPartUI, 3, 5);
 
-            if (playerStats.player.buffs.torsoDebuff)
-            {
-                image = bodyPartUI.transform.GetChild(3).GetChild(1).GetChild(0).GetComponent<Image>().color;
-                image.a = 1f;
-                bodyPartUI.transform.GetChild(3).GetChild(1).GetChild(0).GetComponent<Image>().color = image;
-            }
-            else
-            {
-                image = bodyPartUI.transform.GetChild(3).GetChild(1).GetChild(0).GetComponent<Image>().color;
-                image.a = 0.3f;
-                bodyPartUI.transform.GetChild(3).GetChild(1).GetChild(0).GetComponent<Image>().color = image;
-            }
-
-            if (playerStats.player.buffs.armsDebuff)
-            {
-                image = bodyPartUI.transform.GetChild(3).GetChild(2).GetChild(0).GetComponent<Image>().color;
-                image.a = 1f;
-                bodyPartUI.transform.GetChild(3).GetChild(2).GetChild(0).GetComponent<Image>().color = image;
-            }
-            else
-            {
-                image = bodyPartUI.transform.GetChild(3).GetChild(2).GetChild(0).GetComponent<Image>().color;
-                image.a = 0.3f;
-                bodyPartUI.transform.GetChild(3).GetChild(2).GetChild(0).GetComponent<Image>().color = image;
-            }
-
-            if (playerStats.player.buffs.handsDebuff)
-            {
-                image = bodyPartUI.transform.GetChild(3).GetChild(3).GetChild(0).GetComponent<Image>().color;
-                image.a = 1f;
-                bodyPartUI.transform.GetChild(3).GetChild(3).GetChild(0).GetComponent<Image>().color = image;
-            }
-            else
-            {
-                image = bodyPartUI.transform.GetChild(3).GetChild(3).GetChild(0).GetComponent<Image>().color;
-                image.a = 0.3f;
-                bodyPartUI.transform.GetChild(3).GetChild(3).GetChild(0).GetComponent<Image>().color = image;
-            }
-
-            if (playerStats.player.buffs.legsDebuff)
-            {
-                image = bodyPartUI.transform.GetChild(3).GetChild(4).GetChild(0).GetComponent<Image>().color;
-                image.a = 1f;
-                bodyPartUI.transform.GetChild(3).GetChild(4).GetChild(0).GetComponent<Image>().color = image;
-            }
-            else
-            {
-                image = bodyPartUI.transform.GetChild(3).GetChild(4).GetChild(0).GetComponent<Image>().color;
-                image.a = 0.3f;
-                bodyPartUI.transform.GetChild(3).GetChild(4).GetChild(0).GetComponent<Image>().color = image;
-            }
-
-            if (playerStats.player.buffs.feetDebuff)
-            {
-                image = bodyPartUI.transform.GetChild(3).GetChild(5).GetChild(0).GetComponent<Image>().color;
-                image.a = 1f;
-                bodyPartUI.transform.GetChild(3).GetChild(5).GetChild(0).GetComponent<Image>().color = image;
-            }
-            else
-            {
-                image = bodyPartUI.transform.GetChild(3).GetChild(5).GetChild(0).GetComponent<Image>().color;
-                image.a = 0.3f;
-                bodyPartUI.transform.GetChild(3).GetChild(5).GetChild(0).GetComponent<Image>().color = image;
-            }
-
-            if (playerStats.player.buffs.Paralysed)
-            {
-                image = bodyPartUI.transform.GetChild(4).GetChild(0).GetChild(0).GetComponent<Image>().color;
-                image.a = 1f;
-                bodyPartUI.transform.GetChild(4).GetChild(0).GetChild(0).GetComponent<Image>().color = image;
-            }
-            else
-            {
-                image = bodyPartUI.transform.GetChild(4).GetChild(0).GetChild(0).GetComponent<Image>().color;
-                image.a = 0.3f;
-                bodyPartUI.transform.GetChild(4).GetChild(0).GetChild(0).GetComponent<Image>().color = image;
-            }
-
-            if (playerStats.player.buffs.Clouded)
-            {
-                image = bodyPartUI.transform.GetChild(4).GetChild(1).GetChild(0).GetComponent<Image>().color;
-                image.a = 1f;
-                bodyPartUI.transform.GetChild(4).GetChild(1).GetChild(0).GetComponent<Image>().color = image;
-            }
-            else
-            {
-                image = bodyPartUI.transform.GetChild(4).GetChild(1).GetChild(0).GetComponent<Image>().color;
-                image.a = 0.3f;
-                bodyPartUI.transform.GetChild(4).GetChild(1).GetChild(0).GetComponent<Image>().color = image;
-            }
-
-            if (playerStats.player.buffs.Slowed)
-            {
-                image = bodyPartUI.transform.GetChild(4).GetChild(2).GetChild(0).GetComponent<Image>().color;
-                image.a = 1f;
-                bodyPartUI.transform.GetChild(4).GetChild(2).GetChild(0).GetComponent<Image>().color = image;
-            }
-            else
-            {
-                image = bodyPartUI.transform.GetChild(4).GetChild(2).GetChild(0).GetComponent<Image>().color;
-                image.a = 0.3f;
-                bodyPartUI.transform.GetChild(4).GetChild(2).GetChild(0).GetComponent<Image>().color = image;
-            }
-
-            if (playerStats.player.buffs.Scared)
-            {
-                image = bodyPartUI.transform.GetChild(4).GetChild(3).GetChild(0).GetComponent<Image>().color;
-                image.a = 1f;
-                bodyPartUI.transform.GetChild(4).GetChild(3).GetChild(0).GetComponent<Image>().color = image;
-            }
-            else
-            {
-                image = bodyPartUI.transform.GetChild(4).GetChild(3).GetChild(0).GetComponent<Image>().color;
-                image.a = 0.3f;
-                bodyPartUI.transform.GetChild(4).GetChild(3).GetChild(0).GetComponent<Image>().color = image;
-            }
-
-            if (playerStats.player.buffs.Unatunned)
-            {
-                image = bodyPartUI.transform.GetChild(4).GetChild(4).GetChild(0).GetComponent<Image>().color;
-                image.a = 1f;
-                bodyPartUI.transform.GetChild(4).GetChild(4).GetChild(0).GetComponent<Image>().color = image;
-            }
-            else
-            {
-                image = bodyPartUI.transform.GetChild(4).GetChild(4).GetChild(0).GetComponent<Image>().color;
-                image.a = 0.3f;
-                bodyPartUI.transform.GetChild(4).GetChild(4).GetChild(0).GetComponent<Image>().color = image;
-            }
-
-            if (playerStats.player.buffs.Unbalanced)
-            {
-                image = bodyPartUI.transform.GetChild(4).GetChild(5).GetChild(0).GetComponent<Image>().color;
-                image.a = 1f;
-                bodyPartUI.transform.GetChild(4).GetChild(5).GetChild(0).GetComponent<Image>().color = image;
-            }
-            else
-            {
-                image = bodyPartUI.transform.GetChild(4).GetChild(5).GetChild(0).GetComponent<Image>().color;
-                image.a = 0.3f;
-                bodyPartUI.transform.GetChild(4).GetChild(5).GetChild(0).GetComponent<Image>().color = image;
-            }
-        }
-        else
-        {
-            EnemyStats enemyStats = enemyTarget.GetComponent<EnemyStats>();
-
-            if (enemyStats.foxEnemy.buffs.headDebuff)
-            {
-                image = bodyPartUI.transform.GetChild(3).GetChild(0).GetChild(0).GetComponent<Image>().color;
-                image.a = 1f;
-                bodyPartUI.transform.GetChild(3).GetChild(0).GetChild(0).GetComponent<Image>().color = image;
-            }
-            else
-            {
-                image = bodyPartUI.transform.GetChild(3).GetChild(0).GetChild(0).GetComponent<Image>().color;
-                image.a = 0.3f;
-                bodyPartUI.transform.GetChild(3).GetChild(0).GetChild(0).GetComponent<Image>().color = image;
-            }
-
-
-            if (enemyStats.foxEnemy.buffs.torsoDebuff)
-            {
-                image = bodyPartUI.transform.GetChild(3).GetChild(1).GetChild(0).GetComponent<Image>().color;
-                image.a = 1f;
-                bodyPartUI.transform.GetChild(3).GetChild(1).GetChild(0).GetComponent<Image>().color = image;
-            }
-            else
-            {
-                image = bodyPartUI.transform.GetChild(3).GetChild(1).GetChild(0).GetComponent<Image>().color;
-                image.a = 0.3f;
-                bodyPartUI.transform.GetChild(3).GetChild(1).GetChild(0).GetComponent<Image>().color = image;
-            }
-
-            if (enemyStats.foxEnemy.buffs.armsDebuff)
-            {
-                image = bodyPartUI.transform.GetChild(3).GetChild(2).GetChild(0).GetComponent<Image>().color;
-                image.a = 1f;
-                bodyPartUI.transform.GetChild(3).GetChild(2).GetChild(0).GetComponent<Image>().color = image;
-            }
-            else
-            {
-                image = bodyPartUI.transform.GetChild(3).GetChild(2).GetChild(0).GetComponent<Image>().color;
-                image.a = 0.3f;
-                bodyPartUI.transform.GetChild(3).GetChild(2).GetChild(0).GetComponent<Image>().color = image;
-            }
-
-            if (enemyStats.foxEnemy.buffs.handsDebuff)
-            {
-                image = bodyPartUI.transform.GetChild(3).GetChild(3).GetChild(0).GetComponent<Image>().color;
-                image.a = 1f;
-                bodyPartUI.transform.GetChild(3).GetChild(3).GetChild(0).GetComponent<Image>().color = image;
-            }
-            else
-            {
-                image = bodyPartUI.transform.GetChild(3).GetChild(3).GetChild(0).GetComponent<Image>().color;
-                image.a = 0.3f;
-                bodyPartUI.transform.GetChild(3).GetChild(3).GetChild(0).GetComponent<Image>().color = image;
-            }
-
-            if (enemyStats.foxEnemy.buffs.legsDebuff)
-            {
-                image = bodyPartUI.transform.GetChild(3).GetChild(4).GetChild(0).GetComponent<Image>().color;
-                image.a = 1f;
-                bodyPartUI.transform.GetChild(3).GetChild(4).GetChild(0).GetComponent<Image>().color = image;
-            }
-            else
-            {
-                image = bodyPartUI.transform.GetChild(3).GetChild(4).GetChild(0).GetComponent<Image>().color;
-                image.a = 0.3f;
-                bodyPartUI.transform.GetChild(3).GetChild(4).GetChild(0).GetComponent<Image>().color = image;
-            }
-
-            if (enemyStats.foxEnemy.buffs.feetDebuff)
-            {
-                image = bodyPartUI.transform.GetChild(3).GetChild(5).GetChild(0).GetComponent<Image>().color;
-                image.a = 1f;
-                bodyPartUI.transform.GetChild(3).GetChild(5).GetChild(0).GetComponent<Image>().color = image;
-            }
-            else
-            {
-                image = bodyPartUI.transform.GetChild(3).GetChild(5).GetChild(0).GetComponent<Image>().color;
-                image.a = 0.3f;
-                bodyPartUI.transform.GetChild(3).GetChild(5).GetChild(0).GetComponent<Image>().color = image;
-            }
-
-            if (enemyStats.foxEnemy.buffs.Paralysed)
-            {
-                image = bodyPartUI.transform.GetChild(4).GetChild(0).GetChild(0).GetComponent<Image>().color;
-                image.a = 1f;
-                bodyPartUI.transform.GetChild(4).GetChild(0).GetChild(0).GetComponent<Image>().color = image;
-            }
-            else
-            {
-                image = bodyPartUI.transform.GetChild(4).GetChild(0).GetChild(0).GetComponent<Image>().color;
-                image.a = 0.3f;
-                bodyPartUI.transform.GetChild(4).GetChild(0).GetChild(0).GetComponent<Image>().color = image;
-            }
-
-            if (enemyStats.foxEnemy.buffs.Clouded)
-            {
-                image = bodyPartUI.transform.GetChild(4).GetChild(1).GetChild(0).GetComponent<Image>().color;
-                image.a = 1f;
-                bodyPartUI.transform.GetChild(4).GetChild(1).GetChild(0).GetComponent<Image>().color = image;
-            }
-            else
-            {
-                image = bodyPartUI.transform.GetChild(4).GetChild(1).GetChild(0).GetComponent<Image>().color;
-                image.a = 0.3f;
-                bodyPartUI.transform.GetChild(4).GetChild(1).GetChild(0).GetComponent<Image>().color = image;
-            }
-
-            if (enemyStats.foxEnemy.buffs.Slowed)
-            {
-                image = bodyPartUI.transform.GetChild(4).GetChild(2).GetChild(0).GetComponent<Image>().color;
-                image.a = 1f;
-                bodyPartUI.transform.GetChild(4).GetChild(2).GetChild(0).GetComponent<Image>().color = image;
-            } else
-            {
-                image = bodyPartUI.transform.GetChild(4).GetChild(2).GetChild(0).GetComponent<Image>().color;
-                image.a = 0.3f;
-                bodyPartUI.transform.GetChild(4).GetChild(2).GetChild(0).GetComponent<Image>().color = image;
-            }
-
-            if (enemyStats.foxEnemy.buffs.Scared)
-            {
-                image = bodyPartUI.transform.GetChild(4).GetChild(3).GetChild(0).GetComponent<Image>().color;
-                image.a = 1f;
-                bodyPartUI.transform.GetChild(4).GetChild(3).GetChild(0).GetComponent<Image>().color = image;
-            } else
-            {
-                image = bodyPartUI.transform.GetChild(4).GetChild(3).GetChild(0).GetComponent<Image>().color;
-                image.a = 0.3f;
-                bodyPartUI.transform.GetChild(4).GetChild(3).GetChild(0).GetComponent<Image>().color = image;
-            }
-
-            if (enemyStats.foxEnemy.buffs.Unatunned)
-            {
-                image = bodyPartUI.transform.GetChild(4).GetChild(4).GetChild(0).GetComponent<Image>().color;
-                image.a = 1f;
-                bodyPartUI.transform.GetChild(4).GetChild(4).GetChild(0).GetComponent<Image>().color = image;
-            } else
-            {
-                image = bodyPartUI.transform.GetChild(4).GetChild(4).GetChild(0).GetComponent<Image>().color;
-                image.a = 0.3f;
-                bodyPartUI.transform.GetChild(4).GetChild(4).GetChild(0).GetComponent<Image>().color = image;
-            }
-
-            if (enemyStats.foxEnemy.buffs.Unbalanced)
-            {
-                image = bodyPartUI.transform.GetChild(4).GetChild(5).GetChild(0).GetComponent<Image>().color;
-                image.a = 1f;
-                bodyPartUI.transform.GetChild(4).GetChild(5).GetChild(0).GetComponent<Image>().color = image;
-            } else
-            {
-                image = bodyPartUI.transform.GetChild(4).GetChild(5).GetChild(0).GetComponent<Image>().color;
-                image.a = 0.3f;
-                bodyPartUI.transform.GetChild(4).GetChild(5).GetChild(0).GetComponent<Image>().color = image;
-            }
-        }
+        battleHUD.BuffDebuffColor(playerStats.player.buffs.Paralysed, bodyPartUI, 4, 0);
+        battleHUD.BuffDebuffColor(playerStats.player.buffs.Clouded, bodyPartUI, 4, 1);
+        battleHUD.BuffDebuffColor(playerStats.player.buffs.Slowed, bodyPartUI, 4, 2);
+        battleHUD.BuffDebuffColor(playerStats.player.buffs.Scared, bodyPartUI, 4, 3);
+        battleHUD.BuffDebuffColor(playerStats.player.buffs.Unatunned, bodyPartUI, 4, 4);
+        battleHUD.BuffDebuffColor(playerStats.player.buffs.Unbalanced, bodyPartUI, 4, 5);
+        battleHUD.BuffDebuffColor(enemyStats.enemy.buffs.Paralysed, bodyPartUI, 4, 0);
+        battleHUD.BuffDebuffColor(enemyStats.enemy.buffs.Clouded, bodyPartUI, 4, 1);
+        battleHUD.BuffDebuffColor(enemyStats.enemy.buffs.Slowed, bodyPartUI, 4, 2);
+        battleHUD.BuffDebuffColor(enemyStats.enemy.buffs.Scared, bodyPartUI, 4, 3);
+        battleHUD.BuffDebuffColor(enemyStats.enemy.buffs.Unatunned, bodyPartUI, 4, 4);
+        battleHUD.BuffDebuffColor(enemyStats.enemy.buffs.Unbalanced, bodyPartUI, 4, 5);
+        
     }
     IEnumerator MyriadOverdrive() 
     {
@@ -1175,7 +751,6 @@ public class PlayerCombat : MonoBehaviour
         yield return new WaitForSeconds(5);
         OverdriveText.SetActive(false);
         MyriadStrikes = false;
-        firstPress = false;
         playerAttacks.MyriadStrikes(enemyTarget,hits);
         cameraController.Play("BattleCamera");
         battleSystem.ChangeState(BattleState.EnemyTurn);
@@ -1198,6 +773,33 @@ public class PlayerCombat : MonoBehaviour
             targetRenderer = currRenderer;
         }
     
+    }
+    void ChangeStance(Stances newStance)
+    {
+        stance = newStance;
+
+        switch (stance)
+        {
+            case Stances.Physical:
+                PlayerUI.transform.GetChild(2).GetChild(1).GetComponent<Image>().sprite = physicalImage;
+                uiState = UIStates.PhysicalNormal;
+                break;
+            case Stances.Magic:
+                PlayerUI.transform.GetChild(2).GetChild(1).GetComponent<Image>().sprite = magicImage;
+                uiState = UIStates.MagicNormal;
+                break;
+            case Stances.Alchemy:
+                PlayerUI.transform.GetChild(2).GetChild(1).GetComponent<Image>().sprite = alchemyImage;
+                uiState = UIStates.AlchemyNormal;
+                break;
+            case Stances.Overdrive:
+                PlayerUI.transform.GetChild(2).GetChild(1).GetComponent<Image>().sprite = overdriveImage;
+                uiState = UIStates.OverdriveNormal;
+                break;
+        }
+
+        changeStanceActive = false;
+        
     }
 
 }

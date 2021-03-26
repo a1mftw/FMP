@@ -3,58 +3,17 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PlayerStats : MonoBehaviour
+public class PlayerStats : CharactersClass
 {
-    public struct BuffDebuff
-    {
-        public bool headDebuff;
-        public bool torsoDebuff;
-        public bool armsDebuff;
-        public bool handsDebuff;
-        public bool legsDebuff;
-        public bool feetDebuff;
-        public bool Paralysed;
-        public bool Clouded;
-        public bool Slowed;
-        public bool Scared;
-        public bool Unatunned;
-        public bool Unbalanced;
-        public bool Scorched;
-        public bool Burning;
-        public bool Chilled;
-        public bool Freezing;
-        public bool Wet;
-        public bool Drowning;
-        public bool Dirty;
-        public bool Poisoned;
-        public bool Shocked;
-        public bool Electrified;
-
-
-    }
-    public struct BodyPartHealth
-    {
-        public int headHealth;
-        public int headMaxHealth;
-        public int torsoHealth;
-        public int torsoMaxHealth;
-        public int armsHealth;
-        public int armsMaxHealth;
-        public int handsHealth;
-        public int handsMaxHealth;
-        public int legsHealth;
-        public int legsMaxHealth;
-        public int feetHealth;
-        public int feetMaxHealth;
-
-    }
-    public struct Player
+    public struct Characters
     {
         public int playerLevel;
         public int baseDamage;
         public int baseArmor;
         public int maxHealth;
         public int currentHealth;
+        public int maxMP;
+        public int currentMp;
         public BodyPartHealth bodyPartHealth;
         public BuffDebuff buffs;
     }
@@ -63,13 +22,13 @@ public class PlayerStats : MonoBehaviour
         player,
     }
 
-    public Players playableChar;
+    public Players playableChars;
 
-    public Player player;
+    public Characters player;
 
     private void Start()
     {
-        switch (playableChar)
+        switch (playableChars)
         {
             case Players.player:
                 SetPlayerValues();
@@ -84,6 +43,8 @@ public class PlayerStats : MonoBehaviour
         player.playerLevel = 1;
         player.baseDamage = 10;
         player.baseArmor = 5;
+        player.maxMP = 200;
+        player.currentMp = player.maxMP;
         player.maxHealth = 200;
         player.currentHealth = player.maxHealth;
         player.bodyPartHealth.headMaxHealth = 40;

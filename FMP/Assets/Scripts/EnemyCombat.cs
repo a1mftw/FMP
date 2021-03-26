@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Reflection;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -36,13 +37,25 @@ public class EnemyCombat : MonoBehaviour
         {
             Debug.Log("Enemy Turn");
 
-            if (enemyStats.foxEnemy.buffs.Burning || enemyStats.foxEnemy.buffs.Drowning || enemyStats.foxEnemy.buffs.Freezing || enemyStats.foxEnemy.buffs.Poisoned || enemyStats.foxEnemy.buffs.Electrified)
+            if (enemyStats.enemy.buffs.Burning || enemyStats.enemy.buffs.Drowning || enemyStats.enemy.buffs.Freezing || enemyStats.enemy.buffs.Poisoned || enemyStats.enemy.buffs.Electrified)
             {
-                enemyStats.foxEnemy.currentHealth -= Mathf.RoundToInt(enemyStats.foxEnemy.maxHealth * 0.05f);
+                enemyStats.enemy.currentHealth -= Mathf.RoundToInt(enemyStats.enemy.maxHealth * 0.05f);
             }
 
-            StartCoroutine("TailSwipe");
+            if (!enemyStats.enemy.buffs.Clouded)
+            {
+                StartCoroutine("TailSwipe");
+                RemoveBuffs();
+            }
+            else
+            {
+                RemoveBuffs();
+                battleSystem.ChangeState(BattleState.PlayerTurn);
+            }
+
+
             
+
         }
     }
 
@@ -76,7 +89,14 @@ public class EnemyCombat : MonoBehaviour
         foxAnimation.SetBool("Running", false);
         foxAnimation.SetBool("TailSwipe", true);
         yield return new WaitForSeconds(1);
-        playerTarget.GetComponent<PlayerAttacks>().TakeTailSwipeDamage(enemyStats.foxEnemy.baseDamage, PlayerAttacks.Target.Torso);
+        if (enemyStats.enemy.buffs.Unbalanced)
+        {
+            playerTarget.GetComponent<PlayerAttacks>().TakeTailSwipeDamage(0, PlayerAttacks.Target.Torso);
+        }
+        else
+        {
+            playerTarget.GetComponent<PlayerAttacks>().TakeTailSwipeDamage(enemyStats.enemy.baseDamage, PlayerAttacks.Target.Torso);
+        } 
         foxAnimation.SetBool("TailSwipe", false);
         gameObject.transform.position = returnPos;
         battleSystem.ChangeState(BattleState.PlayerTurn);
@@ -105,7 +125,7 @@ public class EnemyCombat : MonoBehaviour
         foxAnimation.SetBool("Running", false);
         foxAnimation.SetBool("Claw", true);
         yield return new WaitForSeconds(1);
-        playerTarget.GetComponent<PlayerAttacks>().TakeTailSwipeDamage(enemyStats.foxEnemy.baseDamage, PlayerAttacks.Target.Torso);
+        playerTarget.GetComponent<PlayerAttacks>().TakeTailSwipeDamage(enemyStats.enemy.baseDamage, PlayerAttacks.Target.Torso);
         foxAnimation.SetBool("Claw", false);
         gameObject.transform.position = returnPos;
         battleSystem.ChangeState(BattleState.PlayerTurn);
@@ -118,97 +138,97 @@ public class EnemyCombat : MonoBehaviour
 
     public void TakeBludgeoningDamage(int damage,PlayerAttacks.Target target) 
     {
-        int damageDealt = damage - enemyStats.foxEnemy.baseArmor;
+        int damageDealt = damage - enemyStats.enemy.baseArmor;
 
         switch (target)
         {
             case PlayerAttacks.Target.Head:
 
-                if (enemyStats.foxEnemy.bodyPartHealth.headHealth - damageDealt<=0)
+                if (enemyStats.enemy.bodyPartHealth.headHealth - damageDealt<=0)
                 {
-                    enemyStats.foxEnemy.bodyPartHealth.headHealth = 0;
+                    enemyStats.enemy.bodyPartHealth.headHealth = 0;
                     ApplyBodyPartDebuff(target);
                 }
                 else
                 {
-                    enemyStats.foxEnemy.bodyPartHealth.headHealth -= damageDealt;
+                    enemyStats.enemy.bodyPartHealth.headHealth -= damageDealt;
                 }
                 
                 break;
             case PlayerAttacks.Target.Torso:
 
-                if (enemyStats.foxEnemy.bodyPartHealth.torsoHealth - damageDealt <= 0)
+                if (enemyStats.enemy.bodyPartHealth.torsoHealth - damageDealt <= 0)
                 {
-                    enemyStats.foxEnemy.bodyPartHealth.torsoHealth = 0;
+                    enemyStats.enemy.bodyPartHealth.torsoHealth = 0;
                     ApplyBodyPartDebuff(target);
                 }
                 else
                 {
-                    enemyStats.foxEnemy.bodyPartHealth.torsoHealth -= damageDealt;
+                    enemyStats.enemy.bodyPartHealth.torsoHealth -= damageDealt;
                 }
                 break;
 
             case PlayerAttacks.Target.Arms:
 
-                if (enemyStats.foxEnemy.bodyPartHealth.armsHealth - damageDealt <= 0)
+                if (enemyStats.enemy.bodyPartHealth.armsHealth - damageDealt <= 0)
                 {
-                    enemyStats.foxEnemy.bodyPartHealth.armsHealth = 0;
+                    enemyStats.enemy.bodyPartHealth.armsHealth = 0;
                     ApplyBodyPartDebuff(target);
                 }
                 else
                 {
-                    enemyStats.foxEnemy.bodyPartHealth.armsHealth -= damageDealt;
+                    enemyStats.enemy.bodyPartHealth.armsHealth -= damageDealt;
                 }
                 break;
 
             case PlayerAttacks.Target.Hands:
 
-                if (enemyStats.foxEnemy.bodyPartHealth.handsHealth - damageDealt <= 0)
+                if (enemyStats.enemy.bodyPartHealth.handsHealth - damageDealt <= 0)
                 {
-                    enemyStats.foxEnemy.bodyPartHealth.handsHealth = 0;
+                    enemyStats.enemy.bodyPartHealth.handsHealth = 0;
                     ApplyBodyPartDebuff(target);
                 }
                 else
                 {
-                    enemyStats.foxEnemy.bodyPartHealth.handsHealth -= damageDealt;
+                    enemyStats.enemy.bodyPartHealth.handsHealth -= damageDealt;
                 }
                 break;
             case PlayerAttacks.Target.Legs:
 
-                if (enemyStats.foxEnemy.bodyPartHealth.legsHealth - damageDealt <= 0)
+                if (enemyStats.enemy.bodyPartHealth.legsHealth - damageDealt <= 0)
                 {
-                    enemyStats.foxEnemy.bodyPartHealth.legsHealth = 0;
+                    enemyStats.enemy.bodyPartHealth.legsHealth = 0;
                     ApplyBodyPartDebuff(target);
                 }
                 else
                 {
-                    enemyStats.foxEnemy.bodyPartHealth.legsHealth -= damageDealt;
+                    enemyStats.enemy.bodyPartHealth.legsHealth -= damageDealt;
                 }
                 break;
             case PlayerAttacks.Target.Feet:
 
-                if (enemyStats.foxEnemy.bodyPartHealth.feetHealth - damageDealt <= 0)
+                if (enemyStats.enemy.bodyPartHealth.feetHealth - damageDealt <= 0)
                 {
-                    enemyStats.foxEnemy.bodyPartHealth.feetHealth = 0;
+                    enemyStats.enemy.bodyPartHealth.feetHealth = 0;
                     ApplyBodyPartDebuff(target);
                 }
                 else
                 {
-                    enemyStats.foxEnemy.bodyPartHealth.feetHealth -= damageDealt;
+                    enemyStats.enemy.bodyPartHealth.feetHealth -= damageDealt;
                 }
                 break;
 
         }
 
-        enemyStats.foxEnemy.currentHealth -= damageDealt;
+        enemyStats.enemy.currentHealth -= damageDealt;
 
         damageNumber.Create(transform.position, damageDealt, false);
-        Debug.Log("HeadHealth: " + enemyStats.foxEnemy.bodyPartHealth.headHealth);
-        Debug.Log("Dealt " + damageDealt + " damage\nRemains " + enemyStats.foxEnemy.currentHealth + " HP" );
+        Debug.Log("HeadHealth: " + enemyStats.enemy.bodyPartHealth.headHealth);
+        Debug.Log("Dealt " + damageDealt + " damage\nRemains " + enemyStats.enemy.currentHealth + " HP" );
 
 
 
-        if (enemyStats.foxEnemy.currentHealth <= 0)
+        if (enemyStats.enemy.currentHealth <= 0)
         {
             Destroy(this.gameObject);
         }
@@ -220,65 +240,65 @@ public class EnemyCombat : MonoBehaviour
         switch (target)
         {
             case PlayerAttacks.Target.Head:
-                enemyStats.foxEnemy.bodyPartHealth.headHealth -= damageDealt;
+                enemyStats.enemy.bodyPartHealth.headHealth -= damageDealt;
                 break;
             case PlayerAttacks.Target.Torso:
-                enemyStats.foxEnemy.bodyPartHealth.torsoHealth -= damageDealt;
+                enemyStats.enemy.bodyPartHealth.torsoHealth -= damageDealt;
                 break;
             case PlayerAttacks.Target.Arms:
-                enemyStats.foxEnemy.bodyPartHealth.armsHealth -= damageDealt;
+                enemyStats.enemy.bodyPartHealth.armsHealth -= damageDealt;
                 break;
             case PlayerAttacks.Target.Hands:
-                enemyStats.foxEnemy.bodyPartHealth.handsHealth -= damageDealt;
+                enemyStats.enemy.bodyPartHealth.handsHealth -= damageDealt;
                 break;
             case PlayerAttacks.Target.Legs:
-                enemyStats.foxEnemy.bodyPartHealth.legsHealth -= damageDealt;
+                enemyStats.enemy.bodyPartHealth.legsHealth -= damageDealt;
                 break;
             case PlayerAttacks.Target.Feet:
-                enemyStats.foxEnemy.bodyPartHealth.feetHealth -= damageDealt;
+                enemyStats.enemy.bodyPartHealth.feetHealth -= damageDealt;
                 break;
         }
 
-        enemyStats.foxEnemy.currentHealth -= damageDealt;
+        enemyStats.enemy.currentHealth -= damageDealt;
         damageNumber.Create(transform.position, damageDealt, false);
-        Debug.Log("HeadHealth: " + enemyStats.foxEnemy.bodyPartHealth.headHealth);
-        Debug.Log("Dealt " + damageDealt + " damage\nRemains " + enemyStats.foxEnemy.currentHealth + " HP");
-        if (enemyStats.foxEnemy.currentHealth <= 0)
+        Debug.Log("HeadHealth: " + enemyStats.enemy.bodyPartHealth.headHealth);
+        Debug.Log("Dealt " + damageDealt + " damage\nRemains " + enemyStats.enemy.currentHealth + " HP");
+        if (enemyStats.enemy.currentHealth <= 0)
         {
             Destroy(this.gameObject);
         }
     }
     public void TakeSlashingDamage(int damage, PlayerAttacks.Target target) 
     {
-        int damageDealt = damage - enemyStats.foxEnemy.baseArmor;
+        int damageDealt = damage - enemyStats.enemy.baseArmor;
 
         switch (target)
         {
             case PlayerAttacks.Target.Head:
-                enemyStats.foxEnemy.bodyPartHealth.headHealth -= damageDealt;
+                enemyStats.enemy.bodyPartHealth.headHealth -= damageDealt;
                 break;
             case PlayerAttacks.Target.Torso:
-                enemyStats.foxEnemy.bodyPartHealth.torsoHealth -= damageDealt;
+                enemyStats.enemy.bodyPartHealth.torsoHealth -= damageDealt;
                 break;
             case PlayerAttacks.Target.Arms:
-                enemyStats.foxEnemy.bodyPartHealth.armsHealth -= damageDealt;
+                enemyStats.enemy.bodyPartHealth.armsHealth -= damageDealt;
                 break;
             case PlayerAttacks.Target.Hands:
-                enemyStats.foxEnemy.bodyPartHealth.handsHealth -= damageDealt;
+                enemyStats.enemy.bodyPartHealth.handsHealth -= damageDealt;
                 break;
             case PlayerAttacks.Target.Legs:
-                enemyStats.foxEnemy.bodyPartHealth.legsHealth -= damageDealt;
+                enemyStats.enemy.bodyPartHealth.legsHealth -= damageDealt;
                 break;
             case PlayerAttacks.Target.Feet:
-                enemyStats.foxEnemy.bodyPartHealth.feetHealth -= damageDealt;
+                enemyStats.enemy.bodyPartHealth.feetHealth -= damageDealt;
                 break;
         }
 
-        enemyStats.foxEnemy.currentHealth -= damageDealt;
+        enemyStats.enemy.currentHealth -= damageDealt;
         damageNumber.Create(transform.position, damageDealt, false);
-        Debug.Log("HeadHealth: " + enemyStats.foxEnemy.bodyPartHealth.headHealth);
-        Debug.Log("Dealt " + damageDealt + " damage\nRemains " + enemyStats.foxEnemy.currentHealth + " HP");
-        if (enemyStats.foxEnemy.currentHealth <= 0)
+        Debug.Log("HeadHealth: " + enemyStats.enemy.bodyPartHealth.headHealth);
+        Debug.Log("Dealt " + damageDealt + " damage\nRemains " + enemyStats.enemy.currentHealth + " HP");
+        if (enemyStats.enemy.currentHealth <= 0)
         {
             Destroy(this.gameObject);
         }
@@ -291,7 +311,7 @@ public class EnemyCombat : MonoBehaviour
     public void TakeMyriadDamage(int damage) 
     {
         damageNumber.Create(transform.position, damage, false);
-        enemyStats.foxEnemy.currentHealth -= damage;
+        enemyStats.enemy.currentHealth -= damage;
     }
 
     #endregion
@@ -312,7 +332,7 @@ public class EnemyCombat : MonoBehaviour
         }
 
         damageNumber.Create(transform.position, damage, false);
-        enemyStats.foxEnemy.currentHealth -= damage;
+        enemyStats.enemy.currentHealth -= damage;
 
     }
     public void TakeWaterDamage(int damage)
@@ -330,7 +350,7 @@ public class EnemyCombat : MonoBehaviour
         }
 
         damageNumber.Create(transform.position, damage, false);
-        enemyStats.foxEnemy.currentHealth -= damage;
+        enemyStats.enemy.currentHealth -= damage;
 
     }
     public void TakeAirDamage(int damage)
@@ -348,7 +368,7 @@ public class EnemyCombat : MonoBehaviour
         }
 
         damageNumber.Create(transform.position, damage, false);
-        enemyStats.foxEnemy.currentHealth -= damage;
+        enemyStats.enemy.currentHealth -= damage;
 
     }
     public void TakeEarthDamage(int damage)
@@ -366,7 +386,7 @@ public class EnemyCombat : MonoBehaviour
         }
 
         damageNumber.Create(transform.position, damage, false);
-        enemyStats.foxEnemy.currentHealth -= damage;
+        enemyStats.enemy.currentHealth -= damage;
 
     }
     public void TakeLightningDamage(int damage)
@@ -384,7 +404,7 @@ public class EnemyCombat : MonoBehaviour
         }
 
         damageNumber.Create(transform.position, damage, false);
-        enemyStats.foxEnemy.currentHealth -= damage;
+        enemyStats.enemy.currentHealth -= damage;
 
     }
     #endregion
@@ -395,22 +415,22 @@ public class EnemyCombat : MonoBehaviour
         switch (target)
         {
             case PlayerAttacks.Target.Head:
-                enemyStats.foxEnemy.buffs.headDebuff = true;
+                enemyStats.enemy.buffs.headDebuff = true;
                 break;
             case PlayerAttacks.Target.Torso:
-                enemyStats.foxEnemy.buffs.torsoDebuff = true;
+                enemyStats.enemy.buffs.torsoDebuff = true;
                 break;
             case PlayerAttacks.Target.Arms:
-                enemyStats.foxEnemy.buffs.armsDebuff = true;
+                enemyStats.enemy.buffs.armsDebuff = true;
                 break;
             case PlayerAttacks.Target.Hands:
-                enemyStats.foxEnemy.buffs.handsDebuff = true;
+                enemyStats.enemy.buffs.handsDebuff = true;
                 break;
             case PlayerAttacks.Target.Legs:
-                enemyStats.foxEnemy.buffs.legsDebuff = true;
+                enemyStats.enemy.buffs.legsDebuff = true;
                 break;
             case PlayerAttacks.Target.Feet:
-                enemyStats.foxEnemy.buffs.feetDebuff = true;
+                enemyStats.enemy.buffs.feetDebuff = true;
                 break;
             default:
                 break;
@@ -426,15 +446,18 @@ public class EnemyCombat : MonoBehaviour
                 switch (previousSpell)
                 {
                     case PlayerAttacks.Spells.Fire:
-                        enemyStats.foxEnemy.buffs.Burning = true;
+                        enemyStats.enemy.buffs.Burning = true;
+                        previousSpell = PlayerAttacks.Spells.None;
                         break;
 
                     case PlayerAttacks.Spells.Water:
-                        enemyStats.foxEnemy.buffs.Clouded = true;
+                        enemyStats.enemy.buffs.Clouded = true;
+                        previousSpell = PlayerAttacks.Spells.None;
                         break;
 
                     case PlayerAttacks.Spells.Lightning:
-                        enemyStats.foxEnemy.buffs.Unatunned = true;
+                        enemyStats.enemy.buffs.Unatunned = true;
+                        previousSpell = PlayerAttacks.Spells.None;
                         break;
                 }
                 break;
@@ -443,16 +466,20 @@ public class EnemyCombat : MonoBehaviour
                 switch (previousSpell)
                 {
                     case PlayerAttacks.Spells.Fire:
-                        enemyStats.foxEnemy.buffs.Clouded = true;
+                        enemyStats.enemy.buffs.Clouded = true;
+                        previousSpell = PlayerAttacks.Spells.None;
                         break;
                     case PlayerAttacks.Spells.Water:
-                        enemyStats.foxEnemy.buffs.Drowning = true;
+                        enemyStats.enemy.buffs.Drowning = true;
+                        previousSpell = PlayerAttacks.Spells.None;
                         break;
                     case PlayerAttacks.Spells.Earth:
-                        enemyStats.foxEnemy.buffs.Slowed = true;
+                        enemyStats.enemy.buffs.Slowed = true;
+                        previousSpell = PlayerAttacks.Spells.None;
                         break;
                     case PlayerAttacks.Spells.Lightning:
-                        enemyStats.foxEnemy.buffs.Paralysed = true;
+                        enemyStats.enemy.buffs.Paralysed = true;
+                        previousSpell = PlayerAttacks.Spells.None;
                         break;
                 }
 
@@ -461,13 +488,16 @@ public class EnemyCombat : MonoBehaviour
                 switch (previousSpell)
                 {
                     case PlayerAttacks.Spells.Air:
-                        enemyStats.foxEnemy.buffs.Freezing = true;
+                        enemyStats.enemy.buffs.Freezing = true;
+                        previousSpell = PlayerAttacks.Spells.None;
                         break;
                     case PlayerAttacks.Spells.Earth:
-                        enemyStats.foxEnemy.buffs.Unbalanced = true;
+                        enemyStats.enemy.buffs.Unbalanced = true;
+                        previousSpell = PlayerAttacks.Spells.None;
                         break;
                     case PlayerAttacks.Spells.Lightning:
-                        enemyStats.foxEnemy.buffs.Scared = true;
+                        enemyStats.enemy.buffs.Scared = true;
+                        previousSpell = PlayerAttacks.Spells.None;
                         break;
                 }
                 break;
@@ -476,13 +506,16 @@ public class EnemyCombat : MonoBehaviour
                 {
 
                     case PlayerAttacks.Spells.Water:
-                        enemyStats.foxEnemy.buffs.Slowed = true;
+                        enemyStats.enemy.buffs.Slowed = true;
+                        previousSpell = PlayerAttacks.Spells.None;
                         break;
                     case PlayerAttacks.Spells.Air:
-                        enemyStats.foxEnemy.buffs.Unbalanced = true;
+                        enemyStats.enemy.buffs.Unbalanced = true;
+                        previousSpell = PlayerAttacks.Spells.None;
                         break;
                     case PlayerAttacks.Spells.Earth:
-                        enemyStats.foxEnemy.buffs.Poisoned = true;
+                        enemyStats.enemy.buffs.Poisoned = true;
+                        previousSpell = PlayerAttacks.Spells.None;
                         break;
                 }
                 break;
@@ -490,16 +523,20 @@ public class EnemyCombat : MonoBehaviour
                 switch (previousSpell)
                 {
                     case PlayerAttacks.Spells.Fire:
-                        enemyStats.foxEnemy.buffs.Unatunned = true;
+                        enemyStats.enemy.buffs.Unatunned = true;
+                        previousSpell = PlayerAttacks.Spells.None;
                         break;
                     case PlayerAttacks.Spells.Water:
-                        enemyStats.foxEnemy.buffs.Paralysed = true;
+                        enemyStats.enemy.buffs.Paralysed = true;
+                        previousSpell = PlayerAttacks.Spells.None;
                         break;
                     case PlayerAttacks.Spells.Air:
-                        enemyStats.foxEnemy.buffs.Scared = true;
+                        enemyStats.enemy.buffs.Scared = true;
+                        previousSpell = PlayerAttacks.Spells.None;
                         break;
                     case PlayerAttacks.Spells.Lightning:
-                        enemyStats.foxEnemy.buffs.Electrified = true;
+                        enemyStats.enemy.buffs.Electrified = true;
+                        previousSpell = PlayerAttacks.Spells.None;
                         break;
                 }
                 break;
@@ -507,6 +544,16 @@ public class EnemyCombat : MonoBehaviour
                 break;
         }
 
+    }
+
+    private void RemoveBuffs() 
+    {
+        object a = enemyStats.enemy.buffs;
+        PropertyInfo[] info = a.GetType().GetProperties();
+        for (int i = 0; i < info.Length; i++)
+        {
+            info[i].SetValue(a, false, null);
+        }
     }
 
     #endregion
