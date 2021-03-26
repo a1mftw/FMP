@@ -98,6 +98,21 @@ public class EnemyCombat : MonoBehaviour
             playerTarget.GetComponent<PlayerAttacks>().TakeTailSwipeDamage(enemyStats.enemy.baseDamage, PlayerAttacks.Target.Torso);
         } 
         foxAnimation.SetBool("TailSwipe", false);
+
+        step = (12 / (gameObject.transform.position - returnPos).magnitude) * Time.fixedDeltaTime;
+        t = 0;
+        gameObject.transform.LookAt(returnPos);
+        foxAnimation.SetBool("Running", true);
+
+        while (Vector3.Distance(gameObject.transform.position, returnPos) > 2)
+        {
+            t += step;
+            gameObject.transform.position = Vector3.Lerp(gameObject.transform.position, returnPos, t);
+            yield return new WaitForFixedUpdate();
+        }
+
+        foxAnimation.SetBool("Running", false);
+        gameObject.transform.LookAt(playerTarget.transform);
         gameObject.transform.position = returnPos;
         battleSystem.ChangeState(BattleState.PlayerTurn);
         attacking = false;
@@ -127,6 +142,21 @@ public class EnemyCombat : MonoBehaviour
         yield return new WaitForSeconds(1);
         playerTarget.GetComponent<PlayerAttacks>().TakeTailSwipeDamage(enemyStats.enemy.baseDamage, PlayerAttacks.Target.Torso);
         foxAnimation.SetBool("Claw", false);
+
+        step = (12 / (gameObject.transform.position - returnPos).magnitude) * Time.fixedDeltaTime;
+        t = 0;
+        gameObject.transform.LookAt(returnPos);
+        foxAnimation.SetBool("Running", true);
+
+        while (Vector3.Distance(gameObject.transform.position, returnPos) > 2)
+        {
+            t += step;
+            gameObject.transform.position = Vector3.Lerp(gameObject.transform.position, returnPos, t);
+            yield return new WaitForFixedUpdate();
+        }
+
+        foxAnimation.SetBool("Running", false);
+        gameObject.transform.LookAt(playerTarget.transform);
         gameObject.transform.position = returnPos;
         battleSystem.ChangeState(BattleState.PlayerTurn);
         attacking = false;

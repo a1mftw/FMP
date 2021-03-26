@@ -361,6 +361,22 @@ public class PlayerAttacks : MonoBehaviour
         yield return new WaitForSeconds(1);
         enemy.GetComponent<EnemyCombat>().TakeSlashingDamage(playerStats.player.baseDamage, target);
         playerAnimations.SetBool("Slashing", false);
+
+
+        step = (12 / (gameObject.transform.position - returnPos).magnitude) * Time.fixedDeltaTime;
+        t = 0;
+
+        gameObject.transform.LookAt(returnPos);
+        playerAnimations.SetBool("Sprinting", true);
+
+        while (Vector3.Distance(gameObject.transform.position,returnPos) > 5)
+        {
+            t += step;
+            gameObject.transform.position = Vector3.Lerp(gameObject.transform.position, returnPos, t);
+            yield return new WaitForFixedUpdate();
+        }
+        playerAnimations.SetBool("Sprinting", false);
+        gameObject.transform.LookAt(enemy.transform);
         gameObject.transform.position = returnPos;
         battleCamera.Play("BattleCamera");
         battleSystem.ChangeState(BattleState.EnemyTurn);
@@ -389,6 +405,20 @@ public class PlayerAttacks : MonoBehaviour
         yield return new WaitForSeconds(1);
         enemy.GetComponent<EnemyCombat>().TakePiercingDamage(playerStats.player.baseDamage, target);
         playerAnimations.SetBool("Piercing", false);
+        step = (12 / (gameObject.transform.position - returnPos).magnitude) * Time.fixedDeltaTime;
+        t = 0;
+
+        gameObject.transform.LookAt(returnPos);
+        playerAnimations.SetBool("Sprinting", true);
+
+        while (Vector3.Distance(gameObject.transform.position, returnPos) > 5)
+        {
+            t += step;
+            gameObject.transform.position = Vector3.Lerp(gameObject.transform.position, returnPos, t);
+            yield return new WaitForFixedUpdate();
+        }
+        playerAnimations.SetBool("Sprinting", false);
+        gameObject.transform.LookAt(enemy.transform);
         gameObject.transform.position = returnPos;
         battleCamera.Play("BattleCamera");
         battleSystem.ChangeState(BattleState.EnemyTurn);
@@ -417,6 +447,22 @@ public class PlayerAttacks : MonoBehaviour
         yield return new WaitForSeconds(1);
         enemy.GetComponent<EnemyCombat>().TakeBludgeoningDamage(playerStats.player.baseDamage, target);
         playerAnimations.SetBool("Blunt", false);
+
+
+        step = (12 / (gameObject.transform.position - returnPos).magnitude) * Time.fixedDeltaTime;
+        t = 0;
+
+        gameObject.transform.LookAt(returnPos);
+        playerAnimations.SetBool("Sprinting", true);
+
+        while (Vector3.Distance(gameObject.transform.position, returnPos) > 5)
+        {
+            t += step;
+            gameObject.transform.position = Vector3.Lerp(gameObject.transform.position, returnPos, t);
+            yield return new WaitForFixedUpdate();
+        }
+        playerAnimations.SetBool("Sprinting", false);
+        gameObject.transform.LookAt(enemy.transform);
         gameObject.transform.position = returnPos;
         battleCamera.Play("BattleCamera");
         battleSystem.ChangeState(BattleState.EnemyTurn);
@@ -455,7 +501,9 @@ public class PlayerAttacks : MonoBehaviour
                 enemy.GetComponent<EnemyCombat>().TakeLightningDamage(playerStats.player.baseDamage);
                 break;
         }
-        
+
+
+        yield return new WaitForSeconds(1);
         Destroy(particle);
         battleCamera.Play("BattleCamera");
         battleSystem.ChangeState(BattleState.EnemyTurn);

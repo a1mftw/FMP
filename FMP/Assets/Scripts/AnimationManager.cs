@@ -30,9 +30,8 @@ public class AnimationManager : MonoBehaviour
 
     public void MagicCastParticle(Effects effect,Vector3 position) 
     {
-
         Destroy(magicGO);
-        Destroy(magicCircleGO);
+     
         for (int i = 0; i < particleEffects.Count; i++)
         {
             if (particleEffects[i].effect == effect)
@@ -41,7 +40,11 @@ public class AnimationManager : MonoBehaviour
             }
         }
 
-        magicCircleGO = Instantiate(particleEffects[5].particle, transform.position, Quaternion.identity);
+        if (!magicCircleGO)
+        {
+            magicCircleGO = Instantiate(particleEffects[5].particle, transform.position, Quaternion.identity);
+        }
+        
 
 
 
