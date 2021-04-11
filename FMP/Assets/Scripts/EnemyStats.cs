@@ -8,11 +8,7 @@ public class EnemyStats : CharactersClass
 
     public struct EnemyAtributes
     {
-       public int enemyLevel;
-       public int baseDamage;
-       public int baseArmor;
-       public int maxHealth;
-       public int currentHealth;
+       public Stats baseStats;
        public BodyPartHealth bodyPartHealth;
        public BuffDebuff buffs;
     }
@@ -47,11 +43,12 @@ public class EnemyStats : CharactersClass
 
     void SetFoxValues() 
     {
-        enemy.enemyLevel = 1;
-        enemy.baseDamage = 10;
-        enemy.baseArmor = 5;
-        enemy.maxHealth = 100;
-        enemy.currentHealth = enemy.maxHealth;
+        enemy.baseStats.level = 1;
+        enemy.baseStats.baseDamage = 10;
+        enemy.baseStats.baseSpeed = 5;
+        enemy.baseStats.baseArmor = 5;
+        enemy.baseStats.maxHealth = 100;
+        enemy.baseStats.currentHealth = enemy.baseStats.maxHealth;
         enemy.bodyPartHealth.headMaxHealth = 40;
         enemy.bodyPartHealth.torsoMaxHealth = 40;
         enemy.bodyPartHealth.armsMaxHealth = 40;

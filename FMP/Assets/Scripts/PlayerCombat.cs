@@ -678,8 +678,8 @@ public class PlayerCombat : MonoBehaviour
     {
         EnemyStats enemyStats = enemyTarget.GetComponent<EnemyStats>();
 
-        bodyPartUI.transform.GetChild(1).GetComponent<Slider>().maxValue = enemyStats.enemy.maxHealth;
-        bodyPartUI.transform.GetChild(1).GetComponent<Slider>().value = enemyStats.enemy.currentHealth;
+        bodyPartUI.transform.GetChild(1).GetComponent<Slider>().maxValue = enemyStats.enemy.baseStats.maxHealth;
+        bodyPartUI.transform.GetChild(1).GetComponent<Slider>().value = enemyStats.enemy.baseStats.currentHealth;
 
         battleHUD.BodyPartColor(enemyStats.enemy.bodyPartHealth.headHealth, enemyStats.enemy.bodyPartHealth.headMaxHealth, 0, bodyPartUI);
         battleHUD.BodyPartColor(enemyStats.enemy.bodyPartHealth.torsoHealth, enemyStats.enemy.bodyPartHealth.torsoMaxHealth, 1, bodyPartUI);
@@ -693,8 +693,8 @@ public class PlayerCombat : MonoBehaviour
     {
         PlayerStats playerStats = GameObject.Find("Player").GetComponent<PlayerStats>();
 
-        bodyPartUI.transform.GetChild(1).GetComponent<Slider>().maxValue = playerStats.player.maxHealth;
-        bodyPartUI.transform.GetChild(1).GetComponent<Slider>().value = playerStats.player.currentHealth;
+        bodyPartUI.transform.GetChild(1).GetComponent<Slider>().maxValue = playerStats.player.baseStats.maxHealth;
+        bodyPartUI.transform.GetChild(1).GetComponent<Slider>().value = playerStats.player.baseStats.currentHealth;
 
         battleHUD.BodyPartColor(playerStats.player.bodyPartHealth.headHealth, playerStats.player.bodyPartHealth.headMaxHealth, 0, bodyPartUI);
         battleHUD.BodyPartColor(playerStats.player.bodyPartHealth.torsoHealth, playerStats.player.bodyPartHealth.torsoMaxHealth, 1, bodyPartUI);
@@ -753,7 +753,7 @@ public class PlayerCombat : MonoBehaviour
         MyriadStrikes = false;
         playerAttacks.MyriadStrikes(enemyTarget,hits);
         cameraController.Play("BattleCamera");
-        battleSystem.ChangeState(BattleState.EnemyTurn);
+        battleSystem.NextTurn(BattleState.EnemyTurn);
     }
     void TargetShader(bool highlight = true) 
     {

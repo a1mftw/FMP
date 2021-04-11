@@ -119,7 +119,7 @@ public class PlayerAttacks : MonoBehaviour
 
     public void TakeTailSwipeDamage(int damage, Target target) 
     {
-        int damageDealt = damage - playerStats.player.baseArmor;
+        int damageDealt = damage - playerStats.player.baseStats.baseArmor;
 
         switch (target)
         {
@@ -201,15 +201,15 @@ public class PlayerAttacks : MonoBehaviour
 
         }
 
-        playerStats.player.currentHealth -= damageDealt;
+        playerStats.player.baseStats.currentHealth -= damageDealt;
         damageNumber.Create(transform.position, damageDealt, false);
 
         Debug.Log("Torso Health: " + playerStats.player.bodyPartHealth.torsoHealth);
-        Debug.Log("Dealt " + damageDealt + " damage\nRemains " + playerStats.player.currentHealth + " HP");
+        Debug.Log("Dealt " + damageDealt + " damage\nRemains " + playerStats.player.baseStats.currentHealth + " HP");
 
 
 
-        if (playerStats.player.currentHealth <= 0)
+        if (playerStats.player.baseStats.currentHealth <= 0)
         {
             Destroy(this.gameObject);
         }
@@ -359,7 +359,7 @@ public class PlayerAttacks : MonoBehaviour
         yield return new WaitForSeconds(0.5f);
         playerAnimations.SetBool("Slashing", true);
         yield return new WaitForSeconds(1);
-        enemy.GetComponent<EnemyCombat>().TakeSlashingDamage(playerStats.player.baseDamage, target);
+        enemy.GetComponent<EnemyCombat>().TakeSlashingDamage(playerStats.player.baseStats.baseDamage, target);
         playerAnimations.SetBool("Slashing", false);
 
 
@@ -379,7 +379,7 @@ public class PlayerAttacks : MonoBehaviour
         gameObject.transform.LookAt(enemy.transform);
         gameObject.transform.position = returnPos;
         battleCamera.Play("BattleCamera");
-        battleSystem.ChangeState(BattleState.EnemyTurn);
+        battleSystem.NextTurn(BattleState.EnemyTurn);
 
     }
     IEnumerator PiercingAttack(Target target, GameObject enemy)
@@ -403,7 +403,7 @@ public class PlayerAttacks : MonoBehaviour
         yield return new WaitForSeconds(0.5f);
         playerAnimations.SetBool("Piercing", true);
         yield return new WaitForSeconds(1);
-        enemy.GetComponent<EnemyCombat>().TakePiercingDamage(playerStats.player.baseDamage, target);
+        enemy.GetComponent<EnemyCombat>().TakePiercingDamage(playerStats.player.baseStats.baseDamage, target);
         playerAnimations.SetBool("Piercing", false);
         step = (12 / (gameObject.transform.position - returnPos).magnitude) * Time.fixedDeltaTime;
         t = 0;
@@ -421,7 +421,7 @@ public class PlayerAttacks : MonoBehaviour
         gameObject.transform.LookAt(enemy.transform);
         gameObject.transform.position = returnPos;
         battleCamera.Play("BattleCamera");
-        battleSystem.ChangeState(BattleState.EnemyTurn);
+        battleSystem.NextTurn(BattleState.EnemyTurn);
 
     }
     IEnumerator BludgeoningAttack(Target target, GameObject enemy)
@@ -445,7 +445,7 @@ public class PlayerAttacks : MonoBehaviour
         yield return new WaitForSeconds(0.5f);
         playerAnimations.SetBool("Blunt", true);
         yield return new WaitForSeconds(1);
-        enemy.GetComponent<EnemyCombat>().TakeBludgeoningDamage(playerStats.player.baseDamage, target);
+        enemy.GetComponent<EnemyCombat>().TakeBludgeoningDamage(playerStats.player.baseStats.baseDamage, target);
         playerAnimations.SetBool("Blunt", false);
 
 
@@ -465,12 +465,12 @@ public class PlayerAttacks : MonoBehaviour
         gameObject.transform.LookAt(enemy.transform);
         gameObject.transform.position = returnPos;
         battleCamera.Play("BattleCamera");
-        battleSystem.ChangeState(BattleState.EnemyTurn);
+        battleSystem.NextTurn(BattleState.EnemyTurn);
 
     }
     IEnumerator SpellBall(GameObject particle, GameObject enemy, Spells spellType)
     {
-        playerStats.player.currentMp -= 10;
+        playerStats.player.baseStats.currentMana -= 10;
         yield return new WaitForSeconds(1);
 
         float step = (6 / (particle.transform.position - enemy.transform.position).magnitude) * Time.fixedDeltaTime;
@@ -486,19 +486,19 @@ public class PlayerAttacks : MonoBehaviour
         switch (spellType)
         {
             case Spells.Fire:
-                enemy.GetComponent<EnemyCombat>().TakeFireDamage(playerStats.player.baseDamage);
+                enemy.GetComponent<EnemyCombat>().TakeFireDamage(playerStats.player.baseStats.baseDamage);
                 break;
             case Spells.Water:
-                enemy.GetComponent<EnemyCombat>().TakeWaterDamage(playerStats.player.baseDamage);
+                enemy.GetComponent<EnemyCombat>().TakeWaterDamage(playerStats.player.baseStats.baseDamage);
                 break;
             case Spells.Air:
-                enemy.GetComponent<EnemyCombat>().TakeAirDamage(playerStats.player.baseDamage);
+                enemy.GetComponent<EnemyCombat>().TakeAirDamage(playerStats.player.baseStats.baseDamage);
                 break;
             case Spells.Earth:
-                enemy.GetComponent<EnemyCombat>().TakeEarthDamage(playerStats.player.baseDamage);
+                enemy.GetComponent<EnemyCombat>().TakeEarthDamage(playerStats.player.baseStats.baseDamage);
                 break;
             case Spells.Lightning:
-                enemy.GetComponent<EnemyCombat>().TakeLightningDamage(playerStats.player.baseDamage);
+                enemy.GetComponent<EnemyCombat>().TakeLightningDamage(playerStats.player.baseStats.baseDamage);
                 break;
         }
 
@@ -506,7 +506,7 @@ public class PlayerAttacks : MonoBehaviour
         yield return new WaitForSeconds(1);
         Destroy(particle);
         battleCamera.Play("BattleCamera");
-        battleSystem.ChangeState(BattleState.EnemyTurn);
+        battleSystem.NextTurn(BattleState.EnemyTurn);
 
     }
 

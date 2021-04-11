@@ -39,7 +39,7 @@ public class EnemyCombat : MonoBehaviour
 
             if (enemyStats.enemy.buffs.Burning || enemyStats.enemy.buffs.Drowning || enemyStats.enemy.buffs.Freezing || enemyStats.enemy.buffs.Poisoned || enemyStats.enemy.buffs.Electrified)
             {
-                enemyStats.enemy.currentHealth -= Mathf.RoundToInt(enemyStats.enemy.maxHealth * 0.05f);
+                enemyStats.enemy.baseStats.currentHealth -= Mathf.RoundToInt(enemyStats.enemy.baseStats.maxHealth * 0.05f);
             }
 
             if (!enemyStats.enemy.buffs.Clouded)
@@ -50,7 +50,7 @@ public class EnemyCombat : MonoBehaviour
             else
             {
                 RemoveBuffs();
-                battleSystem.ChangeState(BattleState.PlayerTurn);
+                battleSystem.NextTurn(BattleState.PlayerTurn);
             }
 
 
@@ -95,7 +95,7 @@ public class EnemyCombat : MonoBehaviour
         }
         else
         {
-            playerTarget.GetComponent<PlayerAttacks>().TakeTailSwipeDamage(enemyStats.enemy.baseDamage, PlayerAttacks.Target.Torso);
+            playerTarget.GetComponent<PlayerAttacks>().TakeTailSwipeDamage(enemyStats.enemy.baseStats.baseDamage, PlayerAttacks.Target.Torso);
         } 
         foxAnimation.SetBool("TailSwipe", false);
 
@@ -114,7 +114,7 @@ public class EnemyCombat : MonoBehaviour
         foxAnimation.SetBool("Running", false);
         gameObject.transform.LookAt(playerTarget.transform);
         gameObject.transform.position = returnPos;
-        battleSystem.ChangeState(BattleState.PlayerTurn);
+        battleSystem.NextTurn(BattleState.PlayerTurn);
         attacking = false;
     }
     IEnumerator ClawAttack() 
@@ -140,7 +140,7 @@ public class EnemyCombat : MonoBehaviour
         foxAnimation.SetBool("Running", false);
         foxAnimation.SetBool("Claw", true);
         yield return new WaitForSeconds(1);
-        playerTarget.GetComponent<PlayerAttacks>().TakeTailSwipeDamage(enemyStats.enemy.baseDamage, PlayerAttacks.Target.Torso);
+        playerTarget.GetComponent<PlayerAttacks>().TakeTailSwipeDamage(enemyStats.enemy.baseStats.baseDamage, PlayerAttacks.Target.Torso);
         foxAnimation.SetBool("Claw", false);
 
         step = (12 / (gameObject.transform.position - returnPos).magnitude) * Time.fixedDeltaTime;
@@ -158,7 +158,7 @@ public class EnemyCombat : MonoBehaviour
         foxAnimation.SetBool("Running", false);
         gameObject.transform.LookAt(playerTarget.transform);
         gameObject.transform.position = returnPos;
-        battleSystem.ChangeState(BattleState.PlayerTurn);
+        battleSystem.NextTurn(BattleState.PlayerTurn);
         attacking = false;
     }
     #endregion
@@ -168,7 +168,7 @@ public class EnemyCombat : MonoBehaviour
 
     public void TakeBludgeoningDamage(int damage,PlayerAttacks.Target target) 
     {
-        int damageDealt = damage - enemyStats.enemy.baseArmor;
+        int damageDealt = damage - enemyStats.enemy.baseStats.baseArmor;
 
         switch (target)
         {
@@ -250,15 +250,15 @@ public class EnemyCombat : MonoBehaviour
 
         }
 
-        enemyStats.enemy.currentHealth -= damageDealt;
+        enemyStats.enemy.baseStats.currentHealth -= damageDealt;
 
         damageNumber.Create(transform.position, damageDealt, false);
         Debug.Log("HeadHealth: " + enemyStats.enemy.bodyPartHealth.headHealth);
-        Debug.Log("Dealt " + damageDealt + " damage\nRemains " + enemyStats.enemy.currentHealth + " HP" );
+        Debug.Log("Dealt " + damageDealt + " damage\nRemains " + enemyStats.enemy.baseStats.currentHealth + " HP" );
 
 
 
-        if (enemyStats.enemy.currentHealth <= 0)
+        if (enemyStats.enemy.baseStats.currentHealth <= 0)
         {
             Destroy(this.gameObject);
         }
@@ -289,18 +289,18 @@ public class EnemyCombat : MonoBehaviour
                 break;
         }
 
-        enemyStats.enemy.currentHealth -= damageDealt;
+        enemyStats.enemy.baseStats.currentHealth -= damageDealt;
         damageNumber.Create(transform.position, damageDealt, false);
         Debug.Log("HeadHealth: " + enemyStats.enemy.bodyPartHealth.headHealth);
-        Debug.Log("Dealt " + damageDealt + " damage\nRemains " + enemyStats.enemy.currentHealth + " HP");
-        if (enemyStats.enemy.currentHealth <= 0)
+        Debug.Log("Dealt " + damageDealt + " damage\nRemains " + enemyStats.enemy.baseStats.currentHealth + " HP");
+        if (enemyStats.enemy.baseStats.currentHealth <= 0)
         {
             Destroy(this.gameObject);
         }
     }
     public void TakeSlashingDamage(int damage, PlayerAttacks.Target target) 
     {
-        int damageDealt = damage - enemyStats.enemy.baseArmor;
+        int damageDealt = damage - enemyStats.enemy.baseStats.baseArmor;
 
         switch (target)
         {
@@ -324,11 +324,11 @@ public class EnemyCombat : MonoBehaviour
                 break;
         }
 
-        enemyStats.enemy.currentHealth -= damageDealt;
+        enemyStats.enemy.baseStats.currentHealth -= damageDealt;
         damageNumber.Create(transform.position, damageDealt, false);
         Debug.Log("HeadHealth: " + enemyStats.enemy.bodyPartHealth.headHealth);
-        Debug.Log("Dealt " + damageDealt + " damage\nRemains " + enemyStats.enemy.currentHealth + " HP");
-        if (enemyStats.enemy.currentHealth <= 0)
+        Debug.Log("Dealt " + damageDealt + " damage\nRemains " + enemyStats.enemy.baseStats.currentHealth + " HP");
+        if (enemyStats.enemy.baseStats.currentHealth <= 0)
         {
             Destroy(this.gameObject);
         }
@@ -341,7 +341,7 @@ public class EnemyCombat : MonoBehaviour
     public void TakeMyriadDamage(int damage) 
     {
         damageNumber.Create(transform.position, damage, false);
-        enemyStats.enemy.currentHealth -= damage;
+        enemyStats.enemy.baseStats.currentHealth -= damage;
     }
 
     #endregion
@@ -362,7 +362,7 @@ public class EnemyCombat : MonoBehaviour
         }
 
         damageNumber.Create(transform.position, damage, false);
-        enemyStats.enemy.currentHealth -= damage;
+        enemyStats.enemy.baseStats.currentHealth -= damage;
 
     }
     public void TakeWaterDamage(int damage)
@@ -380,7 +380,7 @@ public class EnemyCombat : MonoBehaviour
         }
 
         damageNumber.Create(transform.position, damage, false);
-        enemyStats.enemy.currentHealth -= damage;
+        enemyStats.enemy.baseStats.currentHealth -= damage;
 
     }
     public void TakeAirDamage(int damage)
@@ -398,7 +398,7 @@ public class EnemyCombat : MonoBehaviour
         }
 
         damageNumber.Create(transform.position, damage, false);
-        enemyStats.enemy.currentHealth -= damage;
+        enemyStats.enemy.baseStats.currentHealth -= damage;
 
     }
     public void TakeEarthDamage(int damage)
@@ -416,7 +416,7 @@ public class EnemyCombat : MonoBehaviour
         }
 
         damageNumber.Create(transform.position, damage, false);
-        enemyStats.enemy.currentHealth -= damage;
+        enemyStats.enemy.baseStats.currentHealth -= damage;
 
     }
     public void TakeLightningDamage(int damage)
@@ -434,7 +434,7 @@ public class EnemyCombat : MonoBehaviour
         }
 
         damageNumber.Create(transform.position, damage, false);
-        enemyStats.enemy.currentHealth -= damage;
+        enemyStats.enemy.baseStats.currentHealth -= damage;
 
     }
     #endregion

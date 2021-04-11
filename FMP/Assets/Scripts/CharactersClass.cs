@@ -47,6 +47,18 @@ public class CharactersClass : MonoBehaviour
         public int feetMaxHealth;
 
     }
+
+    public struct Stats 
+    {
+        public int level;
+        public int baseArmor;
+        public int baseDamage;
+        public int maxHealth;
+        public int currentHealth;
+        public int maxMana;
+        public int currentMana;
+        public int baseSpeed;
+    }
     
 
 }

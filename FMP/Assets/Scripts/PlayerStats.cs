@@ -7,13 +7,7 @@ public class PlayerStats : CharactersClass
 {
     public struct Characters
     {
-        public int playerLevel;
-        public int baseDamage;
-        public int baseArmor;
-        public int maxHealth;
-        public int currentHealth;
-        public int maxMP;
-        public int currentMp;
+        public Stats baseStats;
         public BodyPartHealth bodyPartHealth;
         public BuffDebuff buffs;
     }
@@ -40,13 +34,14 @@ public class PlayerStats : CharactersClass
 
     private void SetPlayerValues()
     {
-        player.playerLevel = 1;
-        player.baseDamage = 10;
-        player.baseArmor = 5;
-        player.maxMP = 200;
-        player.currentMp = player.maxMP;
-        player.maxHealth = 200;
-        player.currentHealth = player.maxHealth;
+        player.baseStats.level = 1;
+        player.baseStats.baseDamage = 10;
+        player.baseStats.baseArmor = 5;
+        player.baseStats.baseSpeed = 10;
+        player.baseStats.maxMana = 200;
+        player.baseStats.currentMana = player.baseStats.maxMana;
+        player.baseStats.maxHealth = 200;
+        player.baseStats.currentHealth = player.baseStats.maxHealth;
         player.bodyPartHealth.headMaxHealth = 40;
         player.bodyPartHealth.torsoMaxHealth = 40;
         player.bodyPartHealth.armsMaxHealth = 40;

@@ -33,40 +33,27 @@ public class BattleSystem : MonoBehaviour
 
     public bool playerStartAction = true;
 
-
-
+    List<GameObject> inactiveChars;
+    List<GameObject> availableChars;
+    bool playerTurn;
+    int enemiesSpawned = 0;
+    int bigSpeed = 0;
+    int nextAttacker = 0;
 
 
 
     private void Update()
     {
-
         //Update HUD
         //HUDUpdate();
-
-
-        switch (state)
+        if (playerTurn)
         {
-            case BattleState.PlayerTurn:
-                PlayerAction();
-                break;
-            case BattleState.EnemyTurn:
-                enemyAction();
-                break;
-            case BattleState.Won:
-                break;
-            case BattleState.Lost:
-                break;
-            default:
-                break;
+            PlayerAction();
         }
     }
 
     public void SetupBattle()
     {
-
-        //Set the initial Battle State
-        state = BattleState.Start;
 
         //Show Battle UI
         BattleUI.SetActive(true);
@@ -82,8 +69,17 @@ public class BattleSystem : MonoBehaviour
         playerPrefab.transform.LookAt(enemyPrefab.transform);
         enemyPrefab.transform.LookAt(playerPrefab.transform);
 
-        state = BattleState.PlayerTurn;
 
+        availableChars.Add(playerPrefab);
+        
+
+        for (int i = 0; i < enemiesSpawned; i++)
+        {
+            var newEnemy = Instantiate(enemyPrefab);
+            availableChars.Add(newEnemy);
+        }
+
+        NextTurn();
     }
 
     void PlayerAction()
@@ -122,22 +118,65 @@ public class BattleSystem : MonoBehaviour
 
     }
 
-    void enemyAction() 
+    void enemyAction(GameObject enemy) 
     {
-        enemyPrefab.GetComponent<EnemyCombat>().EnemyTurn();
+        enemy.GetComponent<EnemyCombat>().EnemyTurn();
         playerStartAction = true;
     } 
 
 
-    public void ChangeState(BattleState stateToChange) 
+    public void NextTurn(BattleState stateToChange) 
     {
         state = stateToChange;
+    }
+
+    public void NextTurn()
+    {
+        int tempSpeed;
+
+        if (availableChars.Count == 0)
+        {
+            availableChars = inactiveChars;
+            inactiveChars.Clear();
+            bigSpeed = 0;
+        }
+
+        for (int i = 0; i < availableChars.Count; i++)
+        {
+            if (availableChars[i].tag == "Player")
+            {
+                tempSpeed = availableChars[i].GetComponent<PlayerStats>().player.baseStats.baseSpeed;  
+            }
+            else
+            {
+                tempSpeed = availableChars[i].GetComponent<EnemyStats>().enemy.baseStats.baseSpeed;
+            }
+
+            if (tempSpeed >= bigSpeed)
+            {
+                bigSpeed = tempSpeed;
+                nextAttacker = i;
+            }
+        }
+
+        if (availableChars[nextAttacker].tag == "Player")
+        {
+            playerTurn = true;
+            inactiveChars.Add(availableChars[nextAttacker]);
+            availableChars.Remove(availableChars[nextAttacker]);
+        }
+        else
+        {
+            playerTurn = false;
+            inactiveChars.Add(availableChars[nextAttacker]);
+            availableChars.Remove(availableChars[nextAttacker]);
+            enemyAction(availableChars[nextAttacker]);
+        }
     }
 
     public void EndBattle()
     {
         BattleUI.SetActive(false);
-        state = BattleState.None;
     }
 
 }
