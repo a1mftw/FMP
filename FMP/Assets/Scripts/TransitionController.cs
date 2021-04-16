@@ -13,10 +13,29 @@ public class TransitionController : MonoBehaviour
     public BattleSystem battleSystemController;
     public float menuTransitionTime = 1f;
     public float battleTransitionTime = 2f;
+    public GameObject tutorial1;
+    public GameObject tutorial2;
+    public GameObject tutorial3;
 
-   
 
-
+    public void NextTutorial() 
+    {
+        if (tutorial1.activeSelf)
+        {
+            tutorial1.SetActive(false);
+            tutorial2.SetActive(true);
+        }
+        else if(tutorial2.activeSelf)
+        {
+            tutorial2.SetActive(false);
+            tutorial3.SetActive(true);
+        }
+        else
+        {
+            tutorial3.SetActive(false);
+            playerMovement.canControl = true;
+        }
+    }
     public void StartGame() 
     {
         StartCoroutine(StartMenuTransition());
@@ -39,8 +58,8 @@ public class TransitionController : MonoBehaviour
         yield return new WaitForSeconds(menuTransitionTime);
         MainMenu.SetActive(false);
         playerCamera.enabled = true;
-        playerMovement.canControl = true;
         menuTransition.SetTrigger("End");
+        tutorial1.SetActive(true);
 
     }
 
