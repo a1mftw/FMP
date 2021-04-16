@@ -21,7 +21,9 @@ public class BattleSystem : MonoBehaviour
     public GameObject enemyPrefab;
 
     public Transform playerBattleSpot;
-    public Transform enemyBattleSpot;
+    public Transform enemyBattleSpot1;
+    public Transform enemyBattleSpot2;
+    public Transform enemyBattleSpot3;
 
     public BattleHUD playerHUD;
     public PlayerCombat playerCombat;
@@ -33,12 +35,16 @@ public class BattleSystem : MonoBehaviour
 
     public bool playerStartAction = true;
 
-    List<GameObject> inactiveChars;
-    List<GameObject> availableChars;
+    GameObject newEnemy;
+    List<GameObject> inactiveChars = new List<GameObject>();
+    List<GameObject> availableChars = new List<GameObject>();
+    List<GameObject> Enemies = new List<GameObject>();
+    List<Transform> battleSpots = new List<Transform>();
     bool playerTurn;
     int enemiesSpawned = 0;
     int bigSpeed = 0;
     int nextAttacker = 0;
+    int target = 0;
 
 
 
@@ -61,23 +67,31 @@ public class BattleSystem : MonoBehaviour
         //Set player hud
         playerHUD.SetHUD();
 
-        //Transport the enemy and the player onto the arena
+
+        enemiesSpawned = 3;//Random.Range(1, 3);
+
+        battleSpots.Add(enemyBattleSpot1.transform);
+        battleSpots.Add(enemyBattleSpot2.transform);
+        battleSpots.Add(enemyBattleSpot3.transform);
+
+
+        //Transport the player onto the arena
         playerPrefab.transform.position = playerBattleSpot.position;
-        enemyPrefab.transform.position = enemyBattleSpot.position;
-
-        //Make them look at each other
-        playerPrefab.transform.LookAt(enemyPrefab.transform);
-        enemyPrefab.transform.LookAt(playerPrefab.transform);
-
 
         availableChars.Add(playerPrefab);
         
 
         for (int i = 0; i < enemiesSpawned; i++)
         {
-            var newEnemy = Instantiate(enemyPrefab);
+            newEnemy = Instantiate(enemyPrefab);
+            newEnemy.transform.position = battleSpots[i].position;
+            newEnemy.transform.LookAt(playerPrefab.transform);
             availableChars.Add(newEnemy);
+            Enemies.Add(newEnemy);
         }
+
+        playerPrefab.transform.LookAt(newEnemy.transform);
+        enemyTarget = Enemies[target];
 
         NextTurn();
     }
@@ -122,12 +136,37 @@ public class BattleSystem : MonoBehaviour
     {
         enemy.GetComponent<EnemyCombat>().EnemyTurn();
         playerStartAction = true;
-    } 
+    }
 
-
-    public void NextTurn(BattleState stateToChange) 
+    public void NextTarget() 
     {
-        state = stateToChange;
+
+        if ((target+1) >= enemiesSpawned)
+        {
+            target = 0;
+        }
+        else
+        {
+            target++;
+        }
+
+        enemyTarget = Enemies[target];
+    
+    }
+
+    public void PreviousTarget() 
+    {
+        if ((target-1) < 0)
+        {
+            target = enemiesSpawned-1;
+        }
+        else
+        {
+            target--;
+        }
+
+        enemyTarget = Enemies[target];
+
     }
 
     public void NextTurn()
@@ -168,9 +207,10 @@ public class BattleSystem : MonoBehaviour
         else
         {
             playerTurn = false;
+            enemyAction(availableChars[nextAttacker]);
             inactiveChars.Add(availableChars[nextAttacker]);
             availableChars.Remove(availableChars[nextAttacker]);
-            enemyAction(availableChars[nextAttacker]);
+            
         }
     }
 

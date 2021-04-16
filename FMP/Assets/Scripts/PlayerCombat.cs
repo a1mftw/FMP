@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using Cinemachine;
 
 public class PlayerCombat : MonoBehaviour
 {
@@ -89,6 +90,9 @@ public class PlayerCombat : MonoBehaviour
     private int bodyPartCount = 0;
     public bool BattleOver = false;
     private bool cancel = false;
+
+    public CinemachineVirtualCamera targetingCamera;
+    public CinemachineVirtualCamera physicalCamera;
     
 
     private void Update()
@@ -188,12 +192,14 @@ public class PlayerCombat : MonoBehaviour
             //Change between enemy
             if (Input.GetButtonDown("Right"))
             {
-                //If theres more than 1 enemy change camera and target here
+                battleSystem.NextTarget();
+                targetingCamera.LookAt = battleSystem.enemyTarget.transform;
             }
 
             if (Input.GetButtonDown("Left"))
             {
-                //If theres more than 1 enemy change camera and target here
+                battleSystem.PreviousTarget();
+                targetingCamera.LookAt = battleSystem.enemyTarget.transform;
             }
 
             if (stance == Stances.Physical)
@@ -217,7 +223,7 @@ public class PlayerCombat : MonoBehaviour
                     }
                 }
             }
-
+            
             if (Input.GetButtonDown("Submit"))
             {
                 switch (stance)
@@ -226,66 +232,50 @@ public class PlayerCombat : MonoBehaviour
                         switch (attack)
                         {
                             case PlayerAttacks.Attacks.Bludgeoning:
-                                playerAttacks.Blunt(target, enemyTarget);
+                                playerAttacks.Blunt(target, battleSystem.enemyTarget);
                                 break;
                             case PlayerAttacks.Attacks.Piercing:
-                                playerAttacks.Pierce(target, enemyTarget);
+                                playerAttacks.Pierce(target, battleSystem.enemyTarget);
                                 break;
                             case PlayerAttacks.Attacks.Slashing:
-                                playerAttacks.Slash(target, enemyTarget);
+                                playerAttacks.Slash(target, battleSystem.enemyTarget);
                                 break;
                             default:
                                 break;
                         }
                         bodyPartUI.SetActive(false);
                         break;
+
                     case Stances.Magic:
                         switch (spell)
                         {
                             case PlayerAttacks.Spells.Fire:
-                                playerAttacks.FireDamage(animationManager.GetMagicParticle(), enemyTarget);
+                                playerAttacks.FireDamage(animationManager.GetMagicParticle(), battleSystem.enemyTarget);
                                 Debug.Log("Fire damage");
                                 break;
                             case PlayerAttacks.Spells.Water:
-                                playerAttacks.WaterDamage(animationManager.GetMagicParticle(), enemyTarget);
+                                playerAttacks.WaterDamage(animationManager.GetMagicParticle(), battleSystem.enemyTarget);
                                 Debug.Log("Water damage");
                                 break;
                             case PlayerAttacks.Spells.Air:
-                                playerAttacks.AirDamage(animationManager.GetMagicParticle(), enemyTarget);
+                                playerAttacks.AirDamage(animationManager.GetMagicParticle(), battleSystem.enemyTarget);
                                 Debug.Log("Air damage");
                                 break;
                             case PlayerAttacks.Spells.Earth:
-                                playerAttacks.EarthDamage(animationManager.GetMagicParticle(), enemyTarget);
+                                playerAttacks.EarthDamage(animationManager.GetMagicParticle(), battleSystem.enemyTarget);
                                 Debug.Log("Earth damage");
                                 break;
                             case PlayerAttacks.Spells.Lightning:
-                                playerAttacks.LightningDamage(animationManager.GetMagicParticle(), enemyTarget);
+                                playerAttacks.LightningDamage(animationManager.GetMagicParticle(), battleSystem.enemyTarget);
                                 Debug.Log("Lightning damage");
                                 break;
                         }
+
                         cameraController.Play("BattleCamera");
 
                         break;
                     case Stances.Alchemy:
-
-                        switch (target)
-                        {
-                            case PlayerAttacks.Target.Head:
-                                break;
-                            case PlayerAttacks.Target.Torso:
-                                break;
-                            case PlayerAttacks.Target.Arms:
-                                break;
-                            case PlayerAttacks.Target.Hands:
-                                break;
-                            case PlayerAttacks.Target.Legs:
-                                break;
-                            case PlayerAttacks.Target.Feet:
-                                break;
-                            default:
-                                break;
-                        }
-
+                        playerAttacks.Alchemy(target);
                         bodyPartUI.SetActive(false);
                         break;
 
@@ -382,10 +372,10 @@ public class PlayerCombat : MonoBehaviour
             case UIStates.PhysicalAttacks:
                     uiState = UIStates.Action;
                     attack = PlayerAttacks.Attacks.Bludgeoning;
-                    enemyTarget = battleSystem.enemyTarget;
                     partHighlight.Select();
                     targeting = true;
                     //Change camera to enemy
+                    targetingCamera.LookAt = battleSystem.enemyTarget.transform;
                     cameraController.Play("TargetingEnemy");
                     //Change color of parts if they are damaged
                     EnemyColorTargetSystem();
@@ -440,9 +430,9 @@ public class PlayerCombat : MonoBehaviour
 
             case UIStates.OverdriveAttacks:
                     uiState = UIStates.Action;
-                    enemyTarget = battleSystem.enemyTarget;
                     targeting = true;
                     //Change camera to enemy
+                    targetingCamera.LookAt = battleSystem.enemyTarget.transform;
                     cameraController.Play("TargetingEnemy");
                 break;
 
@@ -469,10 +459,10 @@ public class PlayerCombat : MonoBehaviour
             case UIStates.PhysicalAttacks:
                 uiState = UIStates.Action;
                 attack = PlayerAttacks.Attacks.Piercing;
-                enemyTarget = battleSystem.enemyTarget;
                 partHighlight.Select();
                 targeting = true;
                 //Change camera to enemy
+                targetingCamera.LookAt = battleSystem.enemyTarget.transform;
                 cameraController.Play("TargetingEnemy");
                 //Change color of parts if they are damaged
                 EnemyColorTargetSystem();
@@ -529,9 +519,9 @@ public class PlayerCombat : MonoBehaviour
             case UIStates.PhysicalAttacks:
                 uiState = UIStates.Action;
                 attack = PlayerAttacks.Attacks.Slashing;
-                enemyTarget = battleSystem.enemyTarget;
                 partHighlight.Select();
                 targeting = true;
+                targetingCamera.LookAt = battleSystem.enemyTarget.transform;
                 cameraController.Play("TargetingEnemy");
                 //Change color of parts if they are damaged
                 EnemyColorTargetSystem();
@@ -676,7 +666,7 @@ public class PlayerCombat : MonoBehaviour
     }
     void EnemyColorTargetSystem() 
     {
-        EnemyStats enemyStats = enemyTarget.GetComponent<EnemyStats>();
+        EnemyStats enemyStats = battleSystem.enemyTarget.GetComponent<EnemyStats>();
 
         bodyPartUI.transform.GetChild(1).GetComponent<Slider>().maxValue = enemyStats.enemy.baseStats.maxHealth;
         bodyPartUI.transform.GetChild(1).GetComponent<Slider>().value = enemyStats.enemy.baseStats.currentHealth;
@@ -706,17 +696,17 @@ public class PlayerCombat : MonoBehaviour
     public void ChooseSpellTarget(int spellChosen) 
     {
         spell = (PlayerAttacks.Spells)spellChosen;
-        enemyTarget = battleSystem.enemyTarget;
         magicSpellList.SetActive(false);
         spellChoiceActive = false;
         targeting = true;
+        targetingCamera.LookAt = battleSystem.enemyTarget.transform;
         cameraController.Play("TargetingEnemy");
 
     }
     private void BuffDebuffs(bool player = false)
     {
         PlayerStats playerStats = GetComponent<PlayerStats>();
-        EnemyStats enemyStats = enemyTarget.GetComponent<EnemyStats>();
+        EnemyStats enemyStats = battleSystem.enemyTarget.GetComponent<EnemyStats>();
 
         battleHUD.BuffDebuffColor(playerStats.player.buffs.headDebuff, bodyPartUI, 3, 0);
         battleHUD.BuffDebuffColor(playerStats.player.buffs.torsoDebuff, bodyPartUI, 3, 1);
@@ -751,13 +741,13 @@ public class PlayerCombat : MonoBehaviour
         yield return new WaitForSeconds(5);
         OverdriveText.SetActive(false);
         MyriadStrikes = false;
-        playerAttacks.MyriadStrikes(enemyTarget,hits);
+        playerAttacks.MyriadStrikes(battleSystem.enemyTarget, hits);
         cameraController.Play("BattleCamera");
-        battleSystem.NextTurn(BattleState.EnemyTurn);
+        battleSystem.NextTurn();
     }
     void TargetShader(bool highlight = true) 
     {
-        currRenderer = enemyTarget.transform.GetChild(0).GetComponent<SkinnedMeshRenderer>();
+        currRenderer = battleSystem.enemyTarget.transform.GetChild(0).GetComponent<SkinnedMeshRenderer>();
 
         if (!highlight)
         {

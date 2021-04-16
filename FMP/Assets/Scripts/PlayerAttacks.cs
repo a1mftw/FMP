@@ -98,6 +98,11 @@ public class PlayerAttacks : MonoBehaviour
 
     #region Alchemy Abilities
 
+    public void Alchemy(Target target)
+    {
+        
+    }
+
     #endregion
 
     #region Alchemy Skills
@@ -379,7 +384,7 @@ public class PlayerAttacks : MonoBehaviour
         gameObject.transform.LookAt(enemy.transform);
         gameObject.transform.position = returnPos;
         battleCamera.Play("BattleCamera");
-        battleSystem.NextTurn(BattleState.EnemyTurn);
+        battleSystem.NextTurn();
 
     }
     IEnumerator PiercingAttack(Target target, GameObject enemy)
@@ -421,7 +426,7 @@ public class PlayerAttacks : MonoBehaviour
         gameObject.transform.LookAt(enemy.transform);
         gameObject.transform.position = returnPos;
         battleCamera.Play("BattleCamera");
-        battleSystem.NextTurn(BattleState.EnemyTurn);
+        battleSystem.NextTurn();
 
     }
     IEnumerator BludgeoningAttack(Target target, GameObject enemy)
@@ -465,7 +470,7 @@ public class PlayerAttacks : MonoBehaviour
         gameObject.transform.LookAt(enemy.transform);
         gameObject.transform.position = returnPos;
         battleCamera.Play("BattleCamera");
-        battleSystem.NextTurn(BattleState.EnemyTurn);
+        battleSystem.NextTurn();
 
     }
     IEnumerator SpellBall(GameObject particle, GameObject enemy, Spells spellType)
@@ -506,7 +511,7 @@ public class PlayerAttacks : MonoBehaviour
         yield return new WaitForSeconds(1);
         Destroy(particle);
         battleCamera.Play("BattleCamera");
-        battleSystem.NextTurn(BattleState.EnemyTurn);
+        battleSystem.NextTurn();
 
     }
 

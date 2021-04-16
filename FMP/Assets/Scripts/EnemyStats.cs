@@ -48,6 +48,7 @@ public class EnemyStats : CharactersClass
         enemy.baseStats.baseSpeed = 5;
         enemy.baseStats.baseArmor = 5;
         enemy.baseStats.maxHealth = 100;
+        enemy.baseStats.baseSpeed = 5;
         enemy.baseStats.currentHealth = enemy.baseStats.maxHealth;
         enemy.bodyPartHealth.headMaxHealth = 40;
         enemy.bodyPartHealth.torsoMaxHealth = 40;

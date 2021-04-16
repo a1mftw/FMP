@@ -50,7 +50,7 @@ public class EnemyCombat : MonoBehaviour
             else
             {
                 RemoveBuffs();
-                battleSystem.NextTurn(BattleState.PlayerTurn);
+                battleSystem.NextTurn();
             }
 
 
@@ -114,7 +114,7 @@ public class EnemyCombat : MonoBehaviour
         foxAnimation.SetBool("Running", false);
         gameObject.transform.LookAt(playerTarget.transform);
         gameObject.transform.position = returnPos;
-        battleSystem.NextTurn(BattleState.PlayerTurn);
+        battleSystem.NextTurn();
         attacking = false;
     }
     IEnumerator ClawAttack() 
@@ -158,7 +158,7 @@ public class EnemyCombat : MonoBehaviour
         foxAnimation.SetBool("Running", false);
         gameObject.transform.LookAt(playerTarget.transform);
         gameObject.transform.position = returnPos;
-        battleSystem.NextTurn(BattleState.PlayerTurn);
+        battleSystem.NextTurn();
         attacking = false;
     }
     #endregion
