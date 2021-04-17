@@ -136,58 +136,9 @@ public class PlayerCombat : MonoBehaviour
             
         }
 
-        if (spellChoiceActive)
-        {
-            if (Input.GetButtonDown("Up"))
-            {
-                
-                spellListControl.MoveOneUnitUp();
-                if (spellListControl.GetCenteredContentID()+1>4)
-                {
-                    animationManager.MagicCastParticle(AnimationManager.Effects.Fire, spellPlaceHolder.transform.position);
-                }
-                else
-                {
-                    animationManager.MagicCastParticle((AnimationManager.Effects)spellListControl.GetCenteredContentID()+1, spellPlaceHolder.transform.position);
-                }
-                
-            }
-
-            if (Input.GetButtonDown("Down"))
-            {
-                
-                spellListControl.MoveOneUnitDown();
-                if (spellListControl.GetCenteredContentID() - 1 < 0)
-                {
-                    animationManager.MagicCastParticle(AnimationManager.Effects.Electric, spellPlaceHolder.transform.position);
-                }
-                else
-                {
-                    animationManager.MagicCastParticle((AnimationManager.Effects)spellListControl.GetCenteredContentID() - 1, spellPlaceHolder.transform.position);
-                }
-            }
-
-            if (Input.GetButtonDown("Submit"))
-            {
-                ChooseSpellTarget(spellListControl.GetCenteredContentID());
-            }
-
-            if (!cancel)
-            {
-                if (Input.GetButtonDown("Cancel"))
-                {
-                    spellChoiceActive = false;
-                    animationManager.RemoveSpells();
-                    
-                    magicSpellList.SetActive(false);
-                    cameraController.Play("BattleCamera");
-                }
-            }
-        }
-
         if (targeting)
         {
-            TargetShader(true);
+            TargetShader();
 
             //Change between enemy
             if (Input.GetButtonDown("Right"))
@@ -198,6 +149,7 @@ public class PlayerCombat : MonoBehaviour
 
             if (Input.GetButtonDown("Left"))
             {
+
                 battleSystem.PreviousTarget();
                 targetingCamera.LookAt = battleSystem.enemyTarget.transform;
             }
@@ -294,7 +246,7 @@ public class PlayerCombat : MonoBehaviour
 
             if (Input.GetButtonDown("Cancel")) 
             {
-                TargetShader(false);
+                TargetShader();
                 targeting = false;
                 bodyPartCount = 0;
                 target = PlayerAttacks.Target.Head;
@@ -303,6 +255,7 @@ public class PlayerCombat : MonoBehaviour
                 {
                     case Stances.Physical:
                         bodyPartUI.SetActive(false);
+                        uiState = UIStates.PhysicalAttacks;
                         cameraController.Play("BattleCamera");
                         break;
                     case Stances.Magic:
@@ -326,6 +279,55 @@ public class PlayerCombat : MonoBehaviour
             }
 
 
+        }
+
+        if (spellChoiceActive)
+        {
+            if (Input.GetButtonDown("Up"))
+            {
+
+                spellListControl.MoveOneUnitUp();
+                if (spellListControl.GetCenteredContentID() + 1 > 4)
+                {
+                    animationManager.MagicCastParticle(AnimationManager.Effects.Fire, spellPlaceHolder.transform.position);
+                }
+                else
+                {
+                    animationManager.MagicCastParticle((AnimationManager.Effects)spellListControl.GetCenteredContentID() + 1, spellPlaceHolder.transform.position);
+                }
+
+            }
+
+            if (Input.GetButtonDown("Down"))
+            {
+
+                spellListControl.MoveOneUnitDown();
+                if (spellListControl.GetCenteredContentID() - 1 < 0)
+                {
+                    animationManager.MagicCastParticle(AnimationManager.Effects.Electric, spellPlaceHolder.transform.position);
+                }
+                else
+                {
+                    animationManager.MagicCastParticle((AnimationManager.Effects)spellListControl.GetCenteredContentID() - 1, spellPlaceHolder.transform.position);
+                }
+            }
+
+            if (Input.GetButtonDown("Submit"))
+            {
+                ChooseSpellTarget(spellListControl.GetCenteredContentID());
+            }
+
+            if (!cancel)
+            {
+                if (Input.GetButtonDown("Cancel"))
+                {
+                    spellChoiceActive = false;
+                    animationManager.RemoveSpells();
+
+                    magicSpellList.SetActive(false);
+                    cameraController.Play("BattleCamera");
+                }
+            }
         }
 
         if (MyriadStrikes)
@@ -745,22 +747,31 @@ public class PlayerCombat : MonoBehaviour
         cameraController.Play("BattleCamera");
         battleSystem.NextTurn();
     }
-    void TargetShader(bool highlight = true) 
+    void TargetShader() 
     {
-        currRenderer = battleSystem.enemyTarget.transform.GetChild(0).GetComponent<SkinnedMeshRenderer>();
+        if (!currRenderer )
+        {
+            currRenderer = battleSystem.enemyTarget.transform.GetChild(0).GetComponent<SkinnedMeshRenderer>();
+            originalMaterials = currRenderer.materials;
 
-        if (!highlight)
+        }
+
+        if (currRenderer != battleSystem.enemyTarget.transform.GetChild(0).GetComponent<SkinnedMeshRenderer>())
         {
             currRenderer.materials = originalMaterials;
-
-         }
+            currRenderer = battleSystem.enemyTarget.transform.GetChild(0).GetComponent<SkinnedMeshRenderer>();
+            originalMaterials = currRenderer.materials;
+        }
        else
         {
-            originalMaterials = currRenderer.materials;
             matArray = new List<Material>(currRenderer.materials);
             matArray.Add(outlineMaterial);
-            currRenderer.materials = matArray.ToArray();
-            targetRenderer = currRenderer;
+
+            if (currRenderer.materials != matArray.ToArray() )
+            {
+                currRenderer.materials = matArray.ToArray();
+                targetRenderer = currRenderer;
+            }
         }
     
     }

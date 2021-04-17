@@ -100,7 +100,6 @@ public class BattleSystem : MonoBehaviour
     {
         if (playerStartAction)
         {
-            playerHUD.SetHUD();
             playerCombat.SetUI();
             playerStartAction = false;
         }
@@ -171,11 +170,15 @@ public class BattleSystem : MonoBehaviour
 
     public void NextTurn()
     {
+        playerHUD.SetHUD();
         int tempSpeed;
 
         if (availableChars.Count == 0)
         {
-            availableChars = inactiveChars;
+            for (int i = 0; i < inactiveChars.Count; i++)
+            {
+                availableChars.Add(inactiveChars[i]);
+            }
             inactiveChars.Clear();
             bigSpeed = 0;
         }

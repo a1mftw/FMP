@@ -2439,7 +2439,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 67601732}
-  m_LocalRotation: {x: 0.08849156, y: 0.78837186, z: -0.11676028, w: 0.59749997}
+  m_LocalRotation: {x: 0.08849156, y: 0.7883719, z: -0.11676029, w: 0.5974999}
   m_LocalPosition: {x: 11.42, y: -7.54, z: 13.8}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
@@ -13431,7 +13431,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1434978434}
-  m_LocalRotation: {x: 0.011500645, y: 0.3122792, z: -0.00378078, w: 0.94991326}
+  m_LocalRotation: {x: 0.011500669, y: 0.31227922, z: -0.0037807878, w: 0.94991326}
   m_LocalPosition: {x: 32.14, y: -4.59, z: 11.59}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
@@ -13958,6 +13958,8 @@ MonoBehaviour:
   playerStats: {fileID: 1518716766}
   hpSlider: {fileID: 1961151106}
   mpSlider: {fileID: 637598926}
+  hpText: {fileID: 1853002394}
+  mpText: {fileID: 680627194}
 --- !u!1 &1518716761 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 4371719825826983893, guid: 8d7b105ae1dc73b48931f2ec43bb7318, type: 3}

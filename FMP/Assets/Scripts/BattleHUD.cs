@@ -10,10 +10,13 @@ public class BattleHUD : MonoBehaviour
     public PlayerStats playerStats;
     public Slider hpSlider;
     public Slider mpSlider;
+    public Text hpText;
+    public Text mpText;
 
 
     public void SetHUD()
     {
+        
         hpSlider.maxValue = playerStats.player.baseStats.maxHealth;
         mpSlider.maxValue = playerStats.player.baseStats.maxHealth;
         SetHP();
@@ -152,10 +155,12 @@ public class BattleHUD : MonoBehaviour
     private void SetHP()
     {
         hpSlider.value = playerStats.player.baseStats.currentHealth;
+        hpText.text = playerStats.player.baseStats.currentHealth.ToString();
     }
     private void SetMP()
     {
         mpSlider.value = playerStats.player.baseStats.currentMana;
+        mpText.text = playerStats.player.baseStats.currentMana.ToString();
     }
 
     public void BodyPartColor(int currentHealth, int maxHealth, int part, GameObject BodyUI)
