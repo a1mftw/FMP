@@ -73,6 +73,7 @@ public class PlayerCombat : MonoBehaviour
     private bool changeStanceActive = false;
     private bool spellChoiceActive = false;
     private bool MyriadStrikes = false;
+    private bool alchemyTargeting = false;
 
     private Text FirstButton;
     private Text SecondButton;
@@ -281,6 +282,53 @@ public class PlayerCombat : MonoBehaviour
 
         }
 
+        if (alchemyTargeting)
+        {
+            target = (PlayerAttacks.Target)bodyPartCount;
+            //Change between body part
+            if (Input.GetButtonDown("Up"))
+            {
+                if (--bodyPartCount < 0)
+                {
+                    bodyPartCount = 5;
+                }
+            }
+
+            if (Input.GetButtonDown("Down"))
+            {
+                if (++bodyPartCount > 5)
+                {
+                    bodyPartCount = 0;
+                }
+            }
+
+            if (Input.GetButtonDown("Submit"))
+            {
+               
+                playerAttacks.Alchemy(target);
+                bodyPartUI.SetActive(false);
+                alchemyTargeting = false;
+                bodyPartCount = 0;
+                cameraController.Play("BattleCamera");
+                animationManager.RemoveSpells();
+            }
+
+              
+
+            if (Input.GetButtonDown("Cancel"))
+            {
+                TargetShader();
+                alchemyTargeting = false;
+                bodyPartCount = 0;
+                target = PlayerAttacks.Target.Head;
+                cameraController.Play("BattleCamera");
+                animationManager.RemoveSpells();
+
+
+            }
+
+        }
+
         if (spellChoiceActive)
         {
             if (Input.GetButtonDown("Up"))
@@ -408,7 +456,7 @@ public class PlayerCombat : MonoBehaviour
             case UIStates.AlchemyNormal:
                 cameraController.Play("AlchemyState");
                 partHighlight.Select();
-                targeting = true;
+                alchemyTargeting = true;
                 //Change color of parts if they are damaged
                 PlayerColorTargetSystem();
                 //Show player buffs/Debuffs

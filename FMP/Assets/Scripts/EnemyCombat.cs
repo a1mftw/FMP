@@ -44,7 +44,16 @@ public class EnemyCombat : MonoBehaviour
 
             if (!enemyStats.enemy.buffs.Clouded)
             {
-                StartCoroutine("TailSwipe");
+                int i = UnityEngine.Random.Range(0,1);
+
+                if (i == 1)
+                {
+                    StartCoroutine("TailSwipe");
+                }
+                else
+                {
+                    StartCoroutine("ClawAttack");
+                }
                 RemoveBuffs();
             }
             else
@@ -140,7 +149,7 @@ public class EnemyCombat : MonoBehaviour
         foxAnimation.SetBool("Running", false);
         foxAnimation.SetBool("Claw", true);
         yield return new WaitForSeconds(1);
-        playerTarget.GetComponent<PlayerAttacks>().TakeTailSwipeDamage(enemyStats.enemy.baseStats.baseDamage, PlayerAttacks.Target.Torso);
+        playerTarget.GetComponent<PlayerAttacks>().TakeClawAttackDamage(enemyStats.enemy.baseStats.baseDamage, PlayerAttacks.Target.Feet);
         foxAnimation.SetBool("Claw", false);
 
         step = (12 / (gameObject.transform.position - returnPos).magnitude) * Time.fixedDeltaTime;
@@ -342,6 +351,7 @@ public class EnemyCombat : MonoBehaviour
     {
         damageNumber.Create(transform.position, damage, false);
         enemyStats.enemy.baseStats.currentHealth -= damage;
+        battleSystem.NextTurn();
     }
 
     #endregion

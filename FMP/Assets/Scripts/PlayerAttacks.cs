@@ -100,7 +100,30 @@ public class PlayerAttacks : MonoBehaviour
 
     public void Alchemy(Target target)
     {
-        
+        switch (target)
+        {
+            case Target.Head:
+                playerStats.player.bodyPartHealth.headHealth = 0;
+                break;
+            case Target.Torso:
+                playerStats.player.bodyPartHealth.torsoHealth = 0;
+                break;
+            case Target.Arms:
+                playerStats.player.bodyPartHealth.armsHealth = 0;
+                break;
+            case Target.Hands:
+                playerStats.player.bodyPartHealth.handsHealth = 0;
+                break;
+            case Target.Legs:
+                playerStats.player.bodyPartHealth.legsHealth = 0;
+                break;
+            case Target.Feet:
+                break;
+            default:
+                break;
+        }
+
+        battleSystem.NextTurn();
     }
 
     #endregion
@@ -123,6 +146,103 @@ public class PlayerAttacks : MonoBehaviour
 
 
     public void TakeTailSwipeDamage(int damage, Target target) 
+    {
+        int damageDealt = damage - playerStats.player.baseStats.baseArmor;
+
+        switch (target)
+        {
+            case Target.Head:
+
+                if (playerStats.player.bodyPartHealth.headHealth - damageDealt <= 0)
+                {
+                    playerStats.player.bodyPartHealth.headHealth = 0;
+                    ApplyBodyPartDebuff(target);
+                }
+                else
+                {
+                    playerStats.player.bodyPartHealth.headHealth -= damageDealt;
+                }
+
+                break;
+            case Target.Torso:
+
+                if (playerStats.player.bodyPartHealth.torsoHealth - damageDealt <= 0)
+                {
+                    playerStats.player.bodyPartHealth.torsoHealth = 0;
+                    ApplyBodyPartDebuff(target);
+                }
+                else
+                {
+                    playerStats.player.bodyPartHealth.torsoHealth -= damageDealt;
+                }
+                break;
+
+            case Target.Arms:
+
+                if (playerStats.player.bodyPartHealth.armsHealth - damageDealt <= 0)
+                {
+                    playerStats.player.bodyPartHealth.armsHealth = 0;
+                    ApplyBodyPartDebuff(target);
+                }
+                else
+                {
+                    playerStats.player.bodyPartHealth.armsHealth -= damageDealt;
+                }
+                break;
+
+            case Target.Hands:
+
+                if (playerStats.player.bodyPartHealth.handsHealth - damageDealt <= 0)
+                {
+                    playerStats.player.bodyPartHealth.handsHealth = 0;
+                    ApplyBodyPartDebuff(target);
+                }
+                else
+                {
+                    playerStats.player.bodyPartHealth.handsHealth -= damageDealt;
+                }
+                break;
+            case Target.Legs:
+
+                if (playerStats.player.bodyPartHealth.legsHealth - damageDealt <= 0)
+                {
+                    playerStats.player.bodyPartHealth.legsHealth = 0;
+                    ApplyBodyPartDebuff(target);
+                }
+                else
+                {
+                    playerStats.player.bodyPartHealth.legsHealth -= damageDealt;
+                }
+                break;
+            case Target.Feet:
+
+                if (playerStats.player.bodyPartHealth.feetHealth - damageDealt <= 0)
+                {
+                    playerStats.player.bodyPartHealth.feetHealth = 0;
+                    ApplyBodyPartDebuff(target);
+                }
+                else
+                {
+                    playerStats.player.bodyPartHealth.feetHealth -= damageDealt;
+                }
+                break;
+
+        }
+
+        playerStats.player.baseStats.currentHealth -= damageDealt;
+        damageNumber.Create(transform.position, damageDealt, false);
+
+        Debug.Log("Torso Health: " + playerStats.player.bodyPartHealth.torsoHealth);
+        Debug.Log("Dealt " + damageDealt + " damage\nRemains " + playerStats.player.baseStats.currentHealth + " HP");
+
+
+
+        if (playerStats.player.baseStats.currentHealth <= 0)
+        {
+            Destroy(this.gameObject);
+        }
+    }
+    public void TakeClawAttackDamage(int damage, Target target)
     {
         int damageDealt = damage - playerStats.player.baseStats.baseArmor;
 
@@ -344,6 +464,7 @@ public class PlayerAttacks : MonoBehaviour
 
     IEnumerator SlashingAttack(Target target, GameObject enemy) 
     {
+        transform.LookAt(enemy.transform);
         battleCamera.Play("BattleCamera");
         yield return new WaitForSeconds(1);
         var returnPos = gameObject.transform.position;
@@ -381,7 +502,6 @@ public class PlayerAttacks : MonoBehaviour
             yield return new WaitForFixedUpdate();
         }
         playerAnimations.SetBool("Sprinting", false);
-        gameObject.transform.LookAt(enemy.transform);
         gameObject.transform.position = returnPos;
         battleCamera.Play("BattleCamera");
         battleSystem.NextTurn();
@@ -389,6 +509,7 @@ public class PlayerAttacks : MonoBehaviour
     }
     IEnumerator PiercingAttack(Target target, GameObject enemy)
     {
+        transform.LookAt(enemy.transform);
         battleCamera.Play("BattleCamera");
         yield return new WaitForSeconds(1);
         var returnPos = gameObject.transform.position;
@@ -431,6 +552,7 @@ public class PlayerAttacks : MonoBehaviour
     }
     IEnumerator BludgeoningAttack(Target target, GameObject enemy)
     {
+        transform.LookAt(enemy.transform);
         battleCamera.Play("BattleCamera");
         yield return new WaitForSeconds(1);
         var returnPos = gameObject.transform.position;
