@@ -464,7 +464,8 @@ public class PlayerAttacks : MonoBehaviour
 
     IEnumerator SlashingAttack(Target target, GameObject enemy) 
     {
-        transform.LookAt(enemy.transform);
+        Vector3 lastEnemyPos = enemy.transform.position;
+        transform.LookAt(lastEnemyPos);
         battleCamera.Play("BattleCamera");
         yield return new WaitForSeconds(1);
         var returnPos = gameObject.transform.position;
@@ -502,6 +503,7 @@ public class PlayerAttacks : MonoBehaviour
             yield return new WaitForFixedUpdate();
         }
         playerAnimations.SetBool("Sprinting", false);
+        gameObject.transform.LookAt(lastEnemyPos);
         gameObject.transform.position = returnPos;
         battleCamera.Play("BattleCamera");
         battleSystem.NextTurn();
@@ -509,7 +511,8 @@ public class PlayerAttacks : MonoBehaviour
     }
     IEnumerator PiercingAttack(Target target, GameObject enemy)
     {
-        transform.LookAt(enemy.transform);
+        Vector3 lastEnemyPos = enemy.transform.position;
+        transform.LookAt(lastEnemyPos);
         battleCamera.Play("BattleCamera");
         yield return new WaitForSeconds(1);
         var returnPos = gameObject.transform.position;
@@ -544,7 +547,7 @@ public class PlayerAttacks : MonoBehaviour
             yield return new WaitForFixedUpdate();
         }
         playerAnimations.SetBool("Sprinting", false);
-        gameObject.transform.LookAt(enemy.transform);
+        gameObject.transform.LookAt(lastEnemyPos);
         gameObject.transform.position = returnPos;
         battleCamera.Play("BattleCamera");
         battleSystem.NextTurn();
@@ -552,7 +555,9 @@ public class PlayerAttacks : MonoBehaviour
     }
     IEnumerator BludgeoningAttack(Target target, GameObject enemy)
     {
-        transform.LookAt(enemy.transform);
+
+        Vector3 lastEnemyPos = enemy.transform.position;
+        transform.LookAt(lastEnemyPos);
         battleCamera.Play("BattleCamera");
         yield return new WaitForSeconds(1);
         var returnPos = gameObject.transform.position;
@@ -579,7 +584,7 @@ public class PlayerAttacks : MonoBehaviour
         step = (12 / (gameObject.transform.position - returnPos).magnitude) * Time.fixedDeltaTime;
         t = 0;
 
-        gameObject.transform.LookAt(returnPos);
+        gameObject.transform.LookAt(lastEnemyPos);
         playerAnimations.SetBool("Sprinting", true);
 
         while (Vector3.Distance(gameObject.transform.position, returnPos) > 5)
@@ -589,7 +594,7 @@ public class PlayerAttacks : MonoBehaviour
             yield return new WaitForFixedUpdate();
         }
         playerAnimations.SetBool("Sprinting", false);
-        gameObject.transform.LookAt(enemy.transform);
+        gameObject.transform.LookAt(lastEnemyPos);
         gameObject.transform.position = returnPos;
         battleCamera.Play("BattleCamera");
         battleSystem.NextTurn();

@@ -177,7 +177,14 @@ public class BattleSystem : MonoBehaviour
         {
             for (int i = 0; i < inactiveChars.Count; i++)
             {
-                availableChars.Add(inactiveChars[i]);
+                if (inactiveChars[i].tag == "Enemy"&&inactiveChars[i].GetComponent<EnemyStats>().enemy.baseStats.currentHealth<=0)
+                {
+                    inactiveChars.RemoveAt(i);
+                }
+                else
+                {
+                    availableChars.Add(inactiveChars[i]);
+                }
             }
             inactiveChars.Clear();
             bigSpeed = 0;

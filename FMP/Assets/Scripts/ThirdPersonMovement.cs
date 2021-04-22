@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Cinemachine;
 
 public class ThirdPersonMovement : MonoBehaviour
 {
@@ -12,6 +13,7 @@ public class ThirdPersonMovement : MonoBehaviour
     public CharacterController charController;
     public TransitionController tranController;
     public Animator playerAnimations;
+    public CinemachineFreeLook playerCamera;
 
     #endregion
 
@@ -23,6 +25,9 @@ public class ThirdPersonMovement : MonoBehaviour
     public float speed = 6f;
     public float gravity = 2f;
     float turnSmoothVelocity;
+
+
+    [HideInInspector]
     public bool canControl = false;
 
     #endregion
@@ -33,6 +38,8 @@ public class ThirdPersonMovement : MonoBehaviour
     {
         if (canControl)
         {
+
+            playerCamera.enabled = true;
             float horizontal = Input.GetAxisRaw("Horizontal");
             float vertical = Input.GetAxisRaw("Vertical");
             Vector3 direction = new Vector3(horizontal, 0f, vertical).normalized;
@@ -58,8 +65,13 @@ public class ThirdPersonMovement : MonoBehaviour
             else
             {
                 playerAnimations.SetBool("Walking", false);
+
             }
 
+        }
+        else
+        {
+            playerCamera.enabled = false;
         }
 
     }
@@ -69,10 +81,11 @@ public class ThirdPersonMovement : MonoBehaviour
     {
         if (other.tag == "Enemy" && canControl)
         {
+            Destroy(other);
             playerAnimations.SetBool("Walking", false);
             canControl = false;
             PreviousPos = transform.position;
-            tranController.StartBattle(other.gameObject);
+            tranController.StartBattle();
         }
     }
 

@@ -23,7 +23,8 @@ public class PlayerCombat : MonoBehaviour
         AlchemyAbilities,
         OverdriveNormal,
         OverdriveAttacks,
-        OverdriveAbilities
+        OverdriveAbilities,
+        ChangeStance,
     }
     public enum Stances
     {
@@ -313,20 +314,6 @@ public class PlayerCombat : MonoBehaviour
                 animationManager.RemoveSpells();
             }
 
-              
-
-            if (Input.GetButtonDown("Cancel"))
-            {
-                TargetShader();
-                alchemyTargeting = false;
-                bodyPartCount = 0;
-                target = PlayerAttacks.Target.Head;
-                cameraController.Play("BattleCamera");
-                animationManager.RemoveSpells();
-
-
-            }
-
         }
 
         if (spellChoiceActive)
@@ -363,18 +350,6 @@ public class PlayerCombat : MonoBehaviour
             if (Input.GetButtonDown("Submit"))
             {
                 ChooseSpellTarget(spellListControl.GetCenteredContentID());
-            }
-
-            if (!cancel)
-            {
-                if (Input.GetButtonDown("Cancel"))
-                {
-                    spellChoiceActive = false;
-                    animationManager.RemoveSpells();
-
-                    magicSpellList.SetActive(false);
-                    cameraController.Play("BattleCamera");
-                }
             }
         }
 
@@ -454,6 +429,7 @@ public class PlayerCombat : MonoBehaviour
                 break;
 
             case UIStates.AlchemyNormal:
+                uiState = UIStates.AlchemyAttacks;
                 cameraController.Play("AlchemyState");
                 partHighlight.Select();
                 alchemyTargeting = true;
@@ -564,6 +540,7 @@ public class PlayerCombat : MonoBehaviour
             case UIStates.PhysicalNormal:
                 changeStanceActive = true;
                 ChangeStanceUI.SetActive(true);
+                uiState = UIStates.ChangeStance;
                 break;
 
             case UIStates.PhysicalAttacks:
@@ -586,6 +563,7 @@ public class PlayerCombat : MonoBehaviour
             case UIStates.MagicNormal:
                 changeStanceActive = true;
                 ChangeStanceUI.SetActive(true);
+                uiState = UIStates.ChangeStance;
                 break;
 
             case UIStates.MagicAttacks:
@@ -597,6 +575,7 @@ public class PlayerCombat : MonoBehaviour
             case UIStates.AlchemyNormal:
                 changeStanceActive = true;
                 ChangeStanceUI.SetActive(true);
+                uiState = UIStates.ChangeStance;
                 break;
 
             case UIStates.AlchemyAttacks:
@@ -606,6 +585,7 @@ public class PlayerCombat : MonoBehaviour
                 break;
 
             case UIStates.OverdriveNormal:
+                uiState = UIStates.ChangeStance;
                 changeStanceActive = true;
                 ChangeStanceUI.SetActive(true);
                 break;
@@ -650,15 +630,19 @@ public class PlayerCombat : MonoBehaviour
                 break;
 
             case UIStates.MagicAttacks:
-                uiState = UIStates.PhysicalNormal;
+                uiState = UIStates.MagicNormal;
                 FirstButton.text = "Attack";
                 SecondButton.text = "Abilities";
                 ThirdButton.text = "Change Stance";
                 FourthButton.text = "Flee";
+                spellChoiceActive = false;
+                animationManager.RemoveSpells();
+                magicSpellList.SetActive(false);
+                cameraController.Play("BattleCamera");
                 break;
 
             case UIStates.MagicAbilities:
-                uiState = UIStates.PhysicalNormal;
+                uiState = UIStates.MagicNormal;
                 FirstButton.text = "Attack";
                 SecondButton.text = "Abilities";
                 ThirdButton.text = "Change Stance";
@@ -670,15 +654,20 @@ public class PlayerCombat : MonoBehaviour
                 break;
 
             case UIStates.AlchemyAttacks:
-                uiState = UIStates.PhysicalNormal;
+                uiState = UIStates.AlchemyNormal;
                 FirstButton.text = "Attack";
                 SecondButton.text = "Abilities";
                 ThirdButton.text = "Change Stance";
                 FourthButton.text = "Flee";
+                alchemyTargeting = false;
+                bodyPartCount = 0;
+                target = PlayerAttacks.Target.Head;
+                cameraController.Play("BattleCamera");
+                animationManager.RemoveSpells();
                 break;
 
             case UIStates.AlchemyAbilities:
-                uiState = UIStates.PhysicalNormal;
+                uiState = UIStates.AlchemyNormal;
                 FirstButton.text = "Attack";
                 SecondButton.text = "Abilities";
                 ThirdButton.text = "Change Stance";
@@ -690,7 +679,7 @@ public class PlayerCombat : MonoBehaviour
                 break;
 
             case UIStates.OverdriveAttacks:
-                uiState = UIStates.PhysicalNormal;
+                uiState = UIStates.OverdriveNormal;
                 FirstButton.text = "Attack";
                 SecondButton.text = "Abilities";
                 ThirdButton.text = "Change Stance";
@@ -698,11 +687,15 @@ public class PlayerCombat : MonoBehaviour
                 break;
 
             case UIStates.OverdriveAbilities:
-                uiState = UIStates.PhysicalNormal;
+                uiState = UIStates.OverdriveNormal;
                 FirstButton.text = "Attack";
                 SecondButton.text = "Abilities";
                 ThirdButton.text = "Change Stance";
                 FourthButton.text = "Flee";
+                break;
+
+            case UIStates.ChangeStance:
+                ChangeStanceUI.SetActive(false);
                 break;
 
             default:
@@ -793,7 +786,6 @@ public class PlayerCombat : MonoBehaviour
         MyriadStrikes = false;
         playerAttacks.MyriadStrikes(battleSystem.enemyTarget, hits);
         cameraController.Play("BattleCamera");
-        battleSystem.NextTurn();
     }
     void TargetShader() 
     {
