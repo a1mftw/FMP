@@ -6,6 +6,9 @@ public class PlayerAttacks : MonoBehaviour
 {
     Spells previousSpell = Spells.None;
     Spells currentSpell = Spells.None;
+
+    public GameObject buff;
+    public GameObject buffPanel;
     public enum Attacks
     {
         Bludgeoning,
@@ -41,9 +44,11 @@ public class PlayerAttacks : MonoBehaviour
     public Animator battleCamera;
     public PlayerStats playerStats;
     public BattleSystem battleSystem;
+    public PlayerCombat playerCombat;
+    public AnimationManager animationManager;
 
     #region Physical Attacks
-   
+
     public void Blunt(Target target, GameObject enemy) 
     {
         StartCoroutine(BludgeoningAttack(target, enemy));
@@ -104,26 +109,45 @@ public class PlayerAttacks : MonoBehaviour
         {
             case Target.Head:
                 playerStats.player.bodyPartHealth.headHealth = 0;
+                ApplyBodyPartDebuff(Target.Head);
+                ApplyBodyPartBuff(Target.Head);
+                StartCoroutine("AlchemySpell");
                 break;
             case Target.Torso:
                 playerStats.player.bodyPartHealth.torsoHealth = 0;
+                ApplyBodyPartDebuff(Target.Torso);
+                ApplyBodyPartBuff(Target.Torso);
+                StartCoroutine("AlchemySpell");
                 break;
             case Target.Arms:
                 playerStats.player.bodyPartHealth.armsHealth = 0;
+                ApplyBodyPartDebuff(Target.Arms);
+                ApplyBodyPartBuff(Target.Arms);
+                StartCoroutine("AlchemySpell");
                 break;
             case Target.Hands:
                 playerStats.player.bodyPartHealth.handsHealth = 0;
+                ApplyBodyPartDebuff(Target.Hands);
+                ApplyBodyPartBuff(Target.Hands);
+                StartCoroutine("AlchemySpell");
                 break;
             case Target.Legs:
                 playerStats.player.bodyPartHealth.legsHealth = 0;
+                ApplyBodyPartDebuff(Target.Legs);
+                ApplyBodyPartBuff(Target.Legs);
+                StartCoroutine("AlchemySpell");
                 break;
             case Target.Feet:
+                playerStats.player.bodyPartHealth.feetHealth = 0;
+                ApplyBodyPartDebuff(Target.Feet);
+                ApplyBodyPartBuff(Target.Feet);
+                StartCoroutine("AlchemySpell");
                 break;
             default:
                 break;
         }
 
-        battleSystem.NextTurn();
+        
     }
 
     #endregion
@@ -347,21 +371,61 @@ public class PlayerAttacks : MonoBehaviour
         {
             case Target.Head:
                 playerStats.player.buffs.headDebuff = true;
+                playerStats.player.baseStats.magicResist -= 10;
                 break;
             case Target.Torso:
                 playerStats.player.buffs.torsoDebuff = true;
+                playerStats.player.baseStats.baseArmor -= 10;
                 break;
             case Target.Arms:
                 playerStats.player.buffs.armsDebuff = true;
+                playerCombat.canMagic = false;
                 break;
             case Target.Hands:
                 playerStats.player.buffs.handsDebuff = true;
+                playerCombat.canStrike = false;
                 break;
             case Target.Legs:
                 playerStats.player.buffs.legsDebuff = true;
+                playerStats.player.baseStats.baseSpeed -= 10;
                 break;
             case Target.Feet:
                 playerStats.player.buffs.feetDebuff = true;
+                playerStats.player.baseStats.baseDodge -= 10;
+                break;
+            default:
+                break;
+        }
+    }
+
+    private void ApplyBodyPartBuff(Target target) 
+    {
+        switch (target)
+        {
+            case Target.Head:
+                playerStats.player.buffs.headBuff = true;
+                playerStats.player.baseStats.baseArmor += 10;
+                break;
+            case Target.Torso:
+                playerStats.player.buffs.torsoBuff = true;
+                playerStats.player.baseStats.magicResist += 10;
+                break;
+            case Target.Arms:
+                playerStats.player.buffs.armsBuff = true;
+                playerStats.player.baseStats.baseDamage += 10;
+                break;
+            case Target.Hands:
+
+                playerStats.player.buffs.handsBuff = true;
+                playerStats.player.baseStats.baseMagicDamage += 10;
+                break;
+            case Target.Legs:
+                playerStats.player.buffs.legsBuff = true;
+                playerStats.player.baseStats.baseDodge += 10;
+                break;
+            case Target.Feet:
+                playerStats.player.buffs.feetBuff = true;
+                playerStats.player.baseStats.baseSpeed += 10;
                 break;
             default:
                 break;
@@ -506,7 +570,7 @@ public class PlayerAttacks : MonoBehaviour
         gameObject.transform.LookAt(lastEnemyPos);
         gameObject.transform.position = returnPos;
         battleCamera.Play("BattleCamera");
-        battleSystem.NextTurn();
+        
 
     }
     IEnumerator PiercingAttack(Target target, GameObject enemy)
@@ -550,7 +614,7 @@ public class PlayerAttacks : MonoBehaviour
         gameObject.transform.LookAt(lastEnemyPos);
         gameObject.transform.position = returnPos;
         battleCamera.Play("BattleCamera");
-        battleSystem.NextTurn();
+        
 
     }
     IEnumerator BludgeoningAttack(Target target, GameObject enemy)
@@ -584,7 +648,7 @@ public class PlayerAttacks : MonoBehaviour
         step = (12 / (gameObject.transform.position - returnPos).magnitude) * Time.fixedDeltaTime;
         t = 0;
 
-        gameObject.transform.LookAt(lastEnemyPos);
+        gameObject.transform.LookAt(returnPos);
         playerAnimations.SetBool("Sprinting", true);
 
         while (Vector3.Distance(gameObject.transform.position, returnPos) > 5)
@@ -597,7 +661,7 @@ public class PlayerAttacks : MonoBehaviour
         gameObject.transform.LookAt(lastEnemyPos);
         gameObject.transform.position = returnPos;
         battleCamera.Play("BattleCamera");
-        battleSystem.NextTurn();
+        
 
     }
     IEnumerator SpellBall(GameObject particle, GameObject enemy, Spells spellType)
@@ -614,23 +678,23 @@ public class PlayerAttacks : MonoBehaviour
             particle.transform.position = Vector3.Lerp(particle.transform.position, enemy.transform.position, t);
             yield return new WaitForFixedUpdate();
         }
-
+        //SFX_Manager_HR.instance.PlaySFX(,);
         switch (spellType)
         {
             case Spells.Fire:
-                enemy.GetComponent<EnemyCombat>().TakeFireDamage(playerStats.player.baseStats.baseDamage);
+                enemy.GetComponent<EnemyCombat>().TakeFireDamage(playerStats.player.baseStats.baseMagicDamage);
                 break;
             case Spells.Water:
-                enemy.GetComponent<EnemyCombat>().TakeWaterDamage(playerStats.player.baseStats.baseDamage);
+                enemy.GetComponent<EnemyCombat>().TakeWaterDamage(playerStats.player.baseStats.baseMagicDamage);
                 break;
             case Spells.Air:
-                enemy.GetComponent<EnemyCombat>().TakeAirDamage(playerStats.player.baseStats.baseDamage);
+                enemy.GetComponent<EnemyCombat>().TakeAirDamage(playerStats.player.baseStats.baseMagicDamage);
                 break;
             case Spells.Earth:
-                enemy.GetComponent<EnemyCombat>().TakeEarthDamage(playerStats.player.baseStats.baseDamage);
+                enemy.GetComponent<EnemyCombat>().TakeEarthDamage(playerStats.player.baseStats.baseMagicDamage);
                 break;
             case Spells.Lightning:
-                enemy.GetComponent<EnemyCombat>().TakeLightningDamage(playerStats.player.baseStats.baseDamage);
+                enemy.GetComponent<EnemyCombat>().TakeLightningDamage(playerStats.player.baseStats.baseMagicDamage);
                 break;
         }
 
@@ -638,7 +702,19 @@ public class PlayerAttacks : MonoBehaviour
         yield return new WaitForSeconds(1);
         Destroy(particle);
         battleCamera.Play("BattleCamera");
+        
+
+    }
+
+    IEnumerator AlchemySpell() 
+    {
+
+        Instantiate(buff,buffPanel.transform);
+        battleCamera.Play("BattleCamera");
+        animationManager.RemoveSpells();
+        yield return new WaitForSeconds(2);
         battleSystem.NextTurn();
+       
 
     }
 

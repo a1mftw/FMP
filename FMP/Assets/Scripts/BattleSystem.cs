@@ -177,7 +177,7 @@ public class BattleSystem : MonoBehaviour
         {
             for (int i = 0; i < inactiveChars.Count; i++)
             {
-                if (inactiveChars[i].tag == "Enemy"&&inactiveChars[i].GetComponent<EnemyStats>().enemy.baseStats.currentHealth<=0)
+                if (inactiveChars[i].tag == "Enemy" && inactiveChars[i].GetComponent<EnemyStats>().enemy.baseStats.currentHealth<=0)
                 {
                     inactiveChars.RemoveAt(i);
                 }
@@ -194,7 +194,7 @@ public class BattleSystem : MonoBehaviour
         {
             if (availableChars[i].tag == "Player")
             {
-                tempSpeed = availableChars[i].GetComponent<PlayerStats>().player.baseStats.baseSpeed;  
+                tempSpeed = availableChars[i].GetComponent<PlayerStats>().player.baseStats.baseSpeed;
             }
             else
             {
@@ -216,11 +216,44 @@ public class BattleSystem : MonoBehaviour
         }
         else
         {
+            playerCombat.RemoveUI();
             playerTurn = false;
             enemyAction(availableChars[nextAttacker]);
             inactiveChars.Add(availableChars[nextAttacker]);
             availableChars.Remove(availableChars[nextAttacker]);
             
+        }
+    }
+
+    public void RemoveFromTurn(GameObject enemy) 
+    {
+        for (int i = 0; i < availableChars.Count; i++)
+        {
+            if (availableChars[i] == enemy)
+            {
+                availableChars.RemoveAt(i);
+            }
+        }
+
+        for (int i = 0; i < inactiveChars.Count; i++)
+        {
+            if (inactiveChars[i] == enemy)
+            {
+                inactiveChars.RemoveAt(i);
+            }
+        }
+
+        enemiesSpawned--;
+        Enemies.RemoveAt(target);
+        
+
+        if (Enemies.Count <= 0)
+        {
+            playerCombat.Flee();
+        }
+        else
+        {
+            enemyTarget = Enemies[0];
         }
     }
 

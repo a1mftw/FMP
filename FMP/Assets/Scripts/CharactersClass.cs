@@ -12,6 +12,12 @@ public class CharactersClass : MonoBehaviour
         public bool handsDebuff;
         public bool legsDebuff;
         public bool feetDebuff;
+        public bool headBuff;
+        public bool torsoBuff;
+        public bool armsBuff;
+        public bool handsBuff;
+        public bool legsBuff;
+        public bool feetBuff;
         public bool Paralysed;
         public bool Clouded;
         public bool Slowed;
@@ -52,7 +58,10 @@ public class CharactersClass : MonoBehaviour
     {
         public int level;
         public int baseArmor;
+        public int magicResist;
         public int baseDamage;
+        public int baseMagicDamage;
+        public int baseDodge;
         public int maxHealth;
         public int currentHealth;
         public int maxMana;

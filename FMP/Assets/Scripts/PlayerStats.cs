@@ -20,7 +20,7 @@ public class PlayerStats : CharactersClass
 
     public Characters player;
 
-    private void Start()
+    private void Awake()
     {
         switch (playableChars)
         {
@@ -38,6 +38,9 @@ public class PlayerStats : CharactersClass
         player.baseStats.baseDamage = 10;
         player.baseStats.baseArmor = 5;
         player.baseStats.baseSpeed = 10;
+        player.baseStats.baseDodge = 10;
+        player.baseStats.baseMagicDamage = 20;
+        player.baseStats.magicResist = 5;
         player.baseStats.maxMana = 200;
         player.baseStats.currentMana = player.baseStats.maxMana;
         player.baseStats.maxHealth = 200;

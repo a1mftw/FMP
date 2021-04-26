@@ -25,6 +25,10 @@ public class PlayerCombat : MonoBehaviour
         OverdriveAttacks,
         OverdriveAbilities,
         ChangeStance,
+        MagicAction,
+        PhysicalAction,
+        AlchemyAction,
+        OverdriveAction
     }
     public enum Stances
     {
@@ -75,6 +79,8 @@ public class PlayerCombat : MonoBehaviour
     private bool spellChoiceActive = false;
     private bool MyriadStrikes = false;
     private bool alchemyTargeting = false;
+    public bool canStrike = true;
+    public bool canMagic = true;
 
     private Text FirstButton;
     private Text SecondButton;
@@ -180,6 +186,7 @@ public class PlayerCombat : MonoBehaviour
             
             if (Input.GetButtonDown("Submit"))
             {
+                RemoveShader();
                 switch (stance)
                 {
                     case Stances.Physical:
@@ -201,6 +208,7 @@ public class PlayerCombat : MonoBehaviour
                         break;
 
                     case Stances.Magic:
+
                         switch (spell)
                         {
                             case PlayerAttacks.Spells.Fire:
@@ -241,46 +249,10 @@ public class PlayerCombat : MonoBehaviour
                     default:
                         break;
                 }
-                
+                RemoveShader();
                 targeting = false;
                 bodyPartCount = 0;
             }
-
-            if (Input.GetButtonDown("Cancel")) 
-            {
-                TargetShader();
-                targeting = false;
-                bodyPartCount = 0;
-                target = PlayerAttacks.Target.Head;
-
-                switch (stance)
-                {
-                    case Stances.Physical:
-                        bodyPartUI.SetActive(false);
-                        uiState = UIStates.PhysicalAttacks;
-                        cameraController.Play("BattleCamera");
-                        break;
-                    case Stances.Magic:
-                        cancel = true;
-                        spellChoiceActive = true;
-                        cameraController.Play("MagicState");
-                        magicSpellList.SetActive(true);
-                        spellHighlight.Select();
-                        animationManager.MagicCastParticle((AnimationManager.Effects)spellListControl.GetCenteredContentID(), spellPlaceHolder.transform.position);
-                        break;
-                    case Stances.Alchemy:
-                        cameraController.Play("BattleCamera");
-                        break;
-                    case Stances.Overdrive:
-                        cameraController.Play("BattleCamera");
-                        break;
-                    default:
-                        break;
-                }
-             
-            }
-
-
         }
 
         if (alchemyTargeting)
@@ -305,13 +277,12 @@ public class PlayerCombat : MonoBehaviour
 
             if (Input.GetButtonDown("Submit"))
             {
-               
+                
                 playerAttacks.Alchemy(target);
                 bodyPartUI.SetActive(false);
                 alchemyTargeting = false;
                 bodyPartCount = 0;
-                cameraController.Play("BattleCamera");
-                animationManager.RemoveSpells();
+                
             }
 
         }
@@ -349,6 +320,7 @@ public class PlayerCombat : MonoBehaviour
 
             if (Input.GetButtonDown("Submit"))
             {
+                uiState = UIStates.MagicAction;
                 ChooseSpellTarget(spellListControl.GetCenteredContentID());
             }
         }
@@ -382,20 +354,30 @@ public class PlayerCombat : MonoBehaviour
 
         ChangeStance(stance);
     }
+
+    public void RemoveUI() 
+    {
+
+        UIControls.SetActive(false);
+    }
     public void FirstButtonAction() 
     {
         switch (uiState)
         {
             case UIStates.PhysicalNormal:
-                FirstButton.text = "Bludgeoning";
-                SecondButton.text = "Piercing";
-                ThirdButton.text = "Slashing";
-                FourthButton.text = "Back";
-                uiState = UIStates.PhysicalAttacks;
+                if (canStrike)
+                {
+                    FirstButton.text = "Bludgeoning";
+                    SecondButton.text = "Piercing";
+                    ThirdButton.text = "Slashing";
+                    FourthButton.text = "Back";
+                    uiState = UIStates.PhysicalAttacks;
+                    cameraController.Play("AttackState");
+                }
                 break;
 
             case UIStates.PhysicalAttacks:
-                    uiState = UIStates.Action;
+                    uiState = UIStates.PhysicalAction;
                     attack = PlayerAttacks.Attacks.Bludgeoning;
                     partHighlight.Select();
                     targeting = true;
@@ -414,12 +396,15 @@ public class PlayerCombat : MonoBehaviour
                 break;
 
             case UIStates.MagicNormal:
-                uiState = UIStates.MagicAttacks;
-                cameraController.Play("MagicState");
-                magicSpellList.SetActive(true);
-                spellHighlight.Select();
-                spellChoiceActive = true;
-                animationManager.MagicCastParticle((AnimationManager.Effects)spellListControl.GetCenteredContentID(), spellPlaceHolder.transform.position);
+                if (canMagic)
+                {
+                    uiState = UIStates.MagicAttacks;
+                    cameraController.Play("MagicState");
+                    magicSpellList.SetActive(true);
+                    spellHighlight.Select();
+                    spellChoiceActive = true;
+                    animationManager.MagicCastParticle((AnimationManager.Effects)spellListControl.GetCenteredContentID(), spellPlaceHolder.transform.position);
+                }
                 break;
 
             case UIStates.MagicAttacks:
@@ -455,7 +440,7 @@ public class PlayerCombat : MonoBehaviour
                 break;
 
             case UIStates.OverdriveAttacks:
-                    uiState = UIStates.Action;
+                    uiState = UIStates.OverdriveAction;
                     targeting = true;
                     //Change camera to enemy
                     targetingCamera.LookAt = battleSystem.enemyTarget.transform;
@@ -483,7 +468,7 @@ public class PlayerCombat : MonoBehaviour
                 break;
 
             case UIStates.PhysicalAttacks:
-                uiState = UIStates.Action;
+                uiState = UIStates.PhysicalAction;
                 attack = PlayerAttacks.Attacks.Piercing;
                 partHighlight.Select();
                 targeting = true;
@@ -544,7 +529,7 @@ public class PlayerCombat : MonoBehaviour
                 break;
 
             case UIStates.PhysicalAttacks:
-                uiState = UIStates.Action;
+                uiState = UIStates.PhysicalAction;
                 attack = PlayerAttacks.Attacks.Slashing;
                 partHighlight.Select();
                 targeting = true;
@@ -615,6 +600,7 @@ public class PlayerCombat : MonoBehaviour
                 SecondButton.text = "Abilities";
                 ThirdButton.text = "Change Stance";
                 FourthButton.text = "Flee";
+                cameraController.Play("BattleCamera");
                 break;
 
             case UIStates.PhysicalAbilities:
@@ -662,6 +648,7 @@ public class PlayerCombat : MonoBehaviour
                 alchemyTargeting = false;
                 bodyPartCount = 0;
                 target = PlayerAttacks.Target.Head;
+                bodyPartUI.SetActive(false);
                 cameraController.Play("BattleCamera");
                 animationManager.RemoveSpells();
                 break;
@@ -698,11 +685,38 @@ public class PlayerCombat : MonoBehaviour
                 ChangeStanceUI.SetActive(false);
                 break;
 
+            case UIStates.MagicAction:
+                uiState = UIStates.MagicAttacks;
+                RemoveShader();
+                targeting = false;
+                spellChoiceActive = true;
+                cameraController.Play("MagicState");
+                magicSpellList.SetActive(true);
+                spellHighlight.Select();
+                animationManager.MagicCastParticle((AnimationManager.Effects)spellListControl.GetCenteredContentID(), spellPlaceHolder.transform.position);
+                break;
+            case UIStates.PhysicalAction:
+                RemoveShader();
+                targeting = false;
+                bodyPartCount = 0;
+                target = PlayerAttacks.Target.Head;
+                uiState = UIStates.PhysicalAttacks;
+                bodyPartUI.SetActive(false);
+                uiState = UIStates.PhysicalAttacks;
+                cameraController.Play("AttackState");
+                break;
+            case UIStates.OverdriveAction:
+                RemoveShader();
+                uiState = UIStates.OverdriveAttacks;
+                cameraController.Play("BattleCamera");
+                targeting = false;
+                break;
+
             default:
                 break;
         } 
     }
-    void Flee() 
+    public void Flee() 
     {
         battleSystem.tranController.FleeBattle();
         BattleOver = false;
@@ -789,11 +803,11 @@ public class PlayerCombat : MonoBehaviour
     }
     void TargetShader() 
     {
+
         if (!currRenderer )
         {
             currRenderer = battleSystem.enemyTarget.transform.GetChild(0).GetComponent<SkinnedMeshRenderer>();
             originalMaterials = currRenderer.materials;
-
         }
 
         if (currRenderer != battleSystem.enemyTarget.transform.GetChild(0).GetComponent<SkinnedMeshRenderer>())
@@ -804,16 +818,19 @@ public class PlayerCombat : MonoBehaviour
         }
        else
         {
-            matArray = new List<Material>(currRenderer.materials);
-            matArray.Add(outlineMaterial);
-
-            if (currRenderer.materials != matArray.ToArray() )
+            if (currRenderer.materials.Length == 1 )
             {
+                matArray = new List<Material>(currRenderer.materials);
+                matArray.Add(outlineMaterial);
                 currRenderer.materials = matArray.ToArray();
-                targetRenderer = currRenderer;
             }
         }
     
+    }
+
+    void RemoveShader() 
+    {
+        currRenderer.materials = originalMaterials;
     }
     void ChangeStance(Stances newStance)
     {

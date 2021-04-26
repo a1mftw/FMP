@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class TransitionController : MonoBehaviour
 {
@@ -16,17 +17,22 @@ public class TransitionController : MonoBehaviour
     public GameObject tutorial1;
     public GameObject tutorial2;
     public GameObject tutorial3;
+    public Button btnTutorial1;
+    public Button btnTutorial2;
+    public Button btnTutorial3;
 
 
     public void NextTutorial() 
     {
         if (tutorial1.activeSelf)
         {
+            btnTutorial2.Select();
             tutorial1.SetActive(false);
             tutorial2.SetActive(true);
         }
         else if(tutorial2.activeSelf)
         {
+            btnTutorial3.Select();
             tutorial2.SetActive(false);
             tutorial3.SetActive(true);
         }
@@ -53,6 +59,7 @@ public class TransitionController : MonoBehaviour
 
     IEnumerator StartMenuTransition() 
     {
+        btnTutorial1.Select();
         menuTransition.SetTrigger("Start");
         yield return new WaitForSeconds(menuTransitionTime);
         MainMenu.SetActive(false);

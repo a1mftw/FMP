@@ -39,12 +39,12 @@ public class EnemyCombat : MonoBehaviour
 
             if (enemyStats.enemy.buffs.Burning || enemyStats.enemy.buffs.Drowning || enemyStats.enemy.buffs.Freezing || enemyStats.enemy.buffs.Poisoned || enemyStats.enemy.buffs.Electrified)
             {
-                enemyStats.enemy.baseStats.currentHealth -= Mathf.RoundToInt(enemyStats.enemy.baseStats.maxHealth * 0.05f);
+                enemyStats.enemy.baseStats.currentHealth -= 5;
             }
 
             if (!enemyStats.enemy.buffs.Clouded)
             {
-                int i = UnityEngine.Random.Range(0,1);
+                int i = UnityEngine.Random.Range(0,2);
 
                 if (i == 1)
                 {
@@ -54,6 +54,7 @@ public class EnemyCombat : MonoBehaviour
                 {
                     StartCoroutine("ClawAttack");
                 }
+
                 RemoveBuffs();
             }
             else
@@ -61,16 +62,7 @@ public class EnemyCombat : MonoBehaviour
                 RemoveBuffs();
                 battleSystem.NextTurn();
             }
-
-
-            
-
         }
-    }
-
-    public void EndTurn() 
-    {
-    
     }
 
     #region EnemyActions
@@ -269,7 +261,11 @@ public class EnemyCombat : MonoBehaviour
 
         if (enemyStats.enemy.baseStats.currentHealth <= 0)
         {
-            Destroy(this.gameObject);
+            StartCoroutine("Die");
+        }
+        else
+        {
+            battleSystem.NextTurn();
         }
 
     }
@@ -304,7 +300,11 @@ public class EnemyCombat : MonoBehaviour
         Debug.Log("Dealt " + damageDealt + " damage\nRemains " + enemyStats.enemy.baseStats.currentHealth + " HP");
         if (enemyStats.enemy.baseStats.currentHealth <= 0)
         {
-            Destroy(this.gameObject);
+            StartCoroutine("Die");
+        }
+        else
+        {
+            battleSystem.NextTurn();
         }
     }
     public void TakeSlashingDamage(int damage, PlayerAttacks.Target target) 
@@ -339,7 +339,11 @@ public class EnemyCombat : MonoBehaviour
         Debug.Log("Dealt " + damageDealt + " damage\nRemains " + enemyStats.enemy.baseStats.currentHealth + " HP");
         if (enemyStats.enemy.baseStats.currentHealth <= 0)
         {
-            Destroy(this.gameObject);
+            StartCoroutine("Die");
+        }
+        else
+        {
+            battleSystem.NextTurn();
         }
     }
 
@@ -351,7 +355,17 @@ public class EnemyCombat : MonoBehaviour
     {
         damageNumber.Create(transform.position, damage, false);
         enemyStats.enemy.baseStats.currentHealth -= damage;
-        battleSystem.NextTurn();
+
+        if (enemyStats.enemy.baseStats.currentHealth <= 0)
+        {
+            StartCoroutine("Die");
+        }
+        else
+        {
+            battleSystem.NextTurn();
+        }
+
+        
     }
 
     #endregion
@@ -373,7 +387,14 @@ public class EnemyCombat : MonoBehaviour
 
         damageNumber.Create(transform.position, damage, false);
         enemyStats.enemy.baseStats.currentHealth -= damage;
-
+        if (enemyStats.enemy.baseStats.currentHealth <= 0)
+        {
+            StartCoroutine("Die");
+        }
+        else
+        {
+            battleSystem.NextTurn();
+        }
     }
     public void TakeWaterDamage(int damage)
     {
@@ -391,7 +412,14 @@ public class EnemyCombat : MonoBehaviour
 
         damageNumber.Create(transform.position, damage, false);
         enemyStats.enemy.baseStats.currentHealth -= damage;
-
+        if (enemyStats.enemy.baseStats.currentHealth <= 0)
+        {
+            StartCoroutine("Die");
+        }
+        else
+        {
+            battleSystem.NextTurn();
+        }
     }
     public void TakeAirDamage(int damage)
     {
@@ -409,7 +437,14 @@ public class EnemyCombat : MonoBehaviour
 
         damageNumber.Create(transform.position, damage, false);
         enemyStats.enemy.baseStats.currentHealth -= damage;
-
+        if (enemyStats.enemy.baseStats.currentHealth <= 0)
+        {
+            StartCoroutine("Die");
+        }
+        else
+        {
+            battleSystem.NextTurn();
+        }
     }
     public void TakeEarthDamage(int damage)
     {
@@ -427,7 +462,14 @@ public class EnemyCombat : MonoBehaviour
 
         damageNumber.Create(transform.position, damage, false);
         enemyStats.enemy.baseStats.currentHealth -= damage;
-
+        if (enemyStats.enemy.baseStats.currentHealth <= 0)
+        {
+            StartCoroutine("Die");
+        }
+        else
+        {
+            battleSystem.NextTurn();
+        }
     }
     public void TakeLightningDamage(int damage)
     {
@@ -445,7 +487,14 @@ public class EnemyCombat : MonoBehaviour
 
         damageNumber.Create(transform.position, damage, false);
         enemyStats.enemy.baseStats.currentHealth -= damage;
-
+        if (enemyStats.enemy.baseStats.currentHealth <= 0)
+        {
+            StartCoroutine("Die");
+        }
+        else
+        {
+            battleSystem.NextTurn();
+        }
     }
     #endregion
 
@@ -586,6 +635,39 @@ public class EnemyCombat : MonoBehaviour
 
     }
 
+    IEnumerator Die() 
+    {
+        Vector3 moveVector;
+        float fadeLerpConstant = 1F;
+        foxAnimation.SetBool("Death", true);
+        yield return new WaitForSeconds(1);
+
+        SkinnedMeshRenderer foxRend = transform.GetChild(0).GetComponent<SkinnedMeshRenderer>();
+
+        foxRend.material.SetOverrideTag("RenderType", "Transparent");
+        foxRend.material.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.SrcAlpha);
+        foxRend.material.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);
+        foxRend.material.SetInt("_ZWrite", 0);
+        foxRend.material.DisableKeyword("_ALPHATEST_ON");
+        foxRend.material.DisableKeyword("_ALPHABLEND_ON");
+        foxRend.material.EnableKeyword("_ALPHAPREMULTIPLY_ON");
+        foxRend.material.renderQueue = (int)UnityEngine.Rendering.RenderQueue.Transparent;
+
+        while (foxRend.material.color.a >= 0.1f)
+        {
+            moveVector = new Vector3(0f, 3f);
+            transform.position += moveVector * Time.deltaTime;
+            moveVector -= moveVector * Time.deltaTime;
+            float newAlpha = Mathf.Lerp(foxRend.material.color.a, 0F, Time.deltaTime * fadeLerpConstant);
+            foxRend.material.color = new Color(foxRend.material.color.r, foxRend.material.color.g, foxRend.material.color.b, newAlpha);
+            yield return new WaitForFixedUpdate();
+        }
+
+        Destroy(gameObject);
+        battleSystem.RemoveFromTurn(gameObject);
+        battleSystem.NextTurn();
+    }
+    
     private void RemoveBuffs() 
     {
         object a = enemyStats.enemy.buffs;
