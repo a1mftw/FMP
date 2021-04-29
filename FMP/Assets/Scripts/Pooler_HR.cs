@@ -1,16 +1,4 @@
-﻿/*
- * Hugo
- * 
- * Object pooling class
- * 
- * It creates various pools with different tags for efficency
- * 
- * Dominique (Changes) 04/04/2020
- * Made object activate after having values changed (or wrong sound plays)
- */
-
-
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;

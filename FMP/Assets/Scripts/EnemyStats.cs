@@ -50,7 +50,7 @@ public class EnemyStats : CharactersClass
         enemy.baseStats.baseMagicDamage = 10;
         enemy.baseStats.magicResist = 10;
         enemy.baseStats.baseArmor = 5;
-        enemy.baseStats.maxHealth = 10;
+        enemy.baseStats.maxHealth = 100;
         enemy.baseStats.baseSpeed = 5;
         enemy.baseStats.currentHealth = enemy.baseStats.maxHealth;
         enemy.bodyPartHealth.headMaxHealth = 40;

@@ -1,13 +1,4 @@
-﻿/*
- * Hugo
- * 
- * Other scripts call this one to set an audio clip into the pool objects and bring them to the desired location playing them afterwards
- * 
- * Changes (Dominique) 04/04/2020
- * Turned into a singleton
- */
-
-using UnityEngine;
+﻿using UnityEngine;
 
 public class SFX_Manager_HR : MonoBehaviour
 {
@@ -16,6 +7,7 @@ public class SFX_Manager_HR : MonoBehaviour
         SWING,
         HIT,
         FIRECAST,
+        FIREFLING,
         FIREHIT,
         AIRCAST,
         AIRHIT,
@@ -30,6 +22,7 @@ public class SFX_Manager_HR : MonoBehaviour
         UIPOSITIVE,
         UINEGATIVE,
         BATTLEPOSITIVE,
+        
 
     }
 
@@ -39,7 +32,7 @@ public class SFX_Manager_HR : MonoBehaviour
     AudioSource soundSource;
 
     //Get the Pooler instance
-    void Awake()
+    void Start()
     {
         instance = this;
         pooler = Pooler_HR.instance;

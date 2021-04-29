@@ -163,7 +163,6 @@ public class PlayerAttacks : MonoBehaviour
         {
             enemy.GetComponent<EnemyCombat>().TakeMyriadDamage(hits);
         }
-        
     }
 
     #endregion
@@ -253,6 +252,7 @@ public class PlayerAttacks : MonoBehaviour
 
         }
 
+
         playerStats.player.baseStats.currentHealth -= damageDealt;
         damageNumber.Create(transform.position, damageDealt, false);
 
@@ -263,7 +263,8 @@ public class PlayerAttacks : MonoBehaviour
 
         if (playerStats.player.baseStats.currentHealth <= 0)
         {
-            Destroy(this.gameObject);
+            Cursor.lockState = CursorLockMode.None;
+            Application.LoadLevel(Application.loadedLevel);
         }
     }
     public void TakeClawAttackDamage(int damage, Target target)
@@ -360,7 +361,9 @@ public class PlayerAttacks : MonoBehaviour
 
         if (playerStats.player.baseStats.currentHealth <= 0)
         {
-            Destroy(this.gameObject);
+            Cursor.lockState = CursorLockMode.None;
+            Application.LoadLevel(Application.loadedLevel);
+            
         }
     }
 
@@ -437,7 +440,6 @@ public class PlayerAttacks : MonoBehaviour
         switch (currentSpell)
         {
             case Spells.Fire:
-
                 switch (previousSpell)
                 {
                     case Spells.Fire:
@@ -454,7 +456,6 @@ public class PlayerAttacks : MonoBehaviour
                 }
                 break;
             case Spells.Water:
-
                 switch (previousSpell)
                 {
                     case Spells.Fire:
@@ -470,7 +471,6 @@ public class PlayerAttacks : MonoBehaviour
                         playerStats.player.buffs.Paralysed = true;
                         break;
                 }
-
                 break;
             case Spells.Air:
                 switch (previousSpell)
@@ -547,6 +547,7 @@ public class PlayerAttacks : MonoBehaviour
 
         playerAnimations.SetBool("Sprinting", false);
         battleCamera.Play("StrikeState");
+        SFX_Manager_HR.instance.PlaySFX(SFX_Manager_HR.SoundEffectNames.SWING, transform.position);
         yield return new WaitForSeconds(0.5f);
         playerAnimations.SetBool("Slashing", true);
         yield return new WaitForSeconds(1);
@@ -595,6 +596,7 @@ public class PlayerAttacks : MonoBehaviour
         battleCamera.Play("StrikeState");
         yield return new WaitForSeconds(0.5f);
         playerAnimations.SetBool("Piercing", true);
+        SFX_Manager_HR.instance.PlaySFX(SFX_Manager_HR.SoundEffectNames.SWING, transform.position);
         yield return new WaitForSeconds(1);
         enemy.GetComponent<EnemyCombat>().TakePiercingDamage(playerStats.player.baseStats.baseDamage, target);
         playerAnimations.SetBool("Piercing", false);
@@ -640,6 +642,7 @@ public class PlayerAttacks : MonoBehaviour
         battleCamera.Play("StrikeState");
         yield return new WaitForSeconds(0.5f);
         playerAnimations.SetBool("Blunt", true);
+        SFX_Manager_HR.instance.PlaySFX(SFX_Manager_HR.SoundEffectNames.SWING, transform.position);
         yield return new WaitForSeconds(1);
         enemy.GetComponent<EnemyCombat>().TakeBludgeoningDamage(playerStats.player.baseStats.baseDamage, target);
         playerAnimations.SetBool("Blunt", false);
@@ -669,6 +672,27 @@ public class PlayerAttacks : MonoBehaviour
         playerStats.player.baseStats.currentMana -= 10;
         yield return new WaitForSeconds(1);
 
+
+        switch (spellType)
+        {
+            case Spells.Fire:
+                SFX_Manager_HR.instance.PlaySFX(SFX_Manager_HR.SoundEffectNames.FIREFLING, transform.position);
+                break;
+            case Spells.Water:
+                SFX_Manager_HR.instance.PlaySFX(SFX_Manager_HR.SoundEffectNames.FIREFLING, transform.position);
+                break;
+            case Spells.Air:
+                SFX_Manager_HR.instance.PlaySFX(SFX_Manager_HR.SoundEffectNames.AIRHIT, transform.position);
+                break;
+            case Spells.Earth:
+                SFX_Manager_HR.instance.PlaySFX(SFX_Manager_HR.SoundEffectNames.BIOCAST, transform.position);
+                break;
+            case Spells.Lightning:
+                SFX_Manager_HR.instance.PlaySFX(SFX_Manager_HR.SoundEffectNames.ZAPHIT, transform.position);
+                break;
+            default:
+                break;
+        }
         float step = (6 / (particle.transform.position - enemy.transform.position).magnitude) * Time.fixedDeltaTime;
         float t = 0;
 
@@ -705,7 +729,6 @@ public class PlayerAttacks : MonoBehaviour
         
 
     }
-
     IEnumerator AlchemySpell() 
     {
 

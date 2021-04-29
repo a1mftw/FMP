@@ -22,8 +22,8 @@ public class ThirdPersonMovement : MonoBehaviour
     #region MovementVariables
 
     public float turnSmoothTime = 0.1f;
-    public float speed = 6f;
-    public float gravity = 2f;
+    public float speed = 10f;
+    public float gravity = 9.8f;
     float turnSmoothVelocity;
 
 
@@ -53,7 +53,7 @@ public class ThirdPersonMovement : MonoBehaviour
                 Vector3 moveDirection = Quaternion.Euler(0f, targetAngle, 0f) * Vector3.forward;
                 if (!charController.isGrounded)
                 {
-                    moveDirection += Physics.gravity;
+                    moveDirection += Physics.gravity * Time.deltaTime;
                 }
 
                 playerAnimations.SetBool("Walking", true);

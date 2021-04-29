@@ -81,7 +81,8 @@ public class PlayerCombat : MonoBehaviour
     private bool alchemyTargeting = false;
     public bool canStrike = true;
     public bool canMagic = true;
-
+    bool canInteract = true;
+    bool firstButton = true;
     private Text FirstButton;
     private Text SecondButton;
     private Text ThirdButton;
@@ -115,25 +116,25 @@ public class PlayerCombat : MonoBehaviour
 
         if (changeStanceActive)
         {
-            if (Input.GetButtonDown("Up"))
+            if (Input.GetButtonDown("Up") || Input.GetAxisRaw("Vertical") > 0)
             {
                 ChangeStance(Stances.Physical);
                 ChangeStanceUI.SetActive(false);
             }
 
-            if (Input.GetButtonDown("Left"))
+            if (Input.GetButtonDown("Left") || Input.GetAxisRaw("Horizontal") < 0)
             {
                 ChangeStance(Stances.Magic);
                 ChangeStanceUI.SetActive(false);
             }
 
-            if (Input.GetButtonDown("Right"))
+            if (Input.GetButtonDown("Right") || Input.GetAxisRaw("Horizontal") > 0)
             {
                 ChangeStance(Stances.Alchemy);
                 ChangeStanceUI.SetActive(false);
             }
 
-            if (Input.GetButtonDown("Down"))
+            if (Input.GetButtonDown("Down") || Input.GetAxisRaw("Vertical") < 0)
             {
                 ChangeStance(Stances.Overdrive);
                 ChangeStanceUI.SetActive(false);
@@ -149,185 +150,172 @@ public class PlayerCombat : MonoBehaviour
             TargetShader();
 
             //Change between enemy
-            if (Input.GetButtonDown("Right"))
+            if (Input.GetButtonDown("Right") || Input.GetAxisRaw("Horizontal")>0 && canInteract)
             {
-                battleSystem.NextTarget();
-                targetingCamera.LookAt = battleSystem.enemyTarget.transform;
+                canInteract = false;
+                StartCoroutine(TargetLook(true));
             }
 
-            if (Input.GetButtonDown("Left"))
+            if (Input.GetButtonDown("Left") || Input.GetAxisRaw("Horizontal") < 0 && canInteract)
             {
-
-                battleSystem.PreviousTarget();
-                targetingCamera.LookAt = battleSystem.enemyTarget.transform;
+                canInteract = false;
+                StartCoroutine(TargetLook(false));
             }
 
             if (stance == Stances.Physical)
             {
                 target = (PlayerAttacks.Target)bodyPartCount;
                 //Change between body part
-                if (Input.GetButtonDown("Up"))
+                if (Input.GetButtonDown("Up") || Input.GetAxisRaw("Vertical") > 0 && canInteract)
                 {
-                    if (--bodyPartCount < 0)
-                    {
-                        bodyPartCount = 5;
-                    }
+                    canInteract = false;
+                    StartCoroutine(BodyChange(true));
                 }
 
-                if (Input.GetButtonDown("Down"))
+                if (Input.GetButtonDown("Down") || Input.GetAxisRaw("Vertical") < 0 && canInteract)
                 {
-                    if (++bodyPartCount > 5)
-                    {
-                        bodyPartCount = 0;
-
-                    }
+                    canInteract = false;
+                    StartCoroutine(BodyChange(false));
                 }
             }
-            
-            if (Input.GetButtonDown("Submit"))
+
+            if (firstButton)
             {
-                RemoveShader();
-                switch (stance)
+                if (Input.GetButtonDown("FirstBattleButton"))
                 {
-                    case Stances.Physical:
-                        switch (attack)
-                        {
-                            case PlayerAttacks.Attacks.Bludgeoning:
-                                playerAttacks.Blunt(target, battleSystem.enemyTarget);
-                                break;
-                            case PlayerAttacks.Attacks.Piercing:
-                                playerAttacks.Pierce(target, battleSystem.enemyTarget);
-                                break;
-                            case PlayerAttacks.Attacks.Slashing:
-                                playerAttacks.Slash(target, battleSystem.enemyTarget);
-                                break;
-                            default:
-                                break;
-                        }
-                        bodyPartUI.SetActive(false);
-                        break;
+                    RemoveShader();
+                    switch (stance)
+                    {
+                        case Stances.Physical:
+                            switch (attack)
+                            {
+                                case PlayerAttacks.Attacks.Bludgeoning:
+                                    playerAttacks.Blunt(target, battleSystem.enemyTarget);
+                                    break;
+                                case PlayerAttacks.Attacks.Piercing:
+                                    playerAttacks.Pierce(target, battleSystem.enemyTarget);
+                                    break;
+                                case PlayerAttacks.Attacks.Slashing:
+                                    playerAttacks.Slash(target, battleSystem.enemyTarget);
+                                    break;
+                                default:
+                                    break;
+                            }
+                            bodyPartUI.SetActive(false);
+                            break;
 
-                    case Stances.Magic:
+                        case Stances.Magic:
 
-                        switch (spell)
-                        {
-                            case PlayerAttacks.Spells.Fire:
-                                playerAttacks.FireDamage(animationManager.GetMagicParticle(), battleSystem.enemyTarget);
-                                Debug.Log("Fire damage");
-                                break;
-                            case PlayerAttacks.Spells.Water:
-                                playerAttacks.WaterDamage(animationManager.GetMagicParticle(), battleSystem.enemyTarget);
-                                Debug.Log("Water damage");
-                                break;
-                            case PlayerAttacks.Spells.Air:
-                                playerAttacks.AirDamage(animationManager.GetMagicParticle(), battleSystem.enemyTarget);
-                                Debug.Log("Air damage");
-                                break;
-                            case PlayerAttacks.Spells.Earth:
-                                playerAttacks.EarthDamage(animationManager.GetMagicParticle(), battleSystem.enemyTarget);
-                                Debug.Log("Earth damage");
-                                break;
-                            case PlayerAttacks.Spells.Lightning:
-                                playerAttacks.LightningDamage(animationManager.GetMagicParticle(), battleSystem.enemyTarget);
-                                Debug.Log("Lightning damage");
-                                break;
-                        }
+                            switch (spell)
+                            {
+                                case PlayerAttacks.Spells.Fire:
+                                    playerAttacks.FireDamage(animationManager.GetMagicParticle(), battleSystem.enemyTarget);
+                                    Debug.Log("Fire damage");
+                                    break;
+                                case PlayerAttacks.Spells.Water:
+                                    playerAttacks.WaterDamage(animationManager.GetMagicParticle(), battleSystem.enemyTarget);
+                                    Debug.Log("Water damage");
+                                    break;
+                                case PlayerAttacks.Spells.Air:
+                                    playerAttacks.AirDamage(animationManager.GetMagicParticle(), battleSystem.enemyTarget);
+                                    Debug.Log("Air damage");
+                                    break;
+                                case PlayerAttacks.Spells.Earth:
+                                    playerAttacks.EarthDamage(animationManager.GetMagicParticle(), battleSystem.enemyTarget);
+                                    Debug.Log("Earth damage");
+                                    break;
+                                case PlayerAttacks.Spells.Lightning:
+                                    playerAttacks.LightningDamage(animationManager.GetMagicParticle(), battleSystem.enemyTarget);
+                                    Debug.Log("Lightning damage");
+                                    break;
+                            }
+                            bodyPartUI.SetActive(false);
+                            cameraController.Play("BattleCamera");
 
-                        cameraController.Play("BattleCamera");
+                            break;
+                        case Stances.Alchemy:
+                            playerAttacks.Alchemy(target);
+                            bodyPartUI.SetActive(false);
+                            break;
 
-                        break;
-                    case Stances.Alchemy:
-                        playerAttacks.Alchemy(target);
-                        bodyPartUI.SetActive(false);
-                        break;
-
-                    case Stances.Overdrive:
-                        hits = 0;
-                        OverdriveText.SetActive(true);
-                        StartCoroutine("MyriadOverdrive");
-                        break;
-                    default:
-                        break;
+                        case Stances.Overdrive:
+                            hits = 0;
+                            OverdriveText.SetActive(true);
+                            StartCoroutine("MyriadOverdrive");
+                            break;
+                        default:
+                            break;
+                    }
+                    RemoveShader();
+                    targeting = false;
+                    bodyPartCount = 0;
                 }
-                RemoveShader();
-                targeting = false;
-                bodyPartCount = 0;
             }
+            firstButton = true;
         }
 
         if (alchemyTargeting)
         {
             target = (PlayerAttacks.Target)bodyPartCount;
             //Change between body part
-            if (Input.GetButtonDown("Up"))
+            if (Input.GetButtonDown("Up") || Input.GetAxisRaw("Vertical") > 0 && canInteract)
             {
-                if (--bodyPartCount < 0)
-                {
-                    bodyPartCount = 5;
-                }
+                canInteract = false;
+                StartCoroutine(BodyChange(true));
             }
 
-            if (Input.GetButtonDown("Down"))
+            if (Input.GetButtonDown("Down") || Input.GetAxisRaw("Vertical") < 0 && canInteract)
             {
-                if (++bodyPartCount > 5)
+                canInteract = false;
+                StartCoroutine(BodyChange(false));
+            }
+
+            if (firstButton)
+            {
+                if (Input.GetButtonDown("FirstBattleButton"))
                 {
+                
+                    playerAttacks.Alchemy(target);
+                    bodyPartUI.SetActive(false);
+                    alchemyTargeting = false;
                     bodyPartCount = 0;
+                
                 }
             }
-
-            if (Input.GetButtonDown("Submit"))
-            {
-                
-                playerAttacks.Alchemy(target);
-                bodyPartUI.SetActive(false);
-                alchemyTargeting = false;
-                bodyPartCount = 0;
-                
-            }
+            firstButton = true;
 
         }
 
         if (spellChoiceActive)
         {
-            if (Input.GetButtonDown("Up"))
+            if (Input.GetButtonDown("Up")|| Input.GetAxisRaw("Vertical") > 0 && canInteract)
             {
-
-                spellListControl.MoveOneUnitUp();
-                if (spellListControl.GetCenteredContentID() + 1 > 4)
-                {
-                    animationManager.MagicCastParticle(AnimationManager.Effects.Fire, spellPlaceHolder.transform.position);
-                }
-                else
-                {
-                    animationManager.MagicCastParticle((AnimationManager.Effects)spellListControl.GetCenteredContentID() + 1, spellPlaceHolder.transform.position);
-                }
-
+                canInteract = false;
+                StartCoroutine(SpellChange(true));
             }
 
-            if (Input.GetButtonDown("Down"))
+            if (Input.GetButtonDown("Down") || Input.GetAxisRaw("Vertical") < 0 && canInteract)
             {
-
-                spellListControl.MoveOneUnitDown();
-                if (spellListControl.GetCenteredContentID() - 1 < 0)
-                {
-                    animationManager.MagicCastParticle(AnimationManager.Effects.Electric, spellPlaceHolder.transform.position);
-                }
-                else
-                {
-                    animationManager.MagicCastParticle((AnimationManager.Effects)spellListControl.GetCenteredContentID() - 1, spellPlaceHolder.transform.position);
-                }
+                canInteract = false;
+                StartCoroutine(SpellChange(false));
             }
 
-            if (Input.GetButtonDown("Submit"))
+            if (firstButton)
             {
-                uiState = UIStates.MagicAction;
-                ChooseSpellTarget(spellListControl.GetCenteredContentID());
+                if (Input.GetButtonDown("FirstBattleButton"))
+                {
+                    bodyPartUI.SetActive(true);
+                    uiState = UIStates.MagicAction;
+                    ChooseSpellTarget(spellListControl.GetCenteredContentID());
+                }
             }
+            firstButton = true;
+            
         }
 
         if (MyriadStrikes)
         {
-            if (Input.GetButtonDown("Jump"))
+            if (Input.GetButtonDown("FirstBattleButton"))
             {
                 ++hits;
                 OverdriveText.GetComponent<Text>().text = hits.ToString() + "/30 Hits";
@@ -381,6 +369,7 @@ public class PlayerCombat : MonoBehaviour
                     attack = PlayerAttacks.Attacks.Bludgeoning;
                     partHighlight.Select();
                     targeting = true;
+                    firstButton = false;
                     //Change camera to enemy
                     targetingCamera.LookAt = battleSystem.enemyTarget.transform;
                     cameraController.Play("TargetingEnemy");
@@ -402,6 +391,7 @@ public class PlayerCombat : MonoBehaviour
                     cameraController.Play("MagicState");
                     magicSpellList.SetActive(true);
                     spellHighlight.Select();
+                    firstButton = false;
                     spellChoiceActive = true;
                     animationManager.MagicCastParticle((AnimationManager.Effects)spellListControl.GetCenteredContentID(), spellPlaceHolder.transform.position);
                 }
@@ -418,6 +408,7 @@ public class PlayerCombat : MonoBehaviour
                 cameraController.Play("AlchemyState");
                 partHighlight.Select();
                 alchemyTargeting = true;
+                firstButton = false;
                 //Change color of parts if they are damaged
                 PlayerColorTargetSystem();
                 //Show player buffs/Debuffs
@@ -440,6 +431,7 @@ public class PlayerCombat : MonoBehaviour
                 break;
 
             case UIStates.OverdriveAttacks:
+                    firstButton = false;
                     uiState = UIStates.OverdriveAction;
                     targeting = true;
                     //Change camera to enemy
@@ -683,6 +675,23 @@ public class PlayerCombat : MonoBehaviour
 
             case UIStates.ChangeStance:
                 ChangeStanceUI.SetActive(false);
+                switch (stance)
+                {
+                    case Stances.Physical:
+                        uiState = UIStates.PhysicalNormal;
+                        break;
+                    case Stances.Magic:
+                        uiState = UIStates.MagicNormal;
+                        break;
+                    case Stances.Alchemy:
+                        uiState = UIStates.AlchemyNormal;
+                        break;
+                    case Stances.Overdrive:
+                        uiState = UIStates.OverdriveNormal;
+                        break;
+                    default:
+                        break;
+                }
                 break;
 
             case UIStates.MagicAction:
@@ -691,6 +700,7 @@ public class PlayerCombat : MonoBehaviour
                 targeting = false;
                 spellChoiceActive = true;
                 cameraController.Play("MagicState");
+                bodyPartUI.SetActive(false);
                 magicSpellList.SetActive(true);
                 spellHighlight.Select();
                 animationManager.MagicCastParticle((AnimationManager.Effects)spellListControl.GetCenteredContentID(), spellPlaceHolder.transform.position);
@@ -860,4 +870,74 @@ public class PlayerCombat : MonoBehaviour
         
     }
 
+    IEnumerator TargetLook(bool right)
+    {
+
+        if (right)
+        {
+            battleSystem.NextTarget();
+            targetingCamera.LookAt = battleSystem.enemyTarget.transform;
+        }
+        else
+        {
+            battleSystem.PreviousTarget();
+            targetingCamera.LookAt = battleSystem.enemyTarget.transform;
+        }
+
+        yield return new WaitForSeconds(0.5f);
+        canInteract = true;
+    }
+    IEnumerator BodyChange(bool up)
+    {
+        if (up)
+        {
+            if (--bodyPartCount < 0)
+            {
+                bodyPartCount = 5;
+            }
+        }
+        else
+        {
+            if (++bodyPartCount > 5)
+            {
+                bodyPartCount = 0;
+
+            }
+        }
+
+        yield return new WaitForSeconds(0.5f);
+        canInteract = true;
+    }
+    IEnumerator SpellChange(bool up)
+    {
+        if (up)
+        {
+            spellListControl.MoveOneUnitUp();
+            if (spellListControl.GetCenteredContentID() + 1 > 4)
+            {
+                animationManager.MagicCastParticle(AnimationManager.Effects.Fire, spellPlaceHolder.transform.position);
+                SFX_Manager_HR.instance.PlaySFX(SFX_Manager_HR.SoundEffectNames.FIRECAST, transform.position);
+            }
+            else
+            {
+                animationManager.MagicCastParticle((AnimationManager.Effects)spellListControl.GetCenteredContentID() + 1, spellPlaceHolder.transform.position);
+            }
+        }
+        else
+        {
+            spellListControl.MoveOneUnitDown();
+            if (spellListControl.GetCenteredContentID() - 1 < 0)
+            {
+                animationManager.MagicCastParticle(AnimationManager.Effects.Electric, spellPlaceHolder.transform.position);
+                SFX_Manager_HR.instance.PlaySFX(SFX_Manager_HR.SoundEffectNames.ZAPCAST, transform.position);
+            }
+            else
+            {
+                animationManager.MagicCastParticle((AnimationManager.Effects)spellListControl.GetCenteredContentID() - 1, spellPlaceHolder.transform.position);
+            }
+        }
+
+        yield return new WaitForSeconds(0.5f);
+        canInteract = true;
+    }
 }

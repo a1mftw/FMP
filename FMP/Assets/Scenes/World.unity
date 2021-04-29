@@ -3043,35 +3043,41 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   soundEffects:
   - name: 0
-    clip: {fileID: 0}
-  - name: 0
-    clip: {fileID: 0}
-  - name: 0
-    clip: {fileID: 0}
-  - name: 0
-    clip: {fileID: 0}
-  - name: 0
-    clip: {fileID: 0}
-  - name: 0
-    clip: {fileID: 0}
-  - name: 0
-    clip: {fileID: 0}
-  - name: 0
-    clip: {fileID: 0}
-  - name: 0
-    clip: {fileID: 0}
-  - name: 0
-    clip: {fileID: 0}
-  - name: 0
-    clip: {fileID: 0}
-  - name: 0
-    clip: {fileID: 0}
-  - name: 0
-    clip: {fileID: 0}
-  - name: 0
-    clip: {fileID: 0}
-  - name: 0
-    clip: {fileID: 0}
+    clip: {fileID: 8300000, guid: 14ce8b11a2a6b204fa040b408657ad63, type: 3}
+  - name: 1
+    clip: {fileID: 8300000, guid: c5e2444511a1da34a8e208cde999a744, type: 3}
+  - name: 2
+    clip: {fileID: 8300000, guid: 3c12fcf25aec157479cfc29750d34226, type: 3}
+  - name: 3
+    clip: {fileID: 8300000, guid: ae0bc8e8edb69034a8963e1fae47cf67, type: 3}
+  - name: 4
+    clip: {fileID: 8300000, guid: a71287cdd45559548a4c8be6bacece13, type: 3}
+  - name: 5
+    clip: {fileID: 8300000, guid: 19e6835e3fa0620469a1b585aeb0f684, type: 3}
+  - name: 6
+    clip: {fileID: 8300000, guid: ac41cef323b1e5546bbe57e649f7a670, type: 3}
+  - name: 7
+    clip: {fileID: 8300000, guid: a2c7aae6529088049b3fa051f9f1f6ad, type: 3}
+  - name: 8
+    clip: {fileID: 8300000, guid: 6286229a9158c7d46aea02e29e73208c, type: 3}
+  - name: 9
+    clip: {fileID: 8300000, guid: 0bbda5149911935499bd4d8e3dab9910, type: 3}
+  - name: 10
+    clip: {fileID: 8300000, guid: e19262b13d006524d9d092fe76a1cc18, type: 3}
+  - name: 11
+    clip: {fileID: 8300000, guid: 8fdd4efaec0ffda4ab0f0074d1a62203, type: 3}
+  - name: 12
+    clip: {fileID: 8300000, guid: db3bf9fccced3004ea823b9e34cf97f3, type: 3}
+  - name: 13
+    clip: {fileID: 8300000, guid: 793bc9dd36ad12c468d7987510f19e9d, type: 3}
+  - name: 14
+    clip: {fileID: 8300000, guid: 4b56532589a494b4abe8d0d67c780124, type: 3}
+  - name: 15
+    clip: {fileID: 8300000, guid: f246b4b7dddfd5349bb6a9128335a308, type: 3}
+  - name: 16
+    clip: {fileID: 8300000, guid: 672a4056af79a5243892bc2e5a9fd611, type: 3}
+  - name: 17
+    clip: {fileID: 8300000, guid: 4b56532589a494b4abe8d0d67c780124, type: 3}
 --- !u!114 &167398364
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3993,7 +3999,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -31.900024, y: 26.700012}
+  m_AnchoredPosition: {x: -31.900024, y: 32.8}
   m_SizeDelta: {x: -95.72937, y: -245.56142}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &225242979
@@ -7672,7 +7678,7 @@ AudioSource:
   OutputAudioMixerGroup: {fileID: 0}
   m_audioClip: {fileID: 8300000, guid: 337bb2073767e37429673a1aac8c2fbd, type: 3}
   m_PlayOnAwake: 1
-  m_Volume: 1
+  m_Volume: 0.1
   m_Pitch: 1
   Loop: 0
   Mute: 0
@@ -11088,14 +11094,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 0.6603774, g: 0.41996995, b: 0.22054109, a: 0.7254902}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: c02f8aa98a070ca40b2c8f50694ac7d6, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 15ec324b46e10db47b736ff151dd581d, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -12264,14 +12270,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 0.6603774, g: 0.41996995, b: 0.22054109, a: 0.7254902}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: c02f8aa98a070ca40b2c8f50694ac7d6, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 15ec324b46e10db47b736ff151dd581d, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -12604,7 +12610,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -31.900024, y: 58.5}
+  m_AnchoredPosition: {x: -31.900024, y: 64.59999}
   m_SizeDelta: {x: -95.72914, y: -245.56142}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1269939170
@@ -12816,14 +12822,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 0.6603774, g: 0.41996995, b: 0.22054109, a: 0.7254902}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: c02f8aa98a070ca40b2c8f50694ac7d6, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 15ec324b46e10db47b736ff151dd581d, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -13465,14 +13471,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 0.6603774, g: 0.41996995, b: 0.22054109, a: 0.7254902}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: c02f8aa98a070ca40b2c8f50694ac7d6, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 15ec324b46e10db47b736ff151dd581d, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -14177,7 +14183,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 0.5226415, g: 0.97671425, b: 1, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -14380,7 +14386,7 @@ AudioSource:
   OutputAudioMixerGroup: {fileID: 0}
   m_audioClip: {fileID: 8300000, guid: fba599e83d3db404e9509fda2f6f967e, type: 3}
   m_PlayOnAwake: 1
-  m_Volume: 1
+  m_Volume: 0.1
   m_Pitch: 1
   Loop: 0
   Mute: 0
@@ -16027,14 +16033,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 0.6392157}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: a61b14e40418ca0498dec8c0eee8ae0e, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 15ec324b46e10db47b736ff151dd581d, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -17314,14 +17320,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 0.6603774, g: 0.41996995, b: 0.22054109, a: 0.7254902}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: c02f8aa98a070ca40b2c8f50694ac7d6, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 15ec324b46e10db47b736ff151dd581d, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -17390,14 +17396,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 0.6603774, g: 0.41996995, b: 0.22054109, a: 0.7254902}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: c02f8aa98a070ca40b2c8f50694ac7d6, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 15ec324b46e10db47b736ff151dd581d, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -18506,14 +18512,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 0.6392157}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: a61b14e40418ca0498dec8c0eee8ae0e, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 15ec324b46e10db47b736ff151dd581d, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -19178,14 +19184,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 0.6392157}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: a61b14e40418ca0498dec8c0eee8ae0e, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 15ec324b46e10db47b736ff151dd581d, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -19242,13 +19248,29 @@ PrefabInstance:
       propertyPath: m_Enabled
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 4371719825026649132, guid: 8d7b105ae1dc73b48931f2ec43bb7318, type: 3}
+      propertyPath: m_YAxis.m_InputAxisName
+      value: Mouse Y
+      objectReference: {fileID: 0}
+    - target: {fileID: 4371719825026649132, guid: 8d7b105ae1dc73b48931f2ec43bb7318, type: 3}
+      propertyPath: m_XAxis.m_InputAxisName
+      value: Mouse X
+      objectReference: {fileID: 0}
+    - target: {fileID: 4371719825026649134, guid: 8d7b105ae1dc73b48931f2ec43bb7318, type: 3}
+      propertyPath: m_Strategy
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4371719825026649134, guid: 8d7b105ae1dc73b48931f2ec43bb7318, type: 3}
+      propertyPath: m_SmoothingTime
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 4371719825215268834, guid: 8d7b105ae1dc73b48931f2ec43bb7318, type: 3}
       propertyPath: m_LocalRotation.y
-      value: -0.000000008567686
+      value: 0.000000008567688
       objectReference: {fileID: 0}
     - target: {fileID: 4371719825215268834, guid: 8d7b105ae1dc73b48931f2ec43bb7318, type: 3}
       propertyPath: m_LocalRotation.z
-      value: -7.807836e-10
+      value: 7.8078377e-10
       objectReference: {fileID: 0}
     - target: {fileID: 4371719825287971255, guid: 8d7b105ae1dc73b48931f2ec43bb7318, type: 3}
       propertyPath: m_LookaheadSmoothing
@@ -19376,7 +19398,7 @@ PrefabInstance:
       objectReference: {fileID: 1571312136}
     - target: {fileID: 4371719825826983895, guid: 8d7b105ae1dc73b48931f2ec43bb7318, type: 3}
       propertyPath: speed
-      value: 20
+      value: 10
       objectReference: {fileID: 0}
     - target: {fileID: 4371719825826983895, guid: 8d7b105ae1dc73b48931f2ec43bb7318, type: 3}
       propertyPath: canControl
@@ -19386,6 +19408,10 @@ PrefabInstance:
       propertyPath: playerCamera
       value: 
       objectReference: {fileID: 135058755}
+    - target: {fileID: 4371719825826983895, guid: 8d7b105ae1dc73b48931f2ec43bb7318, type: 3}
+      propertyPath: gravity
+      value: 9.8
+      objectReference: {fileID: 0}
     - target: {fileID: 4371719825826983916, guid: 8d7b105ae1dc73b48931f2ec43bb7318, type: 3}
       propertyPath: battleCamera
       value: 

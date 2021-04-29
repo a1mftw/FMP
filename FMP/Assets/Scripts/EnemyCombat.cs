@@ -89,6 +89,7 @@ public class EnemyCombat : MonoBehaviour
 
         foxAnimation.SetBool("Running", false);
         foxAnimation.SetBool("TailSwipe", true);
+        SFX_Manager_HR.instance.PlaySFX(SFX_Manager_HR.SoundEffectNames.HIT, transform.position);
         yield return new WaitForSeconds(1);
         if (enemyStats.enemy.buffs.Unbalanced)
         {
@@ -140,6 +141,7 @@ public class EnemyCombat : MonoBehaviour
 
         foxAnimation.SetBool("Running", false);
         foxAnimation.SetBool("Claw", true);
+        SFX_Manager_HR.instance.PlaySFX(SFX_Manager_HR.SoundEffectNames.HIT, transform.position);
         yield return new WaitForSeconds(1);
         playerTarget.GetComponent<PlayerAttacks>().TakeClawAttackDamage(enemyStats.enemy.baseStats.baseDamage, PlayerAttacks.Target.Feet);
         foxAnimation.SetBool("Claw", false);
@@ -310,7 +312,6 @@ public class EnemyCombat : MonoBehaviour
     public void TakeSlashingDamage(int damage, PlayerAttacks.Target target) 
     {
         int damageDealt = damage - enemyStats.enemy.baseStats.baseArmor;
-
         switch (target)
         {
             case PlayerAttacks.Target.Head:
@@ -373,7 +374,7 @@ public class EnemyCombat : MonoBehaviour
     #region BasicSpellRecieveDamage
     public void TakeFireDamage(int damage)
     {
-
+        SFX_Manager_HR.instance.PlaySFX(SFX_Manager_HR.SoundEffectNames.FIREHIT, transform.position);
         currentSpell = PlayerAttacks.Spells.Fire;
 
         if (previousSpell != PlayerAttacks.Spells.None)
@@ -398,7 +399,7 @@ public class EnemyCombat : MonoBehaviour
     }
     public void TakeWaterDamage(int damage)
     {
-
+        SFX_Manager_HR.instance.PlaySFX(SFX_Manager_HR.SoundEffectNames.WATERHIT, transform.position);
         currentSpell = PlayerAttacks.Spells.Water;
 
         if (previousSpell != PlayerAttacks.Spells.None)
@@ -448,7 +449,6 @@ public class EnemyCombat : MonoBehaviour
     }
     public void TakeEarthDamage(int damage)
     {
-
         currentSpell = PlayerAttacks.Spells.Earth;
 
         if (previousSpell != PlayerAttacks.Spells.None)
@@ -473,7 +473,7 @@ public class EnemyCombat : MonoBehaviour
     }
     public void TakeLightningDamage(int damage)
     {
-
+        
         currentSpell = PlayerAttacks.Spells.Lightning;
 
         if (previousSpell != PlayerAttacks.Spells.None)
@@ -640,6 +640,7 @@ public class EnemyCombat : MonoBehaviour
         Vector3 moveVector;
         float fadeLerpConstant = 1F;
         foxAnimation.SetBool("Death", true);
+        SFX_Manager_HR.instance.PlaySFX(SFX_Manager_HR.SoundEffectNames.FOXDIE, transform.position);
         yield return new WaitForSeconds(1);
 
         SkinnedMeshRenderer foxRend = transform.GetChild(0).GetComponent<SkinnedMeshRenderer>();

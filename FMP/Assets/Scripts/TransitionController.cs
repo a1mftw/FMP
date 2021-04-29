@@ -26,24 +26,29 @@ public class TransitionController : MonoBehaviour
     {
         if (tutorial1.activeSelf)
         {
+            SFX_Manager_HR.instance.PlaySFX(SFX_Manager_HR.SoundEffectNames.UIPOSITIVE, transform.position);
             btnTutorial2.Select();
             tutorial1.SetActive(false);
             tutorial2.SetActive(true);
         }
         else if(tutorial2.activeSelf)
         {
+            SFX_Manager_HR.instance.PlaySFX(SFX_Manager_HR.SoundEffectNames.UIPOSITIVE, transform.position);
             btnTutorial3.Select();
             tutorial2.SetActive(false);
             tutorial3.SetActive(true);
         }
         else
         {
+            SFX_Manager_HR.instance.PlaySFX(SFX_Manager_HR.SoundEffectNames.UIPOSITIVE, transform.position);
             tutorial3.SetActive(false);
             playerMovement.canControl = true;
+            Cursor.lockState = CursorLockMode.Locked;
         }
     }
     public void StartGame() 
     {
+        SFX_Manager_HR.instance.PlaySFX(SFX_Manager_HR.SoundEffectNames.UIPOSITIVE, transform.position);
         StartCoroutine(StartMenuTransition());
     }
 
